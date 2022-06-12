@@ -1,0 +1,24 @@
+﻿<Window x:Class="TodoList.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+        xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:con="clr-namespace:TodoList.WPF.Controls"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
+        Title="Список дел" Height="700" Width="1600" d:Height="500" d:Width="1000">
+    <Grid Background="{StaticResource MainWindowControlBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <con:MainToolPanel Grid.Row="0" DataContext="{Binding CommandToolPanelViewModel}"/>
+        <con:TodoTabControl Grid.Row="1" DataContext="{Binding TodoListViewModel}" />
+        <con:MainStatusBar Grid.Row="2" DataContext="{Binding StatusToolPanelViewModel}"/>
+    </Grid>
+</Window>

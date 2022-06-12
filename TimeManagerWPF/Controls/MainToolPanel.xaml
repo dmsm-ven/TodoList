@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="TodoList.WPF.Controls.MainToolPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="250">
+
+    <StackPanel Orientation="Horizontal">
+        <StackPanel.Background>
+            <SolidColorBrush Color="#FF2A48F1" Opacity="0.75"/>
+        </StackPanel.Background>
+        <Button Command="{Binding CustomCommand}" Style="{StaticResource ToolButtonStyle}">
+            <icons:PackIconFontAwesome Kind="RunningSolid"/>
+        </Button>
+        <Button Command="{Binding CustomCommand}" IsEnabled="False" Style="{StaticResource ToolButtonStyle}">
+            <icons:PackIconFontAwesome Kind="RunningSolid"/>
+        </Button>
+        <Button Command="{Binding CustomCommand}" Style="{StaticResource ToolButtonStyle}">
+            <icons:PackIconFontAwesome Kind="CogSolid"/>
+        </Button>
+    </StackPanel>
+</UserControl>
