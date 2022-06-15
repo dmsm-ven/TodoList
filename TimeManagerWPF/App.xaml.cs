@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
 using TodoList.WPF.DataAccess;
+using TodoList.WPF.Services;
 using TodoList.WPF.ViewModels;
 
 namespace TodoList.WPF;
@@ -19,8 +21,8 @@ public partial class App : Application
             {
                 services.AddAutoMapper(this.GetType().Assembly);
 
-                string connectionString = context.Configuration.GetSection("ConnectionStrings:local_db").Value;
-                services.AddTransient<IDapperDatabaseAccess>(options => new MySqlDapperDatabaseAccess(connectionString));
+                string connectionString = context.Configuration.GetConnectionString("default");
+                services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
 
                 ConfigureDatabaseRepositories(services);
                 ConfigureViewModels(services);           
@@ -30,13 +32,17 @@ public partial class App : Application
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
+
         services.AddTransient<IEmployeerRepository, EmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
         services.AddTransient<IJobItemRepository, JobItemRepository>();
     }
 
     private void ConfigureViewModels(IServiceCollection services)
-    {
+    {      
+        services.AddSingleton<NavigationLocator>();
+
+        services.AddSingleton<AddEmployeerViewModel>();
         services.AddSingleton<TodoListViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainWindow>();

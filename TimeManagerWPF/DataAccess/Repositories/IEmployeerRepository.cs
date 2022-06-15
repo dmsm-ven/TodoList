@@ -22,10 +22,10 @@ public class EmployeerRepository : IEmployeerRepository
 
     public int AddOrUpdateEmployeer(EmployeerEntity entity)
     {
-        string sql = @"INSERT INTO employeer (Id, EmployeerName) 
-                        VALUES(Id, EmployeerName) 
+        string sql = @"INSERT INTO employeer (Id, Name) 
+                        VALUES(@Id, @Name) 
                         ON DUPLICATE KEY UPDATE 
-                            EmployeerName = @EmployeerName";
+                            Name = @Name";
 
         database.Execute(sql, entity);
 

@@ -8,7 +8,7 @@ internal class JobItemProfile : Profile
 {
     public JobItemProfile()
     {
-        this.CreateMap<JobItemEntity, JobItemViewModel>();
-        this.CreateMap<JobItemViewModel, JobItemEntity>();
+        CreateMap<JobItemEntity, JobItemViewModel>();
+        CreateMap<JobItemViewModel, JobItemEntity>();
     }
 }

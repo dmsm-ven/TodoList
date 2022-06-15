@@ -1,36 +1,20 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
+using TodoList.WPF.Services;
 
 namespace TodoList.WPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
-    public TodoListViewModel TodoListViewModel { get; } 
-    public ICommand ShowSettingsCommand { get; }
-    public ICommand AddJobItemCommand { get; }
-    public ICommand DeleteJobItemCommand { get; }
-
+    public NavigationLocator NavigationLocator { get; }
+    public TodoListViewModel TodoListViewModel { get; }
     public MainWindowViewModel()
     {
-        ShowSettingsCommand = new LambdaCommand(e => { MessageBox.Show("NOT IMPLEMENTED"); });
-        AddJobItemCommand = new LambdaCommand(AddJobItem);
-        DeleteJobItemCommand = new LambdaCommand(DeleteJobItem, e => TodoListViewModel?.SelectedTab?.SelectedJobItem != null);
+
     }
-    public MainWindowViewModel(TodoListViewModel todoListViewModel) : this()
+    public MainWindowViewModel(TodoListViewModel todoListViewModel, NavigationLocator navigationLocator) : this()
     {
         TodoListViewModel = todoListViewModel;
-    }
-
-    private void DeleteJobItem(object obj)
-    {
-        var answer = MessageBox.Show("Удалить выделенное задание ?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (answer == MessageBoxResult.Yes)
-        {
-            TodoListViewModel.SelectedTab.DeleteJobItem();
-        }
-    }
-
-    private void AddJobItem(object obj)
-    {
-        TodoListViewModel.SelectedTab.AddJobItem();
+        NavigationLocator = navigationLocator;
     }
 }

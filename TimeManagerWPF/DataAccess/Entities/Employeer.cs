@@ -12,7 +12,5 @@ public class EmployeerEntity
     public int Id { get; set; }  
     [Required]
     public string Name { get; set; } = String.Empty;
-    public DateTime Created { get; set; }
-    public IEnumerable<EmployeerPaymentEntity> Payments { get; set; }
-    public IEnumerable<JobItemEntity> Jobs { get; set; }
+    public DateTime Created { get; set; } = DateTime.Now;
 }

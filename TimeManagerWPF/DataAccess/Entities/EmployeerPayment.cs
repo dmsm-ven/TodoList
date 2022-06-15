@@ -9,5 +9,5 @@ public class EmployeerPaymentEntity
     public int Id { get; set; }
     public int EmployeerId { get; set; }
     public DateTime TransferArrivalDate { get; set; }
-    public int Amount { get; set; }
+    public decimal Amount { get; set; }
 }

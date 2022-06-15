@@ -7,10 +7,16 @@
              xmlns:converters="clr-namespace:TodoList.WPF.Infrastructure.Converters"
              xmlns:con="clr-namespace:TodoList.WPF.Controls"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"             
+             xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"             
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=False}"
              d:Background="White"             
              d:DesignHeight="300" d:DesignWidth="1200">
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
     <Grid>
         <TabControl ItemsSource="{Binding Tabs}"
                     SelectedValue="{Binding SelectedTab}"
