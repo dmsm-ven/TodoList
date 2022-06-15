@@ -4,21 +4,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="250">
+             d:DesignHeight="50" d:DesignWidth="650">
 
-    <StackPanel Orientation="Horizontal">
-        <StackPanel.Background>
+    <DockPanel LastChildFill="True">
+        <DockPanel.Background>
             <SolidColorBrush Color="#FF2A48F1" Opacity="0.75"/>
-        </StackPanel.Background>
-        <Button Command="{Binding CustomCommand}" Style="{StaticResource ToolButtonStyle}">
-            <icons:PackIconFontAwesome Kind="RunningSolid"/>
-        </Button>
-        <Button Command="{Binding CustomCommand}" IsEnabled="False" Style="{StaticResource ToolButtonStyle}">
-            <icons:PackIconFontAwesome Kind="RunningSolid"/>
-        </Button>
-        <Button Command="{Binding CustomCommand}" Style="{StaticResource ToolButtonStyle}">
+        </DockPanel.Background>
+        
+        <Button Command="{Binding ShowSettingsCommand}" Style="{StaticResource ToolButtonStyle}"  DockPanel.Dock="Right">
             <icons:PackIconFontAwesome Kind="CogSolid"/>
         </Button>
-    </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="6 2 30 2"/>
+                    <Setter Property="Foreground" Value="FloralWhite"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Command="{Binding AddJobItemCommand}" Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome Kind="PlusSolid"/>
+            </Button>
+            <TextBlock Text="Добавить задачу" />
+            <Button Command="{Binding DeleteJobItemCommand}"  Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome Kind="MinusSolid"/>
+            </Button>
+            <TextBlock Text="Удалить задачу" />
+        </StackPanel>
+       
+    </DockPanel>
 </UserControl>

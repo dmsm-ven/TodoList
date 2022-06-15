@@ -10,18 +10,22 @@ public class JobItemViewModel : ViewModelBase
     public event Action OnScreenshotsClicked;
     public int Id { get; set; }
 
+    public int EmployeerId { get; set; }
+
     string title;
     public string Title
     {
         get => title;
         set => Set(ref title, value);
     }
+    
     string description;
     public string Description
     {
         get => description;
         set => Set(ref description, value);
     }
+    
     string website;
     public string Website
     {
@@ -45,7 +49,13 @@ public class JobItemViewModel : ViewModelBase
             }
         }
     }
-    public bool IsPayed { get; set; }
+
+    bool isPayed;
+    public bool IsPayed
+    {
+        get => isPayed;
+        set => Set(ref isPayed, value);
+    }
 
     decimal price;
     public decimal Price
@@ -61,9 +71,8 @@ public class JobItemViewModel : ViewModelBase
         get => endDate;
         set => Set(ref endDate, value);
     }
-    public List<string> Screenshots { get; set; } = new List<string>();
     public ICommand OpenScreenshotsFolderCommand { get; }
-    public bool HasScreenshots => Screenshots.Any(s => !string.IsNullOrWhiteSpace(s));
+    public bool HasScreenshots => true;
     public JobItemViewModel()
     {
         OpenScreenshotsFolderCommand = new LambdaCommand(

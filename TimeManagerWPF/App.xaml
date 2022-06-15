@@ -6,6 +6,9 @@
         
         <ResourceDictionary>
             <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
+            <con:IsActiveMonthForegroundBrushConverter x:Key="IsActiveMonthForegroundBrushConverter"/>
+            
             <ResourceDictionary.MergedDictionaries>
                 
                 <ResourceDictionary Source="/Resources/Brushes.xaml"></ResourceDictionary>

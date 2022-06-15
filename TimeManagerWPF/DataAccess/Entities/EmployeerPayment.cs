@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TodoList.Domain;
+namespace TodoList.DataAccess;
 
-public class EmployeerPaymentDto
+public class EmployeerPaymentEntity
 {
     [Key]
     public int Id { get; set; }

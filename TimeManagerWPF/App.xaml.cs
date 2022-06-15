@@ -1,11 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Windows;
-using TodoList.WPF.ViewModels;
-using Microsoft.EntityFrameworkCore.Sqlite.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using TodoList.WPF.DataAccess;
-using System.Configuration;
+using TodoList.WPF.ViewModels;
 
 namespace TodoList.WPF;
 /// <summary>
@@ -20,15 +17,31 @@ public partial class App : Application
         host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                services.AddDbContext<TimeManagerDbContext>(options => options.UseSqlite("Data Source = database.db"));
                 services.AddAutoMapper(this.GetType().Assembly);
 
-                services.AddSingleton<TodoListViewModel>();
-                services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<MainWindow>();
+                string connectionString = context.Configuration.GetSection("ConnectionStrings:local_db").Value;
+                services.AddTransient<IDapperDatabaseAccess>(options => new MySqlDapperDatabaseAccess(connectionString));
+
+                ConfigureDatabaseRepositories(services);
+                ConfigureViewModels(services);           
             })
             .Build();
     }
+
+    private void ConfigureDatabaseRepositories(IServiceCollection services)
+    {
+        services.AddTransient<IEmployeerRepository, EmployeerRepository>();
+        services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
+        services.AddTransient<IJobItemRepository, JobItemRepository>();
+    }
+
+    private void ConfigureViewModels(IServiceCollection services)
+    {
+        services.AddSingleton<TodoListViewModel>();
+        services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<MainWindow>();
+    }
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         await host.StartAsync();

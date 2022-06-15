@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 
 namespace TodoList.WPF.Controls;
 /// <summary>
-/// Interaction logic for TodoTabControl.xaml
+/// Interaction logic for TodoTabItemControlDataTemplate.xaml
 /// </summary>
-public partial class TodoTabControl : UserControl
+public partial class TodoTabItemControlDataTemplate : UserControl
 {
-    public TodoTabControl()
+    public TodoTabItemControlDataTemplate()
     {
         InitializeComponent();
     }

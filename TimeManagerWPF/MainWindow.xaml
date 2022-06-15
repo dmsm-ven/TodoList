@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
         xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:con="clr-namespace:TodoList.WPF.Controls"
+        xmlns:v="clr-namespace:TodoList.WPF.Views"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
@@ -17,8 +18,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <con:MainToolPanel Grid.Row="0" DataContext="{Binding CommandToolPanelViewModel}"/>
-        <con:TodoTabControl Grid.Row="1" DataContext="{Binding TodoListViewModel}" />
-        <con:MainStatusBar Grid.Row="2" DataContext="{Binding StatusToolPanelViewModel}"/>
+        <con:MainToolPanel Grid.Row="0" DataContext="{Binding}"/>
+        <v:TodoListView Grid.Row="1" DataContext="{Binding TodoListViewModel}" />
     </Grid>
 </Window>

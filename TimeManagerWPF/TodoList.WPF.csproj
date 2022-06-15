@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.json" />
     <None Remove="Assets\Images\bricks-texture.jpg" />
     <None Remove="Assets\Images\laminate.jpg" />
     <None Remove="Assets\Images\leaves-texture.jpg" />
@@ -17,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\bricks-texture.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -29,24 +33,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Automapper\Profiles\" />
     <Folder Include="Services\" />
-    <Folder Include="ViewModels\DesignTime\" />
-    <Folder Include="Views\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.11.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TimeManagerDomain\TodoList.Domain.csproj" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="MySql.Data" Version="8.0.29" />
   </ItemGroup>
 
   <ItemGroup>

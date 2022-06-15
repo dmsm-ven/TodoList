@@ -1,19 +1,28 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Data;
 using System.Windows.Input;
+using TodoList.DataAccess;
+using TodoList.WPF.DataAccess;
 
 namespace TodoList.WPF.ViewModels;
 
-
 public class TodoTabViewModel : ViewModelBase
 {
+    private readonly IJobItemRepository jobItemRepository;
+    private readonly IMapper mapper;
+    public bool IsLoaded { get; private set; }
+
     public string EmployeerName { get; set; }
-    public bool HasActiveTask { get; set; }
+    public int EmployeerId { get; set; }
+    public bool HasActiveTask
+    {
+        get => TodoItems.Any(t => !t.IsCompleted && !t.IsPayed);
+    }
 
     MonthPillModel selectedMonthPill;
     public MonthPillModel SelectedMonthPill
@@ -28,56 +37,85 @@ public class TodoTabViewModel : ViewModelBase
         }
     }
 
+    JobItemViewModel selectedJobItem;
+    public JobItemViewModel SelectedJobItem
+    {
+        get => selectedJobItem;
+        set => Set(ref selectedJobItem, value);
+    }
     public List<JobItemViewModel> FilteredTodoItems
     {
-        get => TodoItems
-            .Where(i => i.StartDate.Month == SelectedMonthPill.MonthNumber && i.StartDate.Year == SelectedMonthPill.Year)
-            .OrderByDescending(i => i.StartDate)
-            .ToList();
+        get
+        {
+            var activePill = SelectedMonthPill ?? MonthPills.FirstOrDefault() ?? null;
+            if (activePill != null)
+            {
+                var data = TodoItems
+                .Where(i => i.StartDate.Month == activePill.MonthNumber && i.StartDate.Year == activePill.Year)
+                .OrderByDescending(i => i.StartDate)
+                .ToList();
+
+                return data;
+            }
+            return new List<JobItemViewModel>();
+        }
     }
-    public ObservableCollection<JobItemViewModel> TodoItems { get; set; }
+    public ObservableCollection<JobItemViewModel> TodoItems { get; private set; }
+    public ObservableCollection<MonthPillModel> MonthPills { get; private set; }
 
-    public ObservableCollection<MonthPillModel> MonthPills { get; set; }
-
-    public ICommand AddNewJobItemCommand { get; }
+    public ICommand LoadedCommand { get; }
 
     public TodoTabViewModel()
     {
+        LoadedCommand = new LambdaCommand(Loaded);
         TodoItems = new ObservableCollection<JobItemViewModel>();
         MonthPills = new ObservableCollection<MonthPillModel>();
-        AddNewJobItemCommand = new LambdaCommand(AddNewJobItem);     
-        AddTestData();
-        TodoItems.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(FilteredTodoItems));
-        SelectedMonthPill = MonthPills.First();
-        SelectedMonthPill.IsActive = true;
+        TodoItems.CollectionChanged += (o, e) =>
+        {
+            if (IsLoaded) { return; }
+            RaisePropertyChanged(nameof(FilteredTodoItems));
+            SelectedJobItem = null;
+        };
     }
 
-    private void AddTestData()
+    public TodoTabViewModel(IJobItemRepository jobItemRepository, IMapper mapper) : this()
     {
-        TodoItems = new ObservableCollection<JobItemViewModel>();
-        Enumerable.Range(1, 50).ToList().ForEach(i =>
-        {
-            var item = new JobItemViewModel()
-            {
-                Title = $"Задача #{i}",
-                Description = $"Описание задачи #{i}",
-                StartDate = DateTime.Now.AddDays(-i),
-                EndDate = DateTime.Now.AddDays(i),
-                IsCompleted = new Random().Next(0, 1) == 0 ? false : true,
-                IsPayed = new Random().Next(0, 1) == 0 ? false : true,
-                Price = new Random().Next(400, 3000),
-                Screenshots = new List<string>((new Random().Next(-5, 2) > 0) ? new string[] { "screen.jpg" } : new string[] { string.Empty }),
-                Website = "http://etk-komplekt.ru",
-                Id = i
-            };
-            item.OnScreenshotsClicked += () => OpenScreenshotFolder(item);
-            TodoItems.Add(item);
-        });
+        this.jobItemRepository = jobItemRepository;
+        this.mapper = mapper;
+    }
 
-        MonthPills = new ObservableCollection<MonthPillModel>();
-        for (int month = DateTime.Now.Month; month >= DateTime.Now.Month - 3; month--)
+    private void Loaded(object obj)
+    {
+        LoadItems();
+        LoadMonthPills();
+        IsLoaded = true;
+    }
+
+    private void LoadItems()
+    {
+        jobItemRepository.GetAllJobItems(EmployeerId)
+            .Select(i => mapper.Map<JobItemViewModel>(i))
+            .ToList()
+            .ForEach(i => {
+                TodoItems.Add(i);
+                AddItemEvents(i);
+            });
+    }
+
+    private void LoadMonthPills()
+    {
+        var pillsData = TodoItems.Select(i => i.StartDate)
+            .Select(date => new { Year = date.Year, Month = date.Month })
+            .Distinct()
+            .OrderByDescending(i => i.Year)
+            .ThenByDescending(i => i.Month)
+            .ToDictionary(i => i.Year, i => i.Month);
+
+        MonthPills.Clear();
+
+        foreach (var kvp in pillsData)
         {
-            var pill = new MonthPillModel(DateTime.Now.Year, month);
+            var pill = new MonthPillModel(kvp.Key, kvp.Value);
             MonthPills.Add(pill);
             pill.OnClicked += () =>
             {
@@ -86,16 +124,51 @@ public class TodoTabViewModel : ViewModelBase
             };
         }
 
+        SelectedMonthPill = MonthPills?.FirstOrDefault();
+        if (SelectedMonthPill != null)
+        {
+            SelectedMonthPill.IsActive = true;
+        }
     }
 
-    private void AddNewJobItem(object obj)
+    private void AddItemEvents(JobItemViewModel item)
+    {
+        TodoItems.Add(item);
+
+        item.OnScreenshotsClicked += () => OpenScreenshotFolder(item);
+        item.PropertyChanged += (o, e) => SaveItemChanges(item);
+    }
+
+    private void SaveItemChanges(JobItemViewModel changedItem)
+    {
+        jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(changedItem));
+    }
+    
+    public void AddJobItem()
     {
         var item = new JobItemViewModel()
         {
             StartDate = DateTime.Now,
             Title = "Новая задача",
+            EmployeerId = this.EmployeerId
         };
-        TodoItems.Add(item);
+        
+        AddItemEvents(item);
+
+        int max_id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
+
+        item.Id = max_id;
+    }
+
+    internal void DeleteJobItem()
+    {
+        if(SelectedJobItem != null)
+        {
+            var temp = SelectedJobItem;
+            TodoItems.Remove(temp);
+            jobItemRepository.DeleteJobItem(temp.Id);
+        }
+        SelectedJobItem = null;
     }
 
     private void OpenScreenshotFolder(JobItemViewModel item)
