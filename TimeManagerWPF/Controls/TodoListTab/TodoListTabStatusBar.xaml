@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="TodoList.WPF.Controls.TodoListTabStatusBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+             mc:Ignorable="d"             
+              d:DataContext="{d:DesignInstance Type=vm:TodoListTabStatusBarViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="40" d:DesignWidth="600">
+    <StatusBar>
+        <StatusBarItem Content="{Binding ActiveTasksMessage}"/>
+        <Separator/>
+
+        <StatusBarItem Content="{Binding TotalWorkCashMessage}"/>
+        <Separator/>
+
+        <StatusBarItem Content="{Binding AlreadyPayedTasksCashMessage}"/>
+        <Separator/>
+
+        <StatusBarItem Content="{Binding NotPayedTasksCashMessage}"/>
+    </StatusBar>
+</UserControl>

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TodoList.WPF.Controls.TodoTabItemControlDataTemplate"
+﻿<UserControl x:Class="TodoList.WPF.Controls.TodoListTabContent"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,6 +6,7 @@
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+             xmlns:con="clr-namespace:TodoList.WPF.Controls"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              d:DataContext="{d:DesignInstance Type=vm:TodoTabViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
@@ -21,6 +22,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.Resources>
@@ -311,5 +313,7 @@
                            Panel.ZIndex="10"
                            Opacity="0.75"
                            Thickness="6" Grid.Row="1" Grid.Column="0" />
+
+        <con:TodoListTabStatusBar Grid.Row="3" Grid.ColumnSpan="2" DataContext="{Binding StatusBarData}"/>
     </Grid>
 </UserControl>

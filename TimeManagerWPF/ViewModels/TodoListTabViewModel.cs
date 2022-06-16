@@ -15,7 +15,7 @@ using TodoList.WPF.Services;
 
 namespace TodoList.WPF.ViewModels;
 
-public class TodoTabViewModel : ViewModelBase
+public class TodoListTabViewModel : ViewModelBase
 {
     private readonly IJobItemRepository jobItemRepository;
     private readonly IEmployeerPaymentRepository paymentRepository;
@@ -39,7 +39,14 @@ public class TodoTabViewModel : ViewModelBase
         get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
     }
 
-    public EmployeerViewModel Employeer { get; init; }
+    TodoListTabStatusBarViewModel statusBarData;
+    public TodoListTabStatusBarViewModel StatusBarData
+    {
+        get => statusBarData;
+        set => Set(ref statusBarData, value);
+    }
+
+    public EmployeerViewModel Employeer { get; init; }  
     public EmployeerPaymentsStatisticViewModel PaymentsStatistic { get; init; }
     public ObservableCollection<MonthPillModel> MonthPills { get; init; }
 
@@ -52,6 +59,7 @@ public class TodoTabViewModel : ViewModelBase
             if (Set(ref selectedMonthPill, value))
             {
                 RaisePropertyChanged(nameof(FilteredTodoItems));
+                StatusBarData = new TodoListTabStatusBarViewModel(FilteredTodoItems);
             }
         }
     }
@@ -92,7 +100,7 @@ public class TodoTabViewModel : ViewModelBase
     public ICommand DeleteJobCommand { get; }
     public ICommand ShowPaymentFieldCommand { get; }
     public ICommand AddEmployeerPaymentCommand { get; }
-    public TodoTabViewModel()
+    public TodoListTabViewModel()
     {
         LoadedCommand = new LambdaCommand(Loaded);
         AddJobCommand = new LambdaCommand(AddJobItem);
@@ -101,7 +109,7 @@ public class TodoTabViewModel : ViewModelBase
         AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => NewPayment.Amount != 0);
         MonthPills = new ObservableCollection<MonthPillModel>();
     }
-    public TodoTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
+    public TodoListTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
     {
         this.jobItemRepository = jobItemRepository;
         this.paymentRepository = paymentRepository;
@@ -110,6 +118,7 @@ public class TodoTabViewModel : ViewModelBase
 
         PaymentsStatistic = new EmployeerPaymentsStatisticViewModel(Employeer);
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id };
+        
         Employeer.TodoItems.CollectionChanged += TodoItems_CollectionChanged;
         Employeer.TodoItems.ToList().ForEach(item =>
         {

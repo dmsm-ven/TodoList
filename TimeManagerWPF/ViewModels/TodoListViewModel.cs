@@ -23,10 +23,10 @@ public class TodoListViewModel : ViewModelBase
     public ICommand MoveToTodoListCommand { get; }
     public ICommand LoadedCommand { get; }
 
-    public ObservableCollection<TodoTabViewModel> Tabs { get; set; } = new ObservableCollection<TodoTabViewModel>();
+    public ObservableCollection<TodoListTabViewModel> Tabs { get; set; } = new ObservableCollection<TodoListTabViewModel>();
 
-    TodoTabViewModel selectedTab;
-    public TodoTabViewModel SelectedTab
+    TodoListTabViewModel selectedTab;
+    public TodoListTabViewModel SelectedTab
     {
         get => selectedTab;
         set
@@ -40,7 +40,7 @@ public class TodoListViewModel : ViewModelBase
     public TodoListViewModel()
     {
         LoadedCommand = new LambdaCommand(Loaded);
-        Tabs = new ObservableCollection<TodoTabViewModel>();
+        Tabs = new ObservableCollection<TodoListTabViewModel>();
         MoveToTodoListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.TodoList));        
         AddEmployeerCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.AddEmployeer));     
     }
@@ -71,7 +71,7 @@ public class TodoListViewModel : ViewModelBase
                 TodoItems = new ObservableCollection<JobItemViewModel>(mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(emp.Id))),
                 Payments = new ObservableCollection<EmployeerPaymentViewModel>(mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(emp.Id)))
             })
-            .Select(i => new TodoTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
+            .Select(i => new TodoListTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
             .ToList()
             .ForEach(t => Tabs.Add(t));
         if (SelectedTab == null)

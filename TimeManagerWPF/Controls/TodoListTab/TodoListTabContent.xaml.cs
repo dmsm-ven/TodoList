@@ -4,9 +4,9 @@ namespace TodoList.WPF.Controls;
 /// <summary>
 /// Interaction logic for TodoTabItemControlDataTemplate.xaml
 /// </summary>
-public partial class TodoTabItemControlDataTemplate : UserControl
+public partial class TodoListTabContent : UserControl
 {
-    public TodoTabItemControlDataTemplate()
+    public TodoListTabContent()
     {
         InitializeComponent();
     }

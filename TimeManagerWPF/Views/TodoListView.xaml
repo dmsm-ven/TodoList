@@ -9,7 +9,7 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"             
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"             
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=False}"
              Background="{StaticResource ToolPanelBackground}"
              d:Background="White"       
              d:DesignHeight="300" d:DesignWidth="1200">
@@ -19,14 +19,13 @@
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
-        
+
         <TabControl ItemsSource="{Binding Tabs}"
                     SelectedValue="{Binding SelectedTab}"
                     BorderThickness="0" >
-
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <con:TodoTabItemControlDataTemplate DataContext="{Binding}"></con:TodoTabItemControlDataTemplate>
+                    <con:TodoListTabContent DataContext="{Binding}"></con:TodoListTabContent>
                 </DataTemplate>
             </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
