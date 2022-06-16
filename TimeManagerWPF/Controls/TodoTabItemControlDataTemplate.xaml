@@ -171,7 +171,7 @@
                         </DataGridTemplateColumn.CellEditingTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Задача" Width="2*" Binding="{Binding Title,Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                    <DataGridTextColumn Header="Сайт" Binding="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextBlock.Ac/>
+                    <DataGridTextColumn Header="Сайт" Binding="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                     <DataGridTextColumn Header="Цена" Binding="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <DataGridCheckBoxColumn Header="Оплачено" Binding="{Binding IsPayed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -307,9 +307,9 @@
                            VerticalAlignment="Stretch"
                            HorizontalContentAlignment="Center"
                            VerticalContentAlignment="Center"
-                           Background="Black"
+                           Color="RoyalBlue" 
                            Panel.ZIndex="10"
                            Opacity="0.75"
-                           Foreground="Blue" Thickness="6" Grid.Row="1" Grid.Column="0" />
+                           Thickness="6" Grid.Row="1" Grid.Column="0" />
     </Grid>
 </UserControl>

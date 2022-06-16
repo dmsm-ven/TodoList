@@ -111,6 +111,11 @@ public class TodoTabViewModel : ViewModelBase
         PaymentsStatistic = new EmployeerPaymentsStatisticViewModel(Employeer);
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id };
         Employeer.TodoItems.CollectionChanged += TodoItems_CollectionChanged;
+        Employeer.TodoItems.ToList().ForEach(item =>
+        {
+            item.OnScreenshotsClicked += () => OpenScreenshotFolder(item);
+            item.PropertyChanged += Item_PropertyChanged;
+        });
     }
 
     private void Loaded(object o)
@@ -157,13 +162,6 @@ public class TodoTabViewModel : ViewModelBase
             SelectedMonthPill.IsActive = true;
         }
     }
-    private void AddItemAndEvents(JobItemViewModel item)
-    {
-        Employeer.TodoItems.Add(item);
-        item.OnScreenshotsClicked += () => OpenScreenshotFolder(item);
-        item.PropertyChanged += Item_PropertyChanged;
-        
-    }
     public void AddJobItem(object o)
     {
         var item = new JobItemViewModel()
@@ -174,7 +172,7 @@ public class TodoTabViewModel : ViewModelBase
         };
 
         item.Id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
-        AddItemAndEvents(item);    
+        Employeer.TodoItems.Add(item);
     }
     internal void DeleteSelectedJobItem(object o)
     {
@@ -213,6 +211,9 @@ public class TodoTabViewModel : ViewModelBase
                 MonthPills.Insert(0, new MonthPillModel(newItem.StartDate));
                 SelectedMonthPill = MonthPills[0];
             }
+
+            newItem.OnScreenshotsClicked += () => OpenScreenshotFolder(newItem);
+            newItem.PropertyChanged += Item_PropertyChanged;
         }
     }
     private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
