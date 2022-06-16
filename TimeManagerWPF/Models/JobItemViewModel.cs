@@ -63,7 +63,13 @@ public class JobItemViewModel : ViewModelBase
         get => price;
         set => Set(ref price, value);
     }
-    public DateTime StartDate { get; set; }
+
+    DateTime startDate;
+    public DateTime StartDate
+    {
+        get => startDate;
+        set => Set(ref startDate, value);
+    }
 
     DateTime? endDate;
     public DateTime? EndDate

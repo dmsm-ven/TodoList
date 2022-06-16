@@ -20,13 +20,14 @@ public class EmployeerPaymentRepository : IEmployeerPaymentRepository
 
     public IEnumerable<EmployeerPaymentEntity> GetAllPaymentsForEmployeer(int employeer_id)
     {
-        var items = database.GetList<EmployeerPaymentEntity>("SELECT * FROM employeer_payment");
+        var items = database.GetList<EmployeerPaymentEntity>("SELECT * FROM employeer_payment WHERE EmployeerId = @employeer_id", new { employeer_id });
         return items;
     }
 
     public void AddPayment(EmployeerPaymentEntity payment)
     {
-        string sql = @"INSERT INTO employeer_payment (Id, EmployeerId, Amount, TransferArrivalDate"; 
+        string sql = @"INSERT INTO employeer_payment (EmployeerId, Amount, TransferArrivalDate) VALUES
+                                                     (@EmployeerId, @Amount, @TransferArrivalDate)"; 
 
         database.Execute(sql, payment);
     }

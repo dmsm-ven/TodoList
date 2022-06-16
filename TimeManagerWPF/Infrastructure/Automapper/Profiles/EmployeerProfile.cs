@@ -10,5 +10,10 @@ public class EmployeerProfile : Profile
     {
         CreateMap<EmployeerViewModel, EmployeerEntity>();
         CreateMap<EmployeerEntity, EmployeerViewModel>();
+
+        CreateMap<EmployeerPaymentEntity, EmployeerPaymentViewModel>();
+        CreateMap<EmployeerPaymentViewModel, EmployeerPaymentEntity>();
+
+
     }
 }

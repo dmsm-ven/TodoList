@@ -8,13 +8,22 @@ public class MainWindowViewModel : ViewModelBase
 {
     public NavigationLocator NavigationLocator { get; }
     public TodoListViewModel TodoListViewModel { get; }
+    public ICommand LoadedCommand { get; }
+
     public MainWindowViewModel()
     {
-
+        LoadedCommand = new LambdaCommand(Loaded);
     }
+
     public MainWindowViewModel(TodoListViewModel todoListViewModel, NavigationLocator navigationLocator) : this()
     {
         TodoListViewModel = todoListViewModel;
-        NavigationLocator = navigationLocator;
+        NavigationLocator = navigationLocator;       
     }
+
+    private void Loaded(object obj)
+    {
+        NavigationLocator.MoveTo(ViewModelType.TodoList);
+    }
+
 }

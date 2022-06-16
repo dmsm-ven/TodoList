@@ -7,10 +7,16 @@
         xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:con="clr-namespace:TodoList.WPF.Controls"
         xmlns:v="clr-namespace:TodoList.WPF.Views"
+        xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
         Title="Список дел" Height="700" Width="1600" d:Height="500" d:Width="1000">
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
     <Grid Background="{StaticResource MainWindowControlBackground}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

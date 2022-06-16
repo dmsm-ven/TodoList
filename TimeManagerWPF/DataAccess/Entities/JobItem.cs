@@ -13,6 +13,7 @@ public class JobItemEntity
     public string? Description { get; set; }
     public string? Website { get; set; }
     public bool IsCompleted { get; set; }
+    public bool IsPayed { get; set; }
     public decimal Price { get; set; }
     public DateTime StartDate { get; set; } = DateTime.Now;
     public DateTime? EndDate { get; set; }

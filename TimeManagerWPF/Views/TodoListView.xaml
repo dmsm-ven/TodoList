@@ -9,8 +9,9 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"             
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"             
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=False}"
-             d:Background="White"             
+             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"
+             Background="{StaticResource ToolPanelBackground}"
+             d:Background="White"       
              d:DesignHeight="300" d:DesignWidth="1200">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
@@ -18,26 +19,31 @@
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
+        
         <TabControl ItemsSource="{Binding Tabs}"
                     SelectedValue="{Binding SelectedTab}"
                     BorderThickness="0" >
+
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <con:TodoTabItemControlDataTemplate DataContext="{Binding}"></con:TodoTabItemControlDataTemplate>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" >
-                        <Ellipse Width="24" Height="24" Stroke="Transparent" 
-                                 Fill="{Binding HasActiveTask, Converter={StaticResource HasActiveTaskBrushConverter}}"/>
-                        <TextBlock Text="{Binding EmployeerName}" 
-                                   Margin="8 2 2 2"
-                                   FontWeight="Bold" FontSize="20" Foreground="#FF576D68"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="24" Height="24" Stroke="Transparent"
+                                 Margin="8 2 2 2"
+                                 Fill="{Binding HasActiveTasks, Converter={StaticResource HasActiveTaskBrushConverter}}"/>
+                        <TextBlock Text="{Binding Employeer.Name, TargetNullValue='Имя'}" 
+                                   Background="Transparent"
+                                   Foreground="Black"
+                                   Margin="8 4 2 2"
+                                   FontWeight="Bold" FontSize="20"/>
 
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <con:TodoTabItemControlDataTemplate DataContext="{Binding}"/>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
         </TabControl>
     </Grid>
 </UserControl>

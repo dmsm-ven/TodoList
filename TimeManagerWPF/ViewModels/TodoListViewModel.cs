@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess;
+using TodoList.WPF.Models;
 using TodoList.WPF.Services;
 
 namespace TodoList.WPF.ViewModels;
@@ -13,11 +16,10 @@ public class TodoListViewModel : ViewModelBase
 {
     private readonly NavigationLocator navigationLocator;
     private readonly IEmployeerRepository employeerRepository;
+    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
     private readonly IJobItemRepository jobItemRepository;
     private readonly IMapper mapper;
     public ICommand AddEmployeerCommand { get; }
-    public ICommand AddJobItemCommand { get; }
-    public ICommand DeleteJobItemCommand { get; }
     public ICommand MoveToTodoListCommand { get; }
     public ICommand LoadedCommand { get; }
 
@@ -27,51 +29,56 @@ public class TodoListViewModel : ViewModelBase
     public TodoTabViewModel SelectedTab
     {
         get => selectedTab;
-        set => Set(ref selectedTab, value);
+        set
+        {
+            if (Set(ref selectedTab, value))
+            {
+                selectedTab?.LoadedCommand.Execute(null);
+            }
+        }
     }
     public TodoListViewModel()
     {
-        MoveToTodoListCommand = new LambdaCommand(MoveToTodoList);
         LoadedCommand = new LambdaCommand(Loaded);
-        AddEmployeerCommand = new LambdaCommand(AddEmployeer);
-        AddJobItemCommand = new LambdaCommand(AddJobItem, e => SelectedTab != null);
-        DeleteJobItemCommand = new LambdaCommand(DeleteJobItem, e => SelectedTab?.SelectedJobItem != null);
+        Tabs = new ObservableCollection<TodoTabViewModel>();
+        MoveToTodoListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.TodoList));        
+        AddEmployeerCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.AddEmployeer));     
     }
 
     public TodoListViewModel(NavigationLocator navigationLocator,
-        IEmployeerRepository employeerRepository, 
+        IEmployeerRepository employeerRepository,
+        IEmployeerPaymentRepository employeerPaymentRepository, 
         IJobItemRepository jobItemRepository, 
         IMapper mapper) : this()
     {
         this.navigationLocator = navigationLocator;
         this.employeerRepository = employeerRepository;
+        this.employeerPaymentRepository = employeerPaymentRepository;
         this.jobItemRepository = jobItemRepository;
         this.mapper = mapper;
     }
-    private void MoveToTodoList(object obj)
-    {
-        navigationLocator.MoveTo(ViewModelType.TodoList);
-    }
 
-    private void AddEmployeer(object obj)
-    {
-        navigationLocator.MoveTo(ViewModelType.AddEmployeer);
-    }
-    private void DeleteJobItem(object obj)
-    {
-        var answer = MessageBox.Show("Удалить выделенное задание ?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (answer == MessageBoxResult.Yes)
-        {
-            SelectedTab.DeleteJobItem();
-        }
-    }
-    private void AddJobItem(object obj)
-    {
-        SelectedTab.AddJobItem();
-    }
     private void Loaded(object obj)
     {
-        var items = employeerRepository.GetAllEmployeer().Select(i => new TodoTabViewModel(jobItemRepository, mapper));
-        SelectedTab = Tabs.FirstOrDefault();
+        Tabs.Clear();
+
+        employeerRepository
+            .GetAllEmployeer()
+            .Select(i => new TodoTabViewModel(jobItemRepository, employeerPaymentRepository, mapper)
+            {
+                Employeer = new EmployeerViewModel() {
+
+                    Name = i.Name,                    
+                    Id = i.Id,
+                    TodoItems = new ObservableCollection<JobItemViewModel>(mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(i.Id))),
+                    Payments = new ObservableCollection<EmployeerPaymentViewModel>(mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(i.Id)))
+                },
+            })
+            .ToList()
+            .ForEach(t => Tabs.Add(t));
+        if (SelectedTab == null)
+        {
+            SelectedTab = Tabs.FirstOrDefault();
+        }
     }
 }

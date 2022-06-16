@@ -9,10 +9,7 @@
              d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="50" d:DesignWidth="1000">
 
-    <DockPanel>
-        <DockPanel.Background>
-            <SolidColorBrush Color="#FF2A48F1" Opacity="0.75"/>
-        </DockPanel.Background>
+    <DockPanel Background="{StaticResource ToolPanelBackground}">
         <DockPanel.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -35,19 +32,6 @@
             <TextBlock Text="К списку задач" />
         </StackPanel>
         
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-            <Button Command="{Binding AddJobItemCommand}" Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome Kind="PlusSolid"/>
-            </Button>
-            <TextBlock Text="Добавить задачу" />
-        </StackPanel>
-        
-        <StackPanel Orientation="Horizontal" Opacity="0.25" DockPanel.Dock="Left">
-            <Button Command="{Binding DeleteJobItemCommand}"  Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome Kind="MinusSolid"/>
-            </Button>
-            <TextBlock Text="Удалить задачу" />
-        </StackPanel>
         <StackPanel Orientation="Horizontal" Opacity="0.25" DockPanel.Dock="Right" HorizontalAlignment="Right">
                 <Button Command="{Binding AddEmployeerCommand}"  Style="{StaticResource ToolButtonStyle}">
                 <icons:PackIconFontAwesome Kind="UserPlusSolid"/>

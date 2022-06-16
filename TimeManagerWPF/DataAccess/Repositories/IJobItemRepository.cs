@@ -22,13 +22,15 @@ public class JobItemRepository : IJobItemRepository
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
     {
-        string sql = @"INSERT INTO job_item (Title, Description, Website, IsCompleted, Price, EndDate) 
-                        VALUES(@Title, @Description, @Website, @IsCompleted, @Price, @EndDate) 
+        string sql = @"INSERT INTO job_item (Id, EmployeerId, Title, Description, Website, IsCompleted, IsPayed, Price, EndDate) 
+                        VALUES(@Id, @EmployeerId, @Title, @Description, @Website, @IsCompleted, @IsPayed, @Price, @EndDate) 
                         ON DUPLICATE KEY UPDATE 
                             Title = @Title,
+                            EmployeerId = @EmployeerId,
                             Description = @Description,
                             Website = @Website,
                             IsCompleted = @IsCompleted,
+                            IsPayed = @IsPayed,
                             Price = @Price,
                             EndDate = @EndDate";
 

@@ -9,7 +9,7 @@ public class HasActiveTaskBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? Brushes.GreenYellow : Brushes.LightGray;
+        return (bool)value ? Brushes.DarkBlue : Brushes.LightGray;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
