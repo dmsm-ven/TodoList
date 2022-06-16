@@ -21,6 +21,7 @@ public class TodoListViewModel : ViewModelBase
     private readonly IMapper mapper;
     public ICommand AddEmployeerCommand { get; }
     public ICommand MoveToTodoListCommand { get; }
+    public ICommand MoveToShoppingListCommand { get; }
     public ICommand LoadedCommand { get; }
 
     public ObservableCollection<TodoListTabViewModel> Tabs { get; set; } = new ObservableCollection<TodoListTabViewModel>();
@@ -41,7 +42,8 @@ public class TodoListViewModel : ViewModelBase
     {
         LoadedCommand = new LambdaCommand(Loaded);
         Tabs = new ObservableCollection<TodoListTabViewModel>();
-        MoveToTodoListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.TodoList));        
+        MoveToTodoListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.TodoList));
+        MoveToShoppingListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ShoppingList));        
         AddEmployeerCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.AddEmployeer));     
     }
 

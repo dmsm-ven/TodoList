@@ -31,7 +31,13 @@
             </Button>
             <TextBlock Text="К списку задач" />
         </StackPanel>
-        
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+            <Button Command="{Binding MoveToShoppingListCommand}" Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome Kind="ShoppingBagSolid"/>
+            </Button>
+            <TextBlock Text="К списку покупок" />
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" Opacity="0.25" DockPanel.Dock="Right" HorizontalAlignment="Right">
                 <Button Command="{Binding AddEmployeerCommand}"  Style="{StaticResource ToolButtonStyle}">
                 <icons:PackIconFontAwesome Kind="UserPlusSolid"/>

@@ -36,6 +36,7 @@ public partial class App : Application
         services.AddTransient<IEmployeerRepository, EmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
         services.AddTransient<IJobItemRepository, JobItemRepository>();
+        services.AddTransient<IShoppingItemsRepository, ShoppingItemsRepository>();
     }
 
     private void ConfigureViewModels(IServiceCollection services)
@@ -43,6 +44,7 @@ public partial class App : Application
         services.AddSingleton<NavigationLocator>();
 
         services.AddSingleton<AddEmployeerViewModel>();
+        services.AddSingleton<ShoppingListViewModel>();
         services.AddSingleton<TodoListViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainWindow>();

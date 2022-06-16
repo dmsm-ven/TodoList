@@ -10,7 +10,7 @@
         xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=True}"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="Список дел" Height="700" Width="1600" d:Height="500" d:Width="1000">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
@@ -32,6 +32,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:AddEmployeerViewModel}">
                     <v:AddEmployeerView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ShoppingListViewModel}">
+                    <v:ShoppingListView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>
