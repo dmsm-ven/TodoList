@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              mc:Ignorable="d"             
-              d:DataContext="{d:DesignInstance Type=vm:TodoListTabStatusBarViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:TodoListTabStatusBarViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="40" d:DesignWidth="600">
     <StatusBar>
         <StatusBarItem Content="{Binding ActiveTasksMessage}"/>

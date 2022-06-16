@@ -106,7 +106,7 @@ public class TodoListTabViewModel : ViewModelBase
         AddJobCommand = new LambdaCommand(AddJobItem);
         DeleteJobCommand = new LambdaCommand(DeleteSelectedJobItem);
         ShowPaymentFieldCommand = new LambdaCommand(e => IsShowPaymentField = !IsShowPaymentField);
-        AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => NewPayment.Amount != 0);
+        AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => (NewPayment?.Amount ?? 0) != 0);
         MonthPills = new ObservableCollection<MonthPillModel>();
     }
     public TodoListTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
