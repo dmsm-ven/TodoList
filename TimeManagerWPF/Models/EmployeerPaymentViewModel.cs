@@ -9,7 +9,7 @@ public class EmployeerPaymentViewModel : ViewModelBase
     public int EmployeerId { get; init; }
     public string EmployeerName { get; init; }
 
-    DateTime transferArrivalDate;
+    DateTime transferArrivalDate = DateTime.Now;
     public DateTime TransferArrivalDate
     {
         get => transferArrivalDate;

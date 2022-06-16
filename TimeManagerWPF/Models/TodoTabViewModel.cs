@@ -22,28 +22,27 @@ public class TodoTabViewModel : ViewModelBase
     private readonly IMapper mapper;
 
     private bool isShowPaymentField;
-    public bool IsShowPaymentField { get => isShowPaymentField; set => Set(ref isShowPaymentField, value); }
+    public bool IsShowPaymentField 
+    { 
+        get => isShowPaymentField;
+        set => Set(ref isShowPaymentField, value); 
+    }
 
     private bool isLoading;
-    public bool IsLoading { get => isLoading; set => Set(ref isLoading, value); }
-
-    EmployeerViewModel employeer;
-    public EmployeerViewModel Employeer
-    {
-        get => employeer;
-        set
-        {
-            if(Set(ref employeer, value))
-            {
-                PaymentsStatistic = new EmployeerPaymentsStatisticViewModel(value);
-            }
-        }
+    public bool IsLoading 
+    { 
+        get => isLoading; 
+        set => Set(ref isLoading, value); 
     }
-    public EmployeerPaymentsStatisticViewModel PaymentsStatistic { get; private set; } 
     public bool HasActiveTasks
     {
         get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
     }
+
+    public EmployeerViewModel Employeer { get; init; }
+    public EmployeerPaymentsStatisticViewModel PaymentsStatistic { get; init; }
+    public ObservableCollection<MonthPillModel> MonthPills { get; init; }
+
     MonthPillModel selectedMonthPill;
     public MonthPillModel SelectedMonthPill
     {
@@ -56,13 +55,14 @@ public class TodoTabViewModel : ViewModelBase
             }
         }
     }
+    
     JobItemViewModel selectedJobItem;
     public JobItemViewModel SelectedJobItem
     {
         get => selectedJobItem;
         set => Set(ref selectedJobItem, value);
     }
-    public IEnumerable<JobItemViewModel> FilteredTodoItems
+    public List<JobItemViewModel> FilteredTodoItems
     {
         get
         {
@@ -71,19 +71,21 @@ public class TodoTabViewModel : ViewModelBase
             {
                 var data = Employeer.TodoItems
                 .Where(i => i.StartDate.Month == activePill.MonthNumber && i.StartDate.Year == activePill.Year)
-                .OrderByDescending(i => i.StartDate);
+                .OrderByDescending(i => i.IsCompleted ? 0 : 1)
+                .ThenByDescending(i => i.StartDate)
+                .ToList();
 
                 return data;
             }
             return new List<JobItemViewModel>();
         }
     }
-    public ObservableCollection<MonthPillModel> MonthPills { get; private set; }
-    int paymentAmount;
-    public int PaymentAmount
+    
+    EmployeerPaymentViewModel newPayment;
+    public EmployeerPaymentViewModel NewPayment
     {
-        get => paymentAmount;
-        set => Set(ref paymentAmount, value);
+        get => newPayment;
+        set => Set(ref newPayment, value);
     }
     public ICommand AddJobCommand { get; }  
     public ICommand LoadedCommand { get; }
@@ -96,49 +98,42 @@ public class TodoTabViewModel : ViewModelBase
         AddJobCommand = new LambdaCommand(AddJobItem);
         DeleteJobCommand = new LambdaCommand(DeleteSelectedJobItem);
         ShowPaymentFieldCommand = new LambdaCommand(e => IsShowPaymentField = !IsShowPaymentField);
-        AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => PaymentAmount != 0);
+        AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => NewPayment.Amount != 0);
         MonthPills = new ObservableCollection<MonthPillModel>();
     }
-    public TodoTabViewModel(IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
+    public TodoTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
     {
         this.jobItemRepository = jobItemRepository;
         this.paymentRepository = paymentRepository;
         this.mapper = mapper;
+        Employeer = employeer;
+
+        PaymentsStatistic = new EmployeerPaymentsStatisticViewModel(Employeer);
+        NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id };
+        Employeer.TodoItems.CollectionChanged += TodoItems_CollectionChanged;
     }
-    private async void Loaded(object o)
+
+    private void Loaded(object o)
     {
         if (Employeer == null) { return; }
 
         IsLoading = true;
-        await Task.Delay(TimeSpan.FromSeconds(0.25));
-        LoadItems();
         LoadMonthPills();
         IsLoading = false;
     }
     private void AddEmployeerPayment(object obj)
     {
-        var item = new EmployeerPaymentEntity() { EmployeerId = Employeer.Id, Amount = PaymentAmount, TransferArrivalDate = DateTime.Now };
-        paymentRepository.AddPayment(item);
-        Employeer.Payments.Insert(0, mapper.Map<EmployeerPaymentViewModel>(item));
+        paymentRepository.AddPayment(mapper.Map<EmployeerPaymentEntity>(NewPayment));
+        Employeer.Payments.Insert(0, NewPayment);
         IsShowPaymentField = false;
-    }
-    private void LoadItems()
-    {
-        
-        Employeer.TodoItems?.ToList().ForEach(i => i.PropertyChanged -= Item_PropertyChanged);
-        Employeer.TodoItems = new ObservableCollection<JobItemViewModel>();
-        jobItemRepository.GetAllJobItems(Employeer.Id)
-            .Select(i => mapper.Map<JobItemViewModel>(i))
-            .ToList()
-            .ForEach(i => {
-                AddItemAndEvents(i);
-            });
+        NewPayment = new EmployeerPaymentViewModel();
     }
     private void LoadMonthPills()
     {
         var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
             .Select(date => new { Year = date.Year, Month = date.Month })
-            .Distinct()
+            .GroupBy(i => $"{i.Year}-{i.Month}")
+            .Select(i => i.First())
             .OrderByDescending(i => i.Year)
             .ThenByDescending(i => i.Month)
             .ToDictionary(i => i.Year, i => i.Month);
@@ -169,22 +164,6 @@ public class TodoTabViewModel : ViewModelBase
         item.PropertyChanged += Item_PropertyChanged;
         
     }
-    private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        IsLoading = true;
-        try
-        {
-            jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(sender));
-            if(e.PropertyName == nameof(JobItemViewModel.IsCompleted))
-            {
-                RaisePropertyChanged(nameof(HasActiveTasks));
-            }
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
     public void AddJobItem(object o)
     {
         var item = new JobItemViewModel()
@@ -194,11 +173,8 @@ public class TodoTabViewModel : ViewModelBase
             EmployeerId = this.Employeer.Id
         };
 
-        AddItemAndEvents(item);
-
-        int max_id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
-
-        item.Id = max_id;
+        item.Id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
+        AddItemAndEvents(item);    
     }
     internal void DeleteSelectedJobItem(object o)
     {
@@ -223,5 +199,36 @@ public class TodoTabViewModel : ViewModelBase
             Directory.CreateDirectory(folder);
         }
         Process.Start("explorer.exe", folder);
+    }
+    private void TodoItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        RaisePropertyChanged(nameof(FilteredTodoItems));
+        
+        if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+        {
+            var newItem = ((IEnumerable<JobItemViewModel>)sender).Last();
+            bool hasPill = Employeer.TodoItems.Any(i => i != newItem && i.StartDate.Year == newItem.StartDate.Year && i.StartDate.Month == newItem.StartDate.Month);
+            if (!hasPill)
+            {
+                MonthPills.Insert(0, new MonthPillModel(newItem.StartDate));
+                SelectedMonthPill = MonthPills[0];
+            }
+        }
+    }
+    private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        IsLoading = true;
+        try
+        {
+            jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(sender));
+            if (e.PropertyName == nameof(JobItemViewModel.IsCompleted))
+            {
+                RaisePropertyChanged(nameof(HasActiveTasks));
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }

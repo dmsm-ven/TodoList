@@ -22,8 +22,8 @@ public class JobItemRepository : IJobItemRepository
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
     {
-        string sql = @"INSERT INTO job_item (Id, EmployeerId, Title, Description, Website, IsCompleted, IsPayed, Price, EndDate) 
-                        VALUES(@Id, @EmployeerId, @Title, @Description, @Website, @IsCompleted, @IsPayed, @Price, @EndDate) 
+        string sql = @"INSERT INTO job_item (Id, EmployeerId, Title, Description, Website, IsCompleted, IsPayed, Price, StartDate, EndDate) 
+                        VALUES(@Id, @EmployeerId, @Title, @Description, @Website, @IsCompleted, @IsPayed, @Price, @StartDate,  @EndDate) 
                         ON DUPLICATE KEY UPDATE 
                             Title = @Title,
                             EmployeerId = @EmployeerId,
@@ -32,6 +32,7 @@ public class JobItemRepository : IJobItemRepository
                             IsCompleted = @IsCompleted,
                             IsPayed = @IsPayed,
                             Price = @Price,
+                            StartDate = @StartDate,
                             EndDate = @EndDate";
 
         database.Execute(sql, entity);

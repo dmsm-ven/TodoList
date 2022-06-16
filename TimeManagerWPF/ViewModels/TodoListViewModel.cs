@@ -64,16 +64,14 @@ public class TodoListViewModel : ViewModelBase
 
         employeerRepository
             .GetAllEmployeer()
-            .Select(i => new TodoTabViewModel(jobItemRepository, employeerPaymentRepository, mapper)
+            .Select(emp => new EmployeerViewModel()
             {
-                Employeer = new EmployeerViewModel() {
-
-                    Name = i.Name,                    
-                    Id = i.Id,
-                    TodoItems = new ObservableCollection<JobItemViewModel>(mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(i.Id))),
-                    Payments = new ObservableCollection<EmployeerPaymentViewModel>(mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(i.Id)))
-                },
+                Name = emp.Name,
+                Id = emp.Id,
+                TodoItems = new ObservableCollection<JobItemViewModel>(mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(emp.Id))),
+                Payments = new ObservableCollection<EmployeerPaymentViewModel>(mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(emp.Id)))
             })
+            .Select(i => new TodoTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
             .ToList()
             .ForEach(t => Tabs.Add(t));
         if (SelectedTab == null)

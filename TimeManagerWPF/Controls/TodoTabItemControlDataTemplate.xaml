@@ -7,7 +7,7 @@
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             d:DataContext="{d:DesignInstance Type=vm:TodoTabViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:TodoTabViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
              d:Background="White"
              Background="Transparent"
@@ -46,7 +46,8 @@
             </Style>
         </Grid.Resources>
 
-        <DockPanel Grid.Row="0" Grid.Column="0">
+        <!-- Панель поиска, заголовка и добавления задачи-->
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True">
             <Button Command="{Binding AddJobCommand}" Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
                 <icons:PackIconFontAwesome Kind="PlusSolid" Foreground="{StaticResource ToolPanelBackground}" Width="24" Height="24" />
             </Button>
@@ -55,6 +56,15 @@
                        DockPanel.Dock="Left"
                        Style="{StaticResource ColumnTitleTextBlock}"/>
 
+            <icons:PackIconFontAwesome Kind="SearchLocationSolid" 
+                                       Foreground="LightGray" Width="28" Height="28"
+                                       VerticalAlignment="Center"
+                                       Margin="16 2 8 2"
+                                       DockPanel.Dock="Right"
+                                       Style="{StaticResource TitleIconStyle}"/>
+            <TextBox HorizontalAlignment="Right" MinWidth="200" Width="200" Height="26" />
+
+            <!--
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <icons:PackIconFontAwesome Kind="ListSolid" 
                                        DockPanel.Dock="Left"
@@ -66,18 +76,27 @@
                        Text="{Binding SelectedMonthPill.DisplayName}" 
                        Style="{StaticResource ColumnTitleTextBlock}"/>
             </StackPanel>
-            
+            -->
 
         </DockPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
-            <icons:PackIconFontAwesome Kind="MoneyCheckSolid" Foreground="{StaticResource MoneyGreenBrush}" Style="{StaticResource TitleIconStyle}"/>
-            <TextBlock Text="Оплаты" Style="{StaticResource ColumnTitleTextBlock}"/>
-            <Button Command="{Binding ShowPaymentFieldCommand}" Style="{StaticResource ToolButtonStyle}" >
-                <icons:PackIconFontAwesome Kind="PlusSolid" Foreground="{StaticResource MoneyGreenBrush}" Width="24" Height="24" />
-            </Button>
-            <StackPanel Orientation="Horizontal" Visibility="{Binding IsShowPaymentField, Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBox Text="{Binding PaymentAmount, UpdateSourceTrigger=PropertyChanged}" 
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <icons:PackIconFontAwesome Kind="MoneyCheckSolid" Foreground="{StaticResource MoneyGreenBrush}" Style="{StaticResource TitleIconStyle}"/>
+                <TextBlock Text="Оплаты" Style="{StaticResource ColumnTitleTextBlock}"/>
+                <Button Command="{Binding ShowPaymentFieldCommand}" Style="{StaticResource ToolButtonStyle}" >
+                    <icons:PackIconFontAwesome Kind="PlusSolid" Foreground="{StaticResource MoneyGreenBrush}" Width="24" Height="24" />
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" 
+                        Visibility="{Binding IsShowPaymentField, Converter={StaticResource BoolToVisibilityConverter}}">
+                <DatePicker SelectedDate="{Binding NewPayment.TransferArrivalDate}" 
+                            Margin="2 2 6 2"/>
+                <TextBox Text="{Binding NewPayment.Amount, UpdateSourceTrigger=PropertyChanged}" 
                          HorizontalContentAlignment="Center"
                          VerticalAlignment="Center"
                          Foreground="Red"
@@ -88,13 +107,12 @@
                     <icons:PackIconFontAwesome Kind="DownloadSolid" Foreground="{StaticResource MoneyGreenBrush}" Width="24" Height="24" />
                 </Button>
             </StackPanel>
+        </Grid>
 
-        </StackPanel>
-               
-        <!-- основная панель с задачами -->
+        <!-- ГЛАВНАЯ панель с задачами -->
         <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource ColumnBorderStyle}">
-            <DataGrid ItemsSource="{Binding Employeer.TodoItems}" 
-                  SelectedValue="{Binding SelectedJobItem}"                 
+            <DataGrid ItemsSource="{Binding FilteredTodoItems}" 
+                  SelectedValue="{Binding SelectedJobItem}"   
                   FontSize="15"
                   CanUserAddRows="False"
                   CanUserSortColumns="False"
@@ -107,7 +125,7 @@
                   RowBackground="Transparent"
                   HeadersVisibility="Column"
                   HorizontalGridLinesBrush="LightGray"
-                  RowHeight="26"
+                  RowHeight="28"
                   SelectionMode="Single"
                   AutoGenerateColumns="False">
                 <beh:Interaction.Triggers>
@@ -115,10 +133,45 @@
                         <beh:InvokeCommandAction Command="{Binding DeleteJobCommand}" />
                     </beh:KeyTrigger>
                 </beh:Interaction.Triggers>
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Setter Property="Foreground" Value="Black" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#33ffff00" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                <Setter Property="Foreground" Value="Black"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCompleted}" Value="false">
+                                <Setter Property="Foreground" Value="Navy"></Setter>
+                                <Setter Property="FontWeight" Value="Bold"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding StartDate, StringFormat='dd.MM.yyyy'}" />
+                    <DataGridTemplateColumn Header="Дата">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StartDate, StringFormat='dd.MM.yyyy'}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0" Background="Transparent" Foreground="Blue"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Задача" Width="2*" Binding="{Binding Title,Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                    <DataGridTextColumn Header="Сайт" Binding="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                    <DataGridTextColumn Header="Сайт" Binding="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextBlock.Ac/>
                     <DataGridTextColumn Header="Цена" Binding="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
                     <DataGridCheckBoxColumn Header="Оплачено" Binding="{Binding IsPayed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -157,12 +210,11 @@
                             <Setter Property="VerticalAlignment" Value="Center"/>
                         </Style>
                     </StackPanel.Resources>
-                    
+
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
                         <TextBlock Text="Статистика" Style="{StaticResource ColumnTitleTextBlock}"/>
                         <icons:PackIconFontAwesome Kind="ChartBarRegular" Foreground="{StaticResource ToolPanelBackground}" Style="{StaticResource TitleIconStyle}"/>
                     </StackPanel>
-                    
                     <StackPanel Orientation="Horizontal">
                         <Label Content="За 1  мес." />
                         <TextBlock d:Text="1 000 руб." Text="{Binding Month1Sum, StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />

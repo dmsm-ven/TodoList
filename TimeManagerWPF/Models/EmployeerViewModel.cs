@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using TodoList.WPF.DataAccess;
 using TodoList.WPF.ViewModels;
 
 namespace TodoList.WPF.Models;
@@ -15,18 +16,7 @@ public class EmployeerViewModel : ViewModelBase
         set => Set(ref name, value);
     }
     public DateTime Created { get; set; } = DateTime.Now;
+    public ObservableCollection<EmployeerPaymentViewModel> Payments { get; init; }
 
-    ObservableCollection<EmployeerPaymentViewModel> payments;
-    public ObservableCollection<EmployeerPaymentViewModel> Payments
-    {
-        get => payments;
-        set => Set(ref payments, value);
-    }
-
-    ObservableCollection<JobItemViewModel> todoItems;
-    public ObservableCollection<JobItemViewModel> TodoItems
-    {
-        get => todoItems;
-        set => Set(ref todoItems, value);
-    }
+    public ObservableCollection<JobItemViewModel> TodoItems { get; init; }
 }

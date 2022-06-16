@@ -38,4 +38,6 @@ public class MonthPillModel : ViewModelBase
             IsActive = true;
         }, e => true);
     }
+
+    public MonthPillModel(DateTime date) : this(date.Year, date.Month) { }
 }
