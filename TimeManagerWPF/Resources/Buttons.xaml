@@ -75,6 +75,7 @@
         </Style.Triggers>
 
     </Style>
+    
     <Style TargetType="{x:Type icons:PackIconFontAwesome}">
         <Setter Property="Width" Value="38"/>
         <Setter Property="Height" Value="38"/>

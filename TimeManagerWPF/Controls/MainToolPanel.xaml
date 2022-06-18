@@ -6,11 +6,11 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="50" d:DesignWidth="1000">
+             d:DataContext="{d:DesignInstance Type=vm:ToolPanelViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="60" Height="60" d:DesignWidth="1000">
 
-    <DockPanel Background="{StaticResource ToolPanelBackground}">
-        <DockPanel.Resources>
+    <StackPanel Background="{StaticResource ToolPanelBackground}" Orientation="Horizontal">
+        <StackPanel.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="6 2 30 2"/>
@@ -23,27 +23,32 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-        </DockPanel.Resources>
+            
+        </StackPanel.Resources>
+         
+        <Button Command="{Binding MoveToTodoListCommand}" 
+                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <icons:PackIconFontAwesome Kind="ListSolid"  />
+                <TextBlock Text="Список задач" />
+            </StackPanel>
+        </Button>
 
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-            <Button Command="{Binding MoveToTodoListCommand}" Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome Kind="ListSolid"/>
-            </Button>
-            <TextBlock Text="К списку задач" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-            <Button Command="{Binding MoveToShoppingListCommand}" Style="{StaticResource ToolButtonStyle}">
+        <Button Command="{Binding MoveToShoppingListCommand}" 
+                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
                 <icons:PackIconFontAwesome Kind="ShoppingBagSolid"/>
-            </Button>
-            <TextBlock Text="К списку покупок" />
-        </StackPanel>
+                <TextBlock Text="Список покупок" />
+            </StackPanel>
+        </Button>
 
-        <StackPanel Orientation="Horizontal" Opacity="0.25" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                <Button Command="{Binding AddEmployeerCommand}"  Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome Kind="UserPlusSolid"/>
-            </Button>
-            <TextBlock Text="Добавить вкладку" />
-        </StackPanel>
-
-    </DockPanel>
+        <Button Command="{Binding MoveToReadListCommand}" 
+                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <icons:PackIconFontAwesome Kind="BookOpenSolid"/>
+                <TextBlock Text="Список на прочтение" />
+            </StackPanel>
+        </Button>
+    
+    </StackPanel>
 </UserControl>

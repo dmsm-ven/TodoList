@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
-        Title="Список дел" Height="700" Width="1600" d:Height="500" d:Width="1000">
+        Title="Список дел" Height="700" Width="1600" d:Height="250" d:Width="1000">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
@@ -23,18 +23,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <con:MainToolPanel Grid.Row="0" DataContext="{Binding TodoListViewModel}"/>
+        <con:MainToolPanel Grid.Row="0" DataContext="{Binding ToolPanelViewModel}"/>
 
         <ContentPresenter Grid.Row="1" Content="{Binding NavigationLocator.ActiveViewModel}">
             <ContentPresenter.Resources>
                 <DataTemplate DataType="{x:Type vm:TodoListViewModel}">
                     <v:TodoListView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:AddEmployeerViewModel}">
-                    <v:AddEmployeerView />
-                </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:ShoppingListViewModel}">
                     <v:ShoppingListView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ReadListViewModel}">
+                    <v:ReadListView />
                 </DataTemplate>
             </ContentPresenter.Resources>
         </ContentPresenter>

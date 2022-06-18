@@ -31,9 +31,9 @@ public class NavigationLocator : ViewModelBase
     {
         availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() => new Dictionary<ViewModelType, ViewModelBase>()
         {
-            [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),
-            [ViewModelType.AddEmployeer] = host.Services.GetService<AddEmployeerViewModel>(),
+            [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),            
             [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
+            [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>()
         });
     }
 }
@@ -42,5 +42,6 @@ public enum ViewModelType
 {
     TodoList,
     AddEmployeer,
-    ShoppingList
+    ShoppingList,
+    ReadList
 }

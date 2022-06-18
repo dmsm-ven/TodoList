@@ -5,6 +5,7 @@ using System.Windows;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.Services;
 using TodoList.WPF.ViewModels;
+using TodoList.WPF.Views;
 
 namespace TodoList.WPF;
 /// <summary>
@@ -43,7 +44,12 @@ public partial class App : Application
     {      
         services.AddSingleton<NavigationLocator>();
 
-        services.AddSingleton<AddEmployeerViewModel>();
+
+        services.AddTransient<AddEmployeerWindowViewModel>();
+        services.AddTransient<AddEmployeerWindow>();      
+        services.AddSingleton<ReadListViewModel>();
+        services.AddSingleton<ToolPanelViewModel>();
+        services.AddSingleton<AddEmployeerWindowViewModel>();
         services.AddSingleton<ShoppingListViewModel>();
         services.AddSingleton<TodoListViewModel>();
         services.AddSingleton<MainWindowViewModel>();

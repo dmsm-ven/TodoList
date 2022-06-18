@@ -8,24 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Images\bricks-texture.jpg" />
-    <None Remove="Assets\Images\laminate.jpg" />
-    <None Remove="Assets\Images\leaves-texture.jpg" />
-    <None Remove="Assets\Images\metall-texture.jpg" />
-    <None Remove="Assets\Images\wall-texture.jpg" />
-    <None Remove="Assets\Images\wawe-background.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Assets\Images\bricks-texture.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\laminate.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\leaves-texture.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <None Remove="Assets\Images\ReadList\2.jpg" />
+    <None Remove="Assets\Images\ShoppingList\3.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,13 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\metall-texture.jpg">
+    <Resource Include="Assets\Images\ReadList\2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\wall-texture.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\wawe-background.jpg">
+    <Resource Include="Assets\Images\ShoppingList\3.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

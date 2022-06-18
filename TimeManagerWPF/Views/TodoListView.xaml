@@ -8,20 +8,29 @@
              xmlns:con="clr-namespace:TodoList.WPF.Controls"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"             
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"             
+             xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"             
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=False}"
-             Background="{StaticResource ToolPanelBackground}"
-             d:Background="White"       
-             d:DesignHeight="300" d:DesignWidth="1200">
+             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"      
+             d:DesignHeight="400" d:DesignWidth="900">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Panel.ZIndex="10">
+            <Button Style="{StaticResource ToolButtonStyle}" Command="{Binding AddNewEmployeerTabCommand}" 
+                    ToolTip="Создать новую вкладку с работами">
+                <icons:PackIconFontAwesome Kind="UserPlusSolid" Foreground="LightGray" Width="22" Height="22" />
+            </Button>
+        </StackPanel>
 
+        
         <TabControl ItemsSource="{Binding Tabs}"
                     SelectedValue="{Binding SelectedTab}"
+                    
                     BorderThickness="0" >
             <TabControl.ContentTemplate>
                 <DataTemplate>
@@ -44,5 +53,14 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
+
+        <ss:LoadingSpinner IsLoading="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+                           Width="64" Height="64" 
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Top"
+                           Color="RoyalBlue" 
+                           Panel.ZIndex="10"
+                           Opacity="0.75"
+                           Thickness="6" />
     </Grid>
 </UserControl>

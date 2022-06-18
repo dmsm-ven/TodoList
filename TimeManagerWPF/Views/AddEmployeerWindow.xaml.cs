@@ -10,16 +10,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace TodoList.WPF.Views;
 /// <summary>
-/// Interaction logic for AddEmployeerView.xaml
+/// Interaction logic for AddEmployeerWindow.xaml
 /// </summary>
-public partial class AddEmployeerView : UserControl
+public partial class AddEmployeerWindow : Window
 {
-    public AddEmployeerView()
+    public AddEmployeerWindow()
     {
         InitializeComponent();
     }

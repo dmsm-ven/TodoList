@@ -8,6 +8,8 @@ public class MainWindowViewModel : ViewModelBase
 {
     public NavigationLocator NavigationLocator { get; }
     public TodoListViewModel TodoListViewModel { get; }
+    public ToolPanelViewModel ToolPanelViewModel { get; }
+    
     public ICommand LoadedCommand { get; }
 
     public MainWindowViewModel()
@@ -15,10 +17,13 @@ public class MainWindowViewModel : ViewModelBase
         LoadedCommand = new LambdaCommand(Loaded);
     }
 
-    public MainWindowViewModel(TodoListViewModel todoListViewModel, NavigationLocator navigationLocator) : this()
+    public MainWindowViewModel(TodoListViewModel todoListViewModel, 
+        ToolPanelViewModel toolPanelViewModel,
+        NavigationLocator navigationLocator) : this()
     {
         TodoListViewModel = todoListViewModel;
-        NavigationLocator = navigationLocator;       
+        NavigationLocator = navigationLocator; 
+        ToolPanelViewModel = toolPanelViewModel;
     }
 
     private void Loaded(object obj)

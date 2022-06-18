@@ -1,20 +1,20 @@
-﻿<UserControl x:Class="TodoList.WPF.Views.ShoppingListView"
+﻿<UserControl x:Class="TodoList.WPF.Views.ReadListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             d:DataContext="{d:DesignInstance Type=vm:ShoppingListViewModel, IsDesignTimeCreatable=False}"
+             xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+             d:DataContext="{d:DesignInstance Type=vm:ReadListViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="900">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.Background>
-            <ImageBrush ImageSource="../Assets/Images/ShoppingList/3.jpg"
+            <ImageBrush ImageSource="../Assets/Images/ReadList/2.jpg"
                         Stretch="UniformToFill"/>
         </Grid.Background>
-        <Grid Opacity="0.95" Background="#84858A">
-            
+        <Grid Opacity="0.85" Background="White">
+
         </Grid>
     </Grid>
 </UserControl>
