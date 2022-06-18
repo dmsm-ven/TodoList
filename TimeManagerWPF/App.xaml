@@ -1,13 +1,16 @@
 ﻿<Application x:Class="TodoList.WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters">
+             xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters"
+             xmlns:com="clr-namespace:TodoList.WPF.Infrastructure.Commands">
     <Application.Resources>
         
         <ResourceDictionary>
             <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
             <con:IsActiveMonthForegroundBrushConverter x:Key="IsActiveMonthForegroundBrushConverter"/>
+            
+            <com:CloseApplicationCommand x:Key="CloseApplicationCommand"/>
             
             <ResourceDictionary.MergedDictionaries>
                 

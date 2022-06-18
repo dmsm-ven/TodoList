@@ -65,6 +65,7 @@
             
             <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredItems}" 
                           Margin="10 40"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
                           HorizontalAlignment="Center">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -84,7 +85,9 @@
                                 </Style>
                             </Grid.Resources>
 
-                            <TextBlock Grid.Column="0" Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}" />
+                            <TextBlock Grid.Column="0" 
+                                       Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}"
+                                       ToolTip="Дата создания"/>
                             <TextBox Text="{Binding Name}" 
                                      Width="400"
                                      IsReadOnly="True"
@@ -98,7 +101,8 @@
                                      BorderBrush="#A9DE1F"/>
 
                             <Button Grid.Column="2" Command="{Binding ToggleStatusCommand}" 
-                                    Foreground="LawnGreen"
+                                    ToolTip="Отметить как выполненное"
+                                    Foreground="#A4AE3F"
                                     BorderThickness="0"
                                     Margin="12 2 2 2"
                                     Cursor="Hand"
@@ -106,7 +110,8 @@
                                 <icons:PackIconFontAwesome Kind="{Binding StateIcon}" />
                             </Button>
                             
-                            <TextBlock Grid.Column="3" Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}" />
+                            <TextBlock Grid.Column="3" Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}"
+                                       ToolTip="Дата выполнения"/>
                         </Grid>
 
                     </DataTemplate>

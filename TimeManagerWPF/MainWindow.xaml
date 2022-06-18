@@ -9,7 +9,10 @@
         xmlns:v="clr-namespace:TodoList.WPF.Views"
         xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        WindowStyle="None"
         WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown"
+        ResizeMode="CanResizeWithGrip"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="Список дел" Height="700" Width="1600" d:Height="250" d:Width="1000">
     <beh:Interaction.Triggers>
@@ -17,6 +20,7 @@
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
+    
     <Grid Background="{StaticResource MainWindowControlBackground}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

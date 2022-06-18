@@ -7,48 +7,52 @@
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:ToolPanelViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="60" Height="60" d:DesignWidth="1000">
+             d:DesignHeight="60" Height="50" d:DesignWidth="1000">
 
-    <StackPanel Background="{StaticResource ToolPanelBackground}" Orientation="Horizontal">
-        <StackPanel.Resources>
-            <Style TargetType="TextBlock">
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="6 2 30 2"/>
-                <Setter Property="Foreground" Value="FloralWhite"/>
-            </Style>
-            <Style TargetType="{x:Type Button}">
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Opacity" Value="1"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            
-        </StackPanel.Resources>
-         
-        <Button Command="{Binding MoveToTodoListCommand}" 
-                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
-            <StackPanel Orientation="Horizontal">
-                <icons:PackIconFontAwesome Kind="ListSolid"  />
-                <TextBlock Text="Список задач" />
-            </StackPanel>
-        </Button>
+    <DockPanel Background="{StaticResource ToolPanelBackground}" LastChildFill="True">
 
-        <Button Command="{Binding MoveToShoppingListCommand}" 
-                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
-            <StackPanel Orientation="Horizontal">
-                <icons:PackIconFontAwesome Kind="ShoppingBagSolid"/>
-                <TextBlock Text="Список покупок" />
-            </StackPanel>
-        </Button>
+        <!-- Основная панель навигации по категориям программы-->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="6 2 30 2"/>
+                    <Setter Property="Foreground" Value="FloralWhite"/>
+                </Style>
+                <Style TargetType="{x:Type icons:PackIconFontAwesome}">
+                    <Setter Property="Width" Value="32"/>
+                    <Setter Property="Height" Value="32"/>
+                </Style>
+            </StackPanel.Resources>
 
-        <Button Command="{Binding MoveToReadListCommand}" 
-                Style="{StaticResource ToolButtonStyle}" DockPanel.Dock="Left">
-            <StackPanel Orientation="Horizontal">
-                <icons:PackIconFontAwesome Kind="BookOpenSolid"/>
-                <TextBlock Text="Список на прочтение" />
-            </StackPanel>
-        </Button>
-    
-    </StackPanel>
+            <Button Command="{Binding MoveToTodoListCommand}" Style="{StaticResource ToolButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <icons:PackIconFontAwesome Kind="ListSolid"  />
+                    <TextBlock Text="Список задач" />
+                </StackPanel>
+            </Button>
+
+            <Button Command="{Binding MoveToShoppingListCommand}" Style="{StaticResource ToolButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <icons:PackIconFontAwesome Kind="ShoppingBagSolid"/>
+                    <TextBlock Text="Список покупок" />
+                </StackPanel>
+            </Button>
+
+            <Button Command="{Binding MoveToReadListCommand}" Style="{StaticResource ToolButtonStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <icons:PackIconFontAwesome Kind="BookOpenSolid"/>
+                    <TextBlock Text="Список на прочтение" />
+                </StackPanel>
+            </Button>
+
+        </StackPanel>
+
+        <!-- Кнопки минимизации/закрытия приложения -->
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Command="{StaticResource CloseApplicationCommand}" Style="{StaticResource HeaderApplicationButton}">
+                <icons:PackIconFontAwesome Kind="TimesSolid"  />
+            </Button>
+        </StackPanel>
+    </DockPanel>
 </UserControl>
