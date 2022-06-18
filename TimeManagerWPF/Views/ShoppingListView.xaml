@@ -38,7 +38,7 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                     <Button Command="{Binding AddNewItemCommand}" Style="{StaticResource ToolButtonStyle}" >
                         <StackPanel Orientation="Horizontal">
-                            <icons:PackIconFontAwesome Kind="PlusSolid" />
+                            <icons:PackIconFontAwesome Kind="PlusSolid" Style="{StaticResource MediumIconSize}" />
                         </StackPanel>
                     </Button>
                     
@@ -58,7 +58,7 @@
                 <Button Grid.Column="2" Command="{Binding ShowHiddenToggleCommand}" Style="{StaticResource ToolButtonStyle}" >
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding ShowHiddenTitle}" VerticalAlignment="Center" Margin="2 2 12 2"/>
-                        <icons:PackIconFontAwesome Kind="{Binding ShowHiddenIcon}" />
+                        <icons:PackIconFontAwesome Kind="{Binding ShowHiddenIcon}" Style="{StaticResource MediumIconSize}" />
                     </StackPanel>
                 </Button>
             </Grid>
@@ -110,7 +110,9 @@
                                 <icons:PackIconFontAwesome Kind="{Binding StateIcon}" />
                             </Button>
                             
-                            <TextBlock Grid.Column="3" Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}"
+                            <TextBlock Grid.Column="3" 
+                                       Visibility="{Binding IsPurchased, Converter={StaticResource BoolToVisibilityConverter}}"
+                                       Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}"
                                        ToolTip="Дата выполнения"/>
                         </Grid>
 

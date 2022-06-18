@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
 using TodoList.WPF.DataAccess;
+using TodoList.WPF.DataAccess.Repositories;
 using TodoList.WPF.Services;
 using TodoList.WPF.ViewModels;
 using TodoList.WPF.Views;
@@ -33,7 +34,7 @@ public partial class App : Application
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
-
+        services.AddTransient<IBookToReadRepository, BookToReadRepository>();
         services.AddTransient<IEmployeerRepository, EmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
         services.AddTransient<IJobItemRepository, JobItemRepository>();
@@ -43,8 +44,6 @@ public partial class App : Application
     private void ConfigureViewModels(IServiceCollection services)
     {      
         services.AddSingleton<NavigationLocator>();
-
-
         services.AddTransient<AddEmployeerWindowViewModel>();
         services.AddTransient<AddEmployeerWindow>();      
         services.AddSingleton<ReadListViewModel>();

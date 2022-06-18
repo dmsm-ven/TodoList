@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Images\ReadList\2.jpg" />
+    <None Remove="Assets\Images\ReadList\book-placeholder.png" />
+    <None Remove="Assets\Images\ReadList\texture-1.png" />
+    <None Remove="Assets\Images\ReadList\texture-2.jpg" />
     <None Remove="Assets\Images\ShoppingList\shopping-background.jpg" />
   </ItemGroup>
 
@@ -25,8 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\ReadList\2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Resource Include="Assets\Images\ReadList\book-placeholder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\ReadList\texture-1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\ReadList\texture-2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\ShoppingList\shopping-background.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -37,6 +45,10 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

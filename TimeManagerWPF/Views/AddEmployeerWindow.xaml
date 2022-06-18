@@ -9,6 +9,10 @@
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         x:Name="window"
+        ResizeMode="NoResize"
+        WindowStyle="ToolWindow"
+        Width="500"
+        Height="300"
         d:DataContext="{d:DesignInstance Type=vm:AddEmployeerWindowViewModel, IsDesignTimeCreatable=False}"
         d:DesignHeight="200" d:DesignWidth="300" d:Background="White">
     <Border BorderBrush="LightGray" CornerRadius="4" 

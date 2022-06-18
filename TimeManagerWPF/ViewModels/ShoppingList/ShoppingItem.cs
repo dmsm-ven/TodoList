@@ -12,7 +12,6 @@ namespace TodoList.WPF.Models.ShoppingItem;
 internal class ShoppingItemViewModel : ViewModelBase
 {
     public int Id { get; set; }
-
     string name;
     public string Name
     {
