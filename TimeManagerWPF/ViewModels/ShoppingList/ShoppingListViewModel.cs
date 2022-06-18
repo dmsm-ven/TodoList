@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using MahApps.Metro.IconPacks;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models.ShoppingItem;
@@ -14,12 +17,95 @@ internal class ShoppingListViewModel : ViewModelBase
 
     public ObservableCollection<ShoppingItemViewModel> Items { get; }
 
+    public List<ShoppingItemViewModel> FilteredItems
+    {
+        get
+        {
+            var source = Items
+                .Where(item => ShowHidden ? true : item.IsPurchased == false)
+                .OrderByDescending(item => item.DateAdded)
+                .ToList();
+            return source;
+        }
+    }
+
+    bool showHidden;
+    public bool ShowHidden
+    {
+        get => showHidden;
+        set
+        {
+            if(Set(ref showHidden, value))
+            {
+                RaisePropertyChanged(nameof(ShowHiddenIcon));
+                RaisePropertyChanged(nameof(ShowHiddenTitle));
+                RaisePropertyChanged(nameof(FilteredItems));
+            }
+        }
+    }
+    
+    string newItemText;
+    public string NewItemText
+    {
+        get => newItemText;
+        set => Set(ref newItemText, value);
+    }
+    public PackIconFontAwesomeKind ShowHiddenIcon
+    {
+        get => ShowHidden ? PackIconFontAwesomeKind.EyeSlashSolid : PackIconFontAwesomeKind.EyeSolid;
+    }
+    public string ShowHiddenTitle
+    {
+        get => ShowHidden ? "Скрыть завершенные" : "Отобразить завершенные";
+    }
+
+    public ICommand ShowHiddenToggleCommand { get; }
     public ICommand AddNewItemCommand { get; }
+    public ICommand LoadedCommand { get; }
+    public ShoppingListViewModel(IShoppingItemsRepository repository, IMapper mapper) : this()
+    {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
     public ShoppingListViewModel()
     {
-        AddNewItemCommand = new LambdaCommand(AddNewItem);
-        Items = new ObservableCollection<ShoppingItemViewModel>();
+        ShowHiddenToggleCommand = new LambdaCommand(e => ShowHidden = !ShowHidden);
+        AddNewItemCommand = new LambdaCommand(AddNewItem, e => !string.IsNullOrWhiteSpace(NewItemText));
+        LoadedCommand = new LambdaCommand(Loaded);
+        Items = new ObservableCollection<ShoppingItemViewModel>()
+        {
+            new ShoppingItemViewModel(){ Name = "Товар 1", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
+            new ShoppingItemViewModel(){ Name = "Товар 2", DateAdded = DateTime.Now, DatePurchased = null, IsPurchased = false },
+            new ShoppingItemViewModel(){ Name = "Товар 3", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
+            new ShoppingItemViewModel(){ Name = "Товар 4", DateAdded = DateTime.Now, DatePurchased = null, IsPurchased = false },
+            new ShoppingItemViewModel(){ Name = "Товар 5", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
+        };
+        Items.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(FilteredItems));
+    }
+
+    private void Loaded(object obj)
+    {
+        Items?.ToList().ForEach(item => item.PropertyChanged -= Item_PropertyChanged);
+
+        Items?.Clear();
+
+        repository.GetAll().ToList()
+            .ForEach(item =>
+            {
+                var vmItem = mapper.Map<ShoppingItemViewModel>(item);
+                Items.Add(vmItem);
+                vmItem.PropertyChanged += Item_PropertyChanged;
+            });
+    }
+
+    private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ShoppingItemViewModel.IsPurchased))
+        {
+            RaisePropertyChanged(nameof(FilteredItems));
+            repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(sender as ShoppingItemViewModel));
+        }
     }
 
     private void AddNewItem(object obj)
@@ -27,15 +113,14 @@ internal class ShoppingListViewModel : ViewModelBase
         var item = new ShoppingItemViewModel()
         {
             DateAdded = DateTime.Now,
-            Name = "Новый товар"
+            Name = NewItemText
         };
         item.Id = repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(item));
+        item.PropertyChanged += Item_PropertyChanged;
         Items.Insert(0, item);
+
+        NewItemText = string.Empty;
     }
 
-    public ShoppingListViewModel(IShoppingItemsRepository repository, IMapper mapper) : this()
-    {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
+
 }
