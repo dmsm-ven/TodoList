@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+             xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters"
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance Type=vm:ReadListViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
@@ -15,6 +16,9 @@
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
+        <Grid.Resources>
+            <con:ReadedBookOpacityConverter x:Key="ReadedBookOpacityConverter" />
+        </Grid.Resources>
         <Grid.Background>
             <ImageBrush ImageSource="../Assets/Images/ReadList/texture-2.jpg"
                         TileMode="Tile" Viewport="0,0,200,200" ViewportUnits="Absolute"/>
@@ -102,49 +106,59 @@
                 </Grid>
             </Border>
 
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredBooks}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="#594D5F" BorderThickness="1" Margin="8">
-                            <Grid>
-                                <Image Height="320" Width="180" 
-                                       Panel.ZIndex="0"
-                                       Source="{Binding CachedImage}"
-                                       ToolTip="{Binding Name}" Stretch="Fill"/>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding FilteredBooks}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#594D5F" BorderThickness="1" Margin="8">
+                                <Border.Effect>
+                                    <DropShadowEffect Direction="300"
+                                                      Color="#4083A09F" 
+                                                      ShadowDepth="8"
+                                                      BlurRadius="4"/>
+                                </Border.Effect>
+                                <Grid>
+                                    <Border Background="#9ACB3A">
+                                        <Image Height="220" Width="160" 
+                                               Panel.ZIndex="0"
+                                               Opacity="{Binding IsAlreadyReaded, Converter={StaticResource ReadedBookOpacityConverter}}"
+                                               Source="{Binding CachedImage}"
+                                               ToolTip="{Binding Name}" Stretch="Fill"/>
+                                    </Border>
 
-                                <Button Command="{Binding ToggleStatusCommand}" 
-                                        Panel.ZIndex="1"
-                                        Background="Transparent" BorderThickness="0">
-                                    <icons:PackIconFontAwesome Kind="{Binding StateIcon}" 
-                                                               Foreground="#582C64"
-                                                               Style="{StaticResource LargeIconSize}"
-                                                               HorizontalAlignment="Center" 
-                                                               VerticalAlignment="Center" />
+                                    <Button Command="{Binding ToggleStatusCommand}" 
+                                            Panel.ZIndex="1"
+                                            VerticalAlignment="Bottom"
+                                            HorizontalAlignment="Center"
+                                            Style="{StaticResource ShowHideBookButton}">
+                                        <icons:PackIconFontAwesome Kind="{Binding StateIcon}" 
+                                                                   Style="{StaticResource LargeIconSize}" />
 
-                                </Button>
+                                    </Button>
                                 
-                                <TextBlock d:Text="01.01.2022" 
-                                           Text="{Binding DateEnded, StringFormat=dd.MM.yyyy}"
-                                           Panel.ZIndex="2"
-                                           Foreground="Gray"      
-                                           Visibility="{Binding IsAlreadyReaded, Converter={StaticResource BoolToVisibilityConverter}}"
-                                           HorizontalAlignment="Right" VerticalAlignment="Top"></TextBlock>
-                                <TextBlock d:Text="01.01.2022" 
-                                           Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}"
-                                           Panel.ZIndex="2"
-                                           Foreground="Gray"                                          
-                                           HorizontalAlignment="Left" VerticalAlignment="Top"></TextBlock>
-                            </Grid>
-                        </Border>
+                                    <TextBlock d:Text="01.01.2022" 
+                                               Text="{Binding DateEnded, StringFormat=dd.MM.yyyy}"
+                                               Panel.ZIndex="2"
+                                               Foreground="Gray"      
+                                               Visibility="{Binding IsAlreadyReaded, Converter={StaticResource BoolToVisibilityConverter}}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Top"></TextBlock>
+                                    <TextBlock d:Text="01.01.2022" 
+                                               Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}"
+                                               Panel.ZIndex="2"
+                                               Foreground="Gray"                                          
+                                               HorizontalAlignment="Left" VerticalAlignment="Top"></TextBlock>
+                                </Grid>
+                            </Border>
 
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>

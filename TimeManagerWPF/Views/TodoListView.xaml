@@ -40,9 +40,16 @@
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Ellipse Width="24" Height="24" Stroke="Transparent"
-                                 Margin="8 2 2 2"
+                        <Grid Margin="8 2 2 2">
+                            <Ellipse Width="28" Height="28" Stroke="Transparent"                                 
                                  Fill="{Binding HasActiveTasks, Converter={StaticResource HasActiveTaskBrushConverter}}"/>
+                            <TextBlock d:Text="99" Foreground="White" 
+                                       Text="{Binding StatusBarData.ActiveTasks}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="13"/>
+                        </Grid>
+
                         <TextBlock Text="{Binding Employeer.Name, TargetNullValue='Имя'}" 
                                    Background="Transparent"
                                    Foreground="Black"

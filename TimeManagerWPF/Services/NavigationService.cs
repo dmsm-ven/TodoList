@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using TodoList.WPF.ViewModels;
 
-namespace TodoList.WPF.Services;
+namespace TodoList.WPF;
 
 public class NavigationLocator : ViewModelBase
 {
@@ -23,9 +23,20 @@ public class NavigationLocator : ViewModelBase
         }
     }
 
+    ViewModelType activeViewModelType;
+    public ViewModelType ActiveViewModelType
+    {
+        get => activeViewModelType;
+        private set => Set(ref activeViewModelType, value);
+    }
+
     private readonly Lazy<Dictionary<ViewModelType, ViewModelBase>> availableViewModels;
 
-    public void MoveTo(ViewModelType type) => ActiveViewModel = availableViewModels.Value[type];
+    public void MoveTo(ViewModelType type) 
+    {
+        ActiveViewModelType = type;
+        ActiveViewModel = availableViewModels.Value[type];       
+    }
 
     public NavigationLocator(IHost host)
     {

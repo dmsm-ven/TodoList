@@ -38,7 +38,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
     <Style TargetType="Button" x:Key="ToolButtonStyle">
         <Setter Property="Margin" Value="8 4"/>
         <Setter Property="Padding" Value="2"/>
@@ -107,6 +107,41 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="Button" x:Key="ShowHideBookButton">
+        <Setter Property="Padding" Value="14"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="Yellow"/>
+        <Setter Property="Cursor" Value="Hand"/>
+
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid Background="{TemplateBinding Background}" x:Name="grid" Opacity="0.25">
+                        <ContentPresenter x:Name="MyContentPresenter" 
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="grid" Property="Opacity" Value="1"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="#FF2BFF00"/>
+            </Trigger>
+        </Style.Triggers>
+
+
+    </Style>
+    
     <Style TargetType="{x:Type icons:PackIconFontAwesome}" x:Key="LargeIconSize">
         <Setter Property="Width" Value="34"/>
         <Setter Property="Height" Value="34"/>

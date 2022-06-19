@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using System.Windows;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Repositories;
-using TodoList.WPF.Services;
 using TodoList.WPF.ViewModels;
 using TodoList.WPF.Views;
 

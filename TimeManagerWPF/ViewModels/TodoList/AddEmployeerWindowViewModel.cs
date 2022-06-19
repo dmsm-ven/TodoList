@@ -25,7 +25,7 @@ public class AddEmployeerWindowViewModel : ViewModelBase
 
     public AddEmployeerWindowViewModel()
     {
-        NewEmployeer = new EmployeerViewModel() { Name = default_name };
+        NewEmployeer = new EmployeerViewModel(0, default_name);
         CreateCommand = new LambdaCommand(Create, CanCreate);
     }
 

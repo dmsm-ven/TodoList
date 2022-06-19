@@ -9,6 +9,7 @@
             <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
             <con:IsActiveMonthForegroundBrushConverter x:Key="IsActiveMonthForegroundBrushConverter"/>
+            <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter"/>
             
             <com:CloseApplicationCommand x:Key="CloseApplicationCommand"/>
             

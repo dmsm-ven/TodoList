@@ -5,13 +5,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using TodoList.DataAccess;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models;
-using TodoList.WPF.Services;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -46,8 +44,14 @@ public class TodoListTabViewModel : ViewModelBase
         set => Set(ref statusBarData, value);
     }
 
-    public EmployeerViewModel Employeer { get; init; }  
-    public EmployeerPaymentsStatisticViewModel PaymentsStatistic { get; init; }
+    public EmployeerViewModel Employeer { get; init; }
+
+    EmployeerPaymentsStatisticViewModel paymentsStatistic;
+    public EmployeerPaymentsStatisticViewModel PaymentsStatistic
+    {
+        get => paymentsStatistic;
+        private set => Set(ref paymentsStatistic, value);
+    }
     public ObservableCollection<MonthPillModel> MonthPills { get; init; }
 
     MonthPillModel selectedMonthPill;
@@ -126,7 +130,6 @@ public class TodoListTabViewModel : ViewModelBase
             item.PropertyChanged += Item_PropertyChanged;
         });
     }
-
     private void Loaded(object o)
     {
         if (Employeer == null) { return; }

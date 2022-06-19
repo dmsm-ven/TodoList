@@ -2,16 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models;
-using TodoList.WPF.Services;
 using TodoList.WPF.Views;
 
 namespace TodoList.WPF.ViewModels;
@@ -50,9 +47,9 @@ public class TodoListViewModel : ViewModelBase
         LoadedCommand = new LambdaCommand(Loaded);
         Tabs = new ObservableCollection<TodoListTabViewModel>()
         {
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel() { Name = "Tab 1" }},
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel() { Name = "Tab 2" }},
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel() { Name = "Tab 3" }},
+            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 1") },
+            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 2") },
+            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 3") }
         };
     }
     public TodoListViewModel(NavigationLocator navigationLocator,
@@ -86,18 +83,15 @@ public class TodoListViewModel : ViewModelBase
 
         IsLoading = true;
 
+        await Task.Delay(TimeSpan.FromSeconds(0.25));
+
         var employeers = await Task.Run(() => employeerRepository.GetAllEmployeer());
 
-        employeers.Select(emp => new EmployeerViewModel()
-        {
-            Name = emp.Name,
-            Id = emp.Id,
-            TodoItems = new ObservableCollection<JobItemViewModel>(mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(emp.Id))),
-            Payments = new ObservableCollection<EmployeerPaymentViewModel>(mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(emp.Id)))
-        })
-        .Select(i => new TodoListTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
-        .ToList()
-        .ForEach(t => Tabs.Add(t));
+        employeers
+            .Select(emp => new EmployeerViewModel(emp.Id, emp.Name, mapper, jobItemRepository, employeerPaymentRepository))
+            .Select(i => new TodoListTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
+            .ToList()
+            .ForEach(t => Tabs.Add(t));
 
         IsLoading = false;
 

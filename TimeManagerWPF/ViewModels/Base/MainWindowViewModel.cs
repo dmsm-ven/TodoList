@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Input;
-using TodoList.WPF.Services;
+﻿using System.Windows.Input;
 
 namespace TodoList.WPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
