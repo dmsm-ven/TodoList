@@ -28,11 +28,16 @@
                 <SolidColorBrush Color="#031016" Opacity="0.9"/>
             </Grid.Background>
             <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
 
-            <Border Grid.Row="0" BorderThickness="0" Margin="0 0 0 20" BorderBrush="#D6CFD3">
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    BorderThickness="0" Margin="0 0 0 20" BorderBrush="#D6CFD3">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -106,7 +111,7 @@
                 </Grid>
             </Border>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding FilteredBooks}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -157,6 +162,43 @@
 
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="1" Grid.Column="1" 
+                          Visibility="{Binding IsShowHidden, Converter={StaticResource BoolToVisibilityConverter}}"
+                          VerticalScrollBarVisibility="Auto">
+                <ItemsControl>
+                    <ItemsControl ItemsSource="{Binding ReadedBooks}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Margin="14 2 8 2"
+                                               VerticalAlignment="Center"
+                                               Foreground="White" FontWeight="Bold">
+                                        <Run Text="{Binding DateAdded, StringFormat='dd.MM.yyyy'}"/>
+                                        <Run Text=" - "/>
+                                        <Run Text="{Binding DateEnded, StringFormat='dd.MM.yyyy'}"/>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding Author}" 
+                                               Margin="2 2 8 2"
+                                           FontSize="14"
+                                           Foreground="Beige" TextDecorations="Strikethrough"/>
+                                    <TextBlock Text="{Binding Name}" 
+                                               Margin="2 2 8 2"
+                                           FontSize="15"
+                                           Foreground="LightCoral" TextDecorations="Strikethrough"/>
+                                    
+                                </StackPanel>
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ItemsControl>
             </ScrollViewer>
         </Grid>

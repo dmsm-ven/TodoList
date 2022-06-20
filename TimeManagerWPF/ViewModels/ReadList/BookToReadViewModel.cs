@@ -34,32 +34,32 @@ public class BookToReadViewModel : ViewModelBase
     }
 
     public DateTime DateAdded { get; set; }
-    
-    bool isAlreadyReaded;
-    public bool IsAlreadyReaded
+
+    DateTime? dateEnded;
+    public DateTime? DateEnded
     {
-        get => isAlreadyReaded;
+        get => dateEnded;
         set
         {
-            if(Set(ref isAlreadyReaded, value))
+            if(Set(ref dateEnded, value))
             {
-                DateEnded = value ? (DateTime?)DateTime.Now : null;
-                RaisePropertyChanged(nameof(StateIcon));
+                RaisePropertyChanged(nameof(IsAlreadyReaded));
             }
         }
     }
-    public DateTime? DateEnded { get; set; }
+
+    public bool IsAlreadyReaded => DateEnded.HasValue;
 
     public ICommand ToggleStatusCommand { get; }
 
     public BookToReadViewModel()
     {
-        ToggleStatusCommand = new LambdaCommand(e => IsAlreadyReaded = !IsAlreadyReaded);
+        ToggleStatusCommand = new LambdaCommand(e => DateEnded = (DateEnded == null ? (DateTime?)DateTime.Now : null));
     }
 
     public PackIconFontAwesomeKind StateIcon
     {
-        get => IsAlreadyReaded ? PackIconFontAwesomeKind.EyeSlashRegular : PackIconFontAwesomeKind.EyeRegular;
+        get => DateEnded.HasValue ? PackIconFontAwesomeKind.EyeSlashRegular : PackIconFontAwesomeKind.EyeRegular;
     }
 
     private string GetCacheImage()

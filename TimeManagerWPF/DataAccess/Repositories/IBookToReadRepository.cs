@@ -20,13 +20,12 @@ public class BookToReadRepository : IBookToReadRepository
     }
     public int AddOrUpdate(BookToReadEntity item)
     {
-        string sql = @"INSERT INTO book_to_read (Id, Name, Author, Image, IsAlreadyReaded, DateEnded) 
-                        VALUES(@Id, @Name, @Author, @Image, @IsAlreadyReaded, @DateEnded) 
+        string sql = @"INSERT INTO book_to_read (Id, Name, Author, Image, DateEnded) 
+                        VALUES(@Id, @Name, @Author, @Image, @DateEnded) 
                         ON DUPLICATE KEY UPDATE 
                             Name = @Name,
                             Author = @Author,
                             Image = @Image,
-                            IsAlreadyReaded = @IsAlreadyReaded,
                             DateEnded = @DateEnded";
 
 

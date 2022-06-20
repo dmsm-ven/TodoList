@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.DataAccess.Repositories;
@@ -14,19 +15,20 @@ namespace TodoList.WPF.ViewModels;
 public class ReadListViewModel : ViewModelBase
 {
     public readonly string default_book_name = "Новая книга";
-    public List<BookToReadViewModel> FilteredBooks
-    {
-        get
-        {
-            return Books
-                .Where(book => IsShowHidden ? true : !book.IsAlreadyReaded)
-                .OrderByDescending(book => book.DateAdded)
-                .ToList();
-        }
-    }
     public ObservableCollection<BookToReadViewModel> Books { get; }
+    public IEnumerable<BookToReadViewModel> ReadedBooks
+    {
+        get => Books
+            .Where(book => book.DateEnded != null)
+            .OrderByDescending(book => book.DateEnded.Value);
+    }
+    public IEnumerable<BookToReadViewModel> FilteredBooks
+    {
+        get => Books
+            .Where(book => IsShowHidden ? true : book.DateEnded == null)
+            .OrderByDescending(book => book.DateAdded);
+    }
 
-    
     private readonly IBookToReadRepository repository;
     private readonly IMapper mapper;
     public string ShowHiddenTitle
@@ -63,10 +65,10 @@ public class ReadListViewModel : ViewModelBase
         set
         {
             if(Set(ref isShowHidden, value))
-            {
-                RaisePropertyChanged(nameof(FilteredBooks));
+            {                
                 RaisePropertyChanged(nameof(ShowHiddenIconState));
                 RaisePropertyChanged(nameof(ShowHiddenTitle));
+                RefreshSource();
             }
         }
     }
@@ -102,8 +104,8 @@ public class ReadListViewModel : ViewModelBase
             new BookToReadViewModel() { Name = "Книга 6" },
             new BookToReadViewModel() { Name = "Книга 7" },
         };
-        Books.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(FilteredBooks));
     }
+
     public ReadListViewModel(IBookToReadRepository repository, IMapper mapper) : this()
     {
         this.repository = repository;
@@ -122,12 +124,14 @@ public class ReadListViewModel : ViewModelBase
                 Books.Add(vmItem);
                 vmItem.PropertyChanged += Item_PropertyChanged;
             });
+
+        Books.CollectionChanged += (o, e) => RefreshSource();
+        RefreshSource();
     }
     private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(BookToReadViewModel.IsAlreadyReaded))
+        if (e.PropertyName == nameof(BookToReadViewModel.DateEnded))
         {
-            RaisePropertyChanged(nameof(FilteredBooks));
             repository.AddOrUpdate(mapper.Map<BookToReadEntity>(sender as BookToReadViewModel));
         }
     }
@@ -141,6 +145,12 @@ public class ReadListViewModel : ViewModelBase
 
         IsAddNewBookPanelShow = !IsAddNewBookPanelShow;
 
+    }
+
+    private void RefreshSource()
+    {
+        RaisePropertyChanged(nameof(ReadedBooks));
+        RaisePropertyChanged(nameof(FilteredBooks));
     }
 }
 

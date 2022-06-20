@@ -9,6 +9,8 @@ public class BookToReadProfile : Profile
     public BookToReadProfile()
     {
         this.CreateMap<BookToReadEntity, BookToReadViewModel>();
+            //.ForMember(x => x.IsAlreadyReaded, x => x.MapFrom(x => x.DateEnded.HasValue));
+
         this.CreateMap<BookToReadViewModel, BookToReadEntity>();
     }
 }

@@ -8,7 +8,6 @@ public class BookToReadEntity
     public string Name { get; set; }
     public string Author { get; set; }
     public string Image { get; set; }
-    public bool IsAlreadyReaded { get; set; }
     public DateTime DateAdded { get; set; }
     public DateTime? DateEnded { get; set; }
 }
