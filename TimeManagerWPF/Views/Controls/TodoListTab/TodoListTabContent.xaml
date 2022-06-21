@@ -67,7 +67,11 @@
 
             <Grid HorizontalAlignment="Right" MinWidth="200" Width="200" Height="26">
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                         FontSize="14"
+                         FontSize="16"
+                         d:Text="Поисковый запрос"
+                         Foreground="#E71421"
+                         FontWeight="SemiBold"
+                         FontFamily="Consolas"
                          VerticalContentAlignment="Center"
                          Padding="2"
                          HorizontalContentAlignment="Right"/>
