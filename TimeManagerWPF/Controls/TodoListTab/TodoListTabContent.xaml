@@ -8,6 +8,7 @@
              xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
              xmlns:con="clr-namespace:TodoList.WPF.Controls"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks" 
+             d:DataContext="{d:DesignInstance Type=vm:TodoListTabViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d"            
              d:Background="White"
              Background="Transparent"
@@ -63,7 +64,21 @@
                                        Margin="16 2 8 2"
                                        DockPanel.Dock="Right"
                                        Style="{StaticResource TitleIconStyle}"/>
-            <TextBox HorizontalAlignment="Right" MinWidth="200" Width="200" Height="26" />
+
+            <Grid HorizontalAlignment="Right" MinWidth="200" Width="200" Height="26">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         FontSize="14"
+                         VerticalContentAlignment="Center"
+                         Padding="2"
+                         HorizontalContentAlignment="Right"/>
+                <TextBlock Text="Поиск ..." Foreground="LightGray" 
+                           Visibility="{Binding SearchText, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='inverse'}"
+                           FontSize="13" 
+                           Panel.ZIndex="99"
+                           Margin="2 2 8 2"
+                           VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </Grid>
+
 
             <!--
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -224,7 +239,8 @@
         <con:TodoListTabStatusBar Grid.Row="3" Grid.ColumnSpan="2" MinHeight="20" DataContext="{Binding StatusBarData}"/>
 
         <!-- индикатор загрузки вкладки -->
-        <ss:LoadingSpinner IsLoading="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+        <ss:LoadingSpinner IsLoading="True" 
+                           Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
                            Width="200" Height="200" 
                            HorizontalAlignment="Stretch" 
                            VerticalAlignment="Stretch"

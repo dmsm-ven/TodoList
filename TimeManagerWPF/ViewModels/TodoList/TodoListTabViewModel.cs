@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using TodoList.DataAccess;
@@ -32,21 +33,17 @@ public class TodoListTabViewModel : ViewModelBase
         get => isLoading; 
         set => Set(ref isLoading, value); 
     }
-    public bool HasActiveTasks
-    {
-        get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
-    }
 
-    TodoListTabStatusBarViewModel statusBarData;
+    TodoListTabStatusBarViewModel statusBarData;  
     public TodoListTabStatusBarViewModel StatusBarData
     {
         get => statusBarData;
         set => Set(ref statusBarData, value);
     }
-
+    
     public EmployeerViewModel Employeer { get; init; }
-
     EmployeerPaymentsStatisticViewModel paymentsStatistic;
+    
     public EmployeerPaymentsStatisticViewModel PaymentsStatistic
     {
         get => paymentsStatistic;
@@ -74,20 +71,31 @@ public class TodoListTabViewModel : ViewModelBase
         get => selectedJobItem;
         set => Set(ref selectedJobItem, value);
     }
+    
     public List<JobItemViewModel> FilteredTodoItems
     {
         get
         {
-            var activePill = SelectedMonthPill ?? MonthPills.FirstOrDefault() ?? null;
-            if (activePill != null)
+            if (string.IsNullOrWhiteSpace(SearchText))
             {
-                var data = Employeer.TodoItems
-                .Where(i => i.StartDate.Month == activePill.MonthNumber && i.StartDate.Year == activePill.Year)
-                .OrderByDescending(i => i.IsCompleted ? 0 : 1)
-                .ThenByDescending(i => i.StartDate)
-                .ToList();
+                var activePill = SelectedMonthPill ?? MonthPills.FirstOrDefault() ?? null;
+                if (activePill != null)
+                {
+                    var data = Employeer.TodoItems
+                    .Where(i => i.StartDate.Month == activePill.MonthNumber && i.StartDate.Year == activePill.Year)
+                    .OrderByDescending(i => i.IsCompleted ? 0 : 1)
+                    .ThenByDescending(i => i.StartDate)
+                    .ToList();
 
-                return data;
+                    return data;
+                }
+            }
+            else
+            {
+                return Employeer.TodoItems
+                    .Where(item => item.HasText(SearchText))
+                    .OrderByDescending(item => item.StartDate)
+                    .ToList();
             }
             return new List<JobItemViewModel>();
         }
@@ -99,11 +107,33 @@ public class TodoListTabViewModel : ViewModelBase
         get => newPayment;
         set => Set(ref newPayment, value);
     }
+
+    string searchText;
+    public string SearchText
+    {
+        get => searchText;
+        set
+        {
+            if(Set(ref searchText, value))
+            {
+                IsLoading = true;
+                RaisePropertyChanged(nameof(FilteredTodoItems));
+                IsLoading = false;
+            }
+        }
+    }
+
+    public bool HasActiveTasks
+    {
+        get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
+    }
+
     public ICommand AddJobCommand { get; }  
     public ICommand LoadedCommand { get; }
     public ICommand DeleteJobCommand { get; }
     public ICommand ShowPaymentFieldCommand { get; }
     public ICommand AddEmployeerPaymentCommand { get; }
+   
     public TodoListTabViewModel()
     {
         LoadedCommand = new LambdaCommand(Loaded);
@@ -113,6 +143,7 @@ public class TodoListTabViewModel : ViewModelBase
         AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => (NewPayment?.Amount ?? 0) != 0);
         MonthPills = new ObservableCollection<MonthPillModel>();
     }
+   
     public TodoListTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
     {
         this.jobItemRepository = jobItemRepository;
@@ -130,6 +161,7 @@ public class TodoListTabViewModel : ViewModelBase
             item.PropertyChanged += Item_PropertyChanged;
         });
     }
+    
     private void Loaded(object o)
     {
         if (Employeer == null) { return; }
@@ -138,6 +170,7 @@ public class TodoListTabViewModel : ViewModelBase
         LoadMonthPills();
         IsLoading = false;
     }
+    
     private void AddEmployeerPayment(object obj)
     {
         paymentRepository.AddPayment(mapper.Map<EmployeerPaymentEntity>(NewPayment));
@@ -145,6 +178,7 @@ public class TodoListTabViewModel : ViewModelBase
         IsShowPaymentField = false;
         NewPayment = new EmployeerPaymentViewModel();
     }
+    
     private void LoadMonthPills()
     {
         var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
@@ -174,6 +208,7 @@ public class TodoListTabViewModel : ViewModelBase
             SelectedMonthPill.IsActive = true;
         }
     }
+    
     public void AddJobItem(object o)
     {
         var item = new JobItemViewModel()
@@ -186,6 +221,7 @@ public class TodoListTabViewModel : ViewModelBase
         item.Id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
         Employeer.TodoItems.Add(item);
     }
+    
     internal void DeleteSelectedJobItem(object o)
     {
         var answer = MessageBox.Show("Удалить выделенное задание ?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -197,6 +233,7 @@ public class TodoListTabViewModel : ViewModelBase
 
         SelectedJobItem = null;
     }
+    
     private void OpenScreenshotFolder(JobItemViewModel item)
     {
         string folder = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location),
@@ -210,6 +247,7 @@ public class TodoListTabViewModel : ViewModelBase
         }
         Process.Start("explorer.exe", folder);
     }
+    
     private void TodoItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         RaisePropertyChanged(nameof(FilteredTodoItems));
@@ -228,6 +266,7 @@ public class TodoListTabViewModel : ViewModelBase
             newItem.PropertyChanged += Item_PropertyChanged;
         }
     }
+    
     private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         IsLoading = true;

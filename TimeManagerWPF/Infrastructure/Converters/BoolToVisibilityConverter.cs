@@ -22,11 +22,28 @@ public class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if(value is bool b)
+        Visibility result = Visibility.Visible;
+
+        if (value is bool b)
         {
-            return b ? Visibility.Visible : Visibility.Collapsed;
+            result = b ? Visibility.Visible : Visibility.Collapsed;
         }
-        return value != null ? Visibility.Visible : Visibility.Collapsed;
+        else if (value is string s)
+        {
+            result = (!string.IsNullOrWhiteSpace(s)) ? Visibility.Visible : Visibility.Collapsed;
+        }
+        else 
+        {
+            result = value != null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // inverse
+        if (parameter != null)
+        {
+            result = (result == Visibility.Visible) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        return result;
        
     }
 

@@ -88,4 +88,20 @@ public class JobItemViewModel : ViewModelBase
             e => OnScreenshotsClicked?.Invoke(), 
             e => HasScreenshots);
     }
+
+    internal bool HasText(string searchText)
+    {
+        if (string.IsNullOrWhiteSpace(searchText)) { return false; }
+
+        if(Title?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
+        if(Website?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
+        if(Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
+        if(int.TryParse(searchText, out var price) && price == Price) { return true; }
+        if(DateTime.TryParse(searchText, out var date)) 
+        {
+            return date.Date == StartDate.Date || (EndDate.HasValue && EndDate.Value == date.Date);
+        }
+
+        return false;
+    }
 }
