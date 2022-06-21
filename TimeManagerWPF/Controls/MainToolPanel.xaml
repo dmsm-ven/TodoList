@@ -6,12 +6,12 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
              xmlns:local="clr-namespace:TodoList.WPF"
+             xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:ToolPanelViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="60" Height="50" d:DesignWidth="1000">
+             d:DesignHeight="40" Height="50" d:DesignWidth="1000">
 
     <DockPanel Background="{StaticResource ToolPanelBackground}" LastChildFill="True">
-
         <!-- Основная панель навигации по категориям программы-->
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
             <StackPanel.Resources>
@@ -64,8 +64,26 @@
 
         <!-- Кнопки минимизации/закрытия приложения -->
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Command="{StaticResource CloseApplicationCommand}" Style="{StaticResource HeaderApplicationButton}">
-                <icons:PackIconFontAwesome Kind="TimesSolid"  />
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type icons:PackIconFontAwesome}">
+                    <Setter Property="Width" Value="14"/>
+                    <Setter Property="Height" Value="14"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Command="{StaticResource MinimizeWindowCommand}" 
+                    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                    Style="{StaticResource HeaderApplicationButton}">
+                <icons:PackIconFontAwesome Kind="WindowMinimizeSolid"/>
+            </Button>
+            <Button Command="{StaticResource RestoreWindowCommand}" 
+                    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                    Style="{StaticResource HeaderApplicationButton}">
+                <icons:PackIconFontAwesome Kind="WindowRestoreSolid" />
+            </Button>
+            <Button Command="{StaticResource CloseWindowCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                    Style="{StaticResource HeaderApplicationButton}">
+                <icons:PackIconFontAwesome Kind="TimesSolid" />
             </Button>
         </StackPanel>
     </DockPanel>

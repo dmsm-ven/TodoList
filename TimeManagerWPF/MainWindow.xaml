@@ -11,10 +11,10 @@
         mc:Ignorable="d"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
-        MouseDown="Window_MouseDown"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="NoResize"
+        x:Name="window"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
-        Title="Список дел" Height="700" Width="1600" d:Height="250" d:Width="1000">
+        Title="Список дел" Height="800" Width="1600" d:Height="250" d:Width="1000">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
@@ -27,7 +27,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <con:MainToolPanel Grid.Row="0" DataContext="{Binding ToolPanelViewModel}"/>
+        <con:MainToolPanel Grid.Row="0" DataContext="{Binding ToolPanelViewModel}"
+                           MouseDown="Window_MouseDown">
+            
+        </con:MainToolPanel>
 
         <ContentPresenter Grid.Row="1" Content="{Binding NavigationLocator.ActiveViewModel}">
             <ContentPresenter.Resources>

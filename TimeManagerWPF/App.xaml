@@ -10,8 +10,11 @@
             <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
             <con:IsActiveMonthForegroundBrushConverter x:Key="IsActiveMonthForegroundBrushConverter"/>
             <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter"/>
-            
-            <com:CloseApplicationCommand x:Key="CloseApplicationCommand"/>
+
+            <com:CloseWindowCommand x:Key="CloseWindowCommand"/>
+            <com:MinimizeWindowCommand x:Key="MinimizeWindowCommand"/>
+            <com:RestoreWindowCommand x:Key="RestoreWindowCommand"/>
+            <com:DragMoveCommand x:Key="DragMoveCommand"/>
             
             <ResourceDictionary.MergedDictionaries>
                 

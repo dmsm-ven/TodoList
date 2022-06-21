@@ -17,7 +17,7 @@
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
-    <Grid>
+    <Grid Margin="2">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
                     VerticalAlignment="Top" 
                     Panel.ZIndex="10">
@@ -30,7 +30,6 @@
         
         <TabControl ItemsSource="{Binding Tabs}"
                     SelectedValue="{Binding SelectedTab}"
-                    
                     BorderThickness="0" >
             <TabControl.ContentTemplate>
                 <DataTemplate>
