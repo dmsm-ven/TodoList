@@ -17,7 +17,7 @@
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
-    <Grid Margin="2">
+    <Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
                     VerticalAlignment="Top" 
                     Panel.ZIndex="10">

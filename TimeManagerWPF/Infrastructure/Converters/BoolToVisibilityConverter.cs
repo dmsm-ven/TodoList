@@ -1,15 +1,33 @@
-﻿using System;
+﻿using MahApps.Metro.IconPacks;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace TodoList.WPF.Infrastructure.Converters;
 
+public class BoolToIconKindConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return (bool)value ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.TimesSolid;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
 public class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? Visibility.Visible : Visibility.Collapsed;
+        if(value is bool b)
+        {
+            return b ? Visibility.Visible : Visibility.Collapsed;
+        }
+        return value != null ? Visibility.Visible : Visibility.Collapsed;
+       
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

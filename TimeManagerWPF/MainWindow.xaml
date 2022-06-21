@@ -20,31 +20,34 @@
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
-    
-    <Grid Background="{StaticResource MainWindowControlBackground}">
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <con:MainToolPanel Grid.Row="0" DataContext="{Binding ToolPanelViewModel}"
-                           MouseDown="Window_MouseDown">
-            
-        </con:MainToolPanel>
-
-        <ContentPresenter Grid.Row="1" Content="{Binding NavigationLocator.ActiveViewModel}">
-            <ContentPresenter.Resources>
-                <DataTemplate DataType="{x:Type vm:TodoListViewModel}">
-                    <v:TodoListView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ShoppingListViewModel}">
-                    <v:ShoppingListView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:ReadListViewModel}">
-                    <v:ReadListView />
-                </DataTemplate>
-            </ContentPresenter.Resources>
-        </ContentPresenter>
-        
+                               MouseDown="Window_MouseDown"/>
+        <Border Grid.Row="1" 
+                Background="{StaticResource MainContentBackground}"
+                BorderBrush="{StaticResource ToolPanelBackground}"
+                BorderThickness="1"
+                >
+            <ContentPresenter Content="{Binding NavigationLocator.ActiveViewModel}">
+                <ContentPresenter.Resources>
+                    <DataTemplate DataType="{x:Type vm:TodoListViewModel}">
+                        <v:TodoListView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:ShoppingListViewModel}">
+                        <v:ShoppingListView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:ReadListViewModel}">
+                        <v:ReadListView />
+                    </DataTemplate>
+                </ContentPresenter.Resources>
+            </ContentPresenter>
+        </Border>
+       
     </Grid>
 </Window>

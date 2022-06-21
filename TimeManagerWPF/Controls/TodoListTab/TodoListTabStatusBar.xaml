@@ -7,7 +7,7 @@
              mc:Ignorable="d"             
              d:DataContext="{d:DesignInstance Type=vm:TodoListTabStatusBarViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="40" d:DesignWidth="600">
-    <StatusBar>
+    <StatusBar Margin="0 2 0 0">
         <StatusBarItem Content="{Binding ActiveTasksMessage}"/>
         <Separator/>
 

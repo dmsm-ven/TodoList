@@ -8,8 +8,9 @@
         <ResourceDictionary>
             <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
-            <con:IsActiveMonthForegroundBrushConverter x:Key="IsActiveMonthForegroundBrushConverter"/>
+            <con:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
             <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter"/>
+            <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter"/>
 
             <com:CloseWindowCommand x:Key="CloseWindowCommand"/>
             <com:MinimizeWindowCommand x:Key="MinimizeWindowCommand"/>

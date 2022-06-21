@@ -77,6 +77,9 @@ public class JobItemViewModel : ViewModelBase
         get => endDate;
         set => Set(ref endDate, value);
     }
+
+    public int DaysAgo => (int)Math.Floor((DateTime.Now - StartDate).TotalDays);
+
     public ICommand OpenScreenshotsFolderCommand { get; }
     public bool HasScreenshots => true;
     public JobItemViewModel()

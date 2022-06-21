@@ -54,6 +54,10 @@ public class ReadListViewModel : ViewModelBase
                     };
                     NewBook.PropertyChanged += Item_PropertyChanged;
                 }
+                else
+                {
+                    NewBook = null;
+                }
                 RaisePropertyChanged(nameof(AddBookIconStateKind));
             }
         }
@@ -88,12 +92,14 @@ public class ReadListViewModel : ViewModelBase
         get => IsShowHidden ? PackIconFontAwesomeKind.EyeSlashSolid : PackIconFontAwesomeKind.EyeSolid;
     }
     public ICommand AddBookCommand { get; }
+    public ICommand CancelAddingBookCommand { get; }
     public ICommand ShowHiddenToggleCommand { get; }
     public ICommand LoadedCommand { get; }
     public ReadListViewModel()
     {
         AddBookCommand = new LambdaCommand(AddBook, e => NewBook == null || NewBook?.Name != default_book_name);
         ShowHiddenToggleCommand = new LambdaCommand(e => IsShowHidden = !IsShowHidden);
+        CancelAddingBookCommand = new LambdaCommand(e => IsAddNewBookPanelShow = false) ;
         LoadedCommand = new LambdaCommand(Loaded);
         Books = new ObservableCollection<BookToReadViewModel>()
         {
@@ -146,7 +152,6 @@ public class ReadListViewModel : ViewModelBase
         IsAddNewBookPanelShow = !IsAddNewBookPanelShow;
 
     }
-
     private void RefreshSource()
     {
         RaisePropertyChanged(nameof(ReadedBooks));

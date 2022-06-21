@@ -196,17 +196,16 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button 
-                                            Background="RoyalBlue"
-                                            MinWidth="80"
-                                            HorizontalContentAlignment="Center"
-                                             Margin="2 2 8 2"
-                                             Padding="8 2 8 4"
-                                             FontSize="18"                                            
-                                             Command="{Binding MonthPillClickCommand}"
-                                             Content="{Binding DisplayName}"
-                                             Foreground="{Binding IsActive, Converter={StaticResource IsActiveMonthForegroundBrushConverter}}"
-                                             FontWeight="Bold" >
+                            <Button Command="{Binding MonthPillClickCommand}"
+                                    Content="{Binding DisplayName}"
+                                    Foreground="{Binding IsActive, Converter={StaticResource BoolToBrushConverter}, 
+                                        ConverterParameter='#90EE90;#ffffff'}"
+                                    Background="RoyalBlue"
+                                    MinWidth="80"
+                                    HorizontalContentAlignment="Center"
+                                    Margin="2 2 8 2"
+                                    Padding="8 2 8 4"
+                                    FontSize="18" >
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="4"/>
