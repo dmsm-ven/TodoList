@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Repositories;
@@ -43,6 +46,7 @@ public partial class App : Application
     private void ConfigureViewModels(IServiceCollection services)
     {      
         services.AddSingleton<NavigationLocator>();
+        services.AddTransient<ConnectionErrorViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();
         services.AddTransient<AddEmployeerWindow>();      
         services.AddSingleton<ReadListViewModel>();
@@ -56,11 +60,24 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
+        ApplicationAlreadyRunningCheck();
+
         await host.StartAsync();
 
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.DataContext = host.Services.GetRequiredService<MainWindowViewModel>();
         mainWindow.Show();
+    }
+
+    private void ApplicationAlreadyRunningCheck()
+    {
+        Process proc = Process.GetCurrentProcess();
+        int count = Process.GetProcesses().Where(p =>p.ProcessName == proc.ProcessName).Count();
+
+        if (count > 1)
+        {
+            App.Current.Shutdown();
+        }
     }
 
     protected override async void OnExit(ExitEventArgs e)

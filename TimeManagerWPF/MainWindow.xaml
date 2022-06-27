@@ -29,6 +29,7 @@
 
         <con:MainToolPanel Grid.Row="0" DataContext="{Binding ToolPanelViewModel}"
                                MouseDown="Window_MouseDown"/>
+
         <Border Grid.Row="1" 
                 Background="{StaticResource MainContentBackground}"
                 BorderBrush="{StaticResource ToolPanelBackground}"
@@ -44,6 +45,9 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:ReadListViewModel}">
                         <v:ReadListView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:ConnectionErrorViewModel}">
+                        <v:ConnectionErrorView />
                     </DataTemplate>
                 </ContentPresenter.Resources>
             </ContentPresenter>

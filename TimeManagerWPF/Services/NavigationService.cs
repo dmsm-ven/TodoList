@@ -32,11 +32,12 @@ public class NavigationLocator : ViewModelBase
 
     private readonly Lazy<Dictionary<ViewModelType, ViewModelBase>> availableViewModels;
 
-    public void MoveTo(ViewModelType type) 
+    public void MoveTo(ViewModelType type)
     {
         ActiveViewModelType = type;
-        ActiveViewModel = availableViewModels.Value[type];       
+        ActiveViewModel = availableViewModels.Value[type];
     }
+
 
     public NavigationLocator(IHost host)
     {
@@ -44,15 +45,8 @@ public class NavigationLocator : ViewModelBase
         {
             [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),            
             [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
-            [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>()
+            [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
+            [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorViewModel>(),
         });
     }
-}
-
-public enum ViewModelType
-{
-    TodoList,
-    AddEmployeer,
-    ShoppingList,
-    ReadList
 }
