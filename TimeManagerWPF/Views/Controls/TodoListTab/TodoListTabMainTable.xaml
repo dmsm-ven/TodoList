@@ -80,9 +80,26 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Задача" Width="2*" Binding="{Binding Title,Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
-                <DataGridTextColumn Header="Сайт" 
-                                    Width="300"
-                                    Binding="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <DataGridTemplateColumn Header="Сайт" Width="300">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Website}" 
+                                       TextDecorations="Underline"
+                                       Foreground="RoyalBlue"
+                                       FontSize="10"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox IsTextSearchEnabled="True" 
+                                      IsEditable="True" 
+                                      ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}, 
+                                                            Path=DataContext.UniqueWebsites}"
+                                      Text="{Binding Website, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Цена" 
                                     Width="150"
                                     Binding="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>

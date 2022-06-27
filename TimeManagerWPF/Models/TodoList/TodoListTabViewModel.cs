@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using TodoList.DataAccess;
 using TodoList.WPF.DataAccess;
@@ -128,6 +130,24 @@ public class TodoListTabViewModel : ViewModelBase
         get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
     }
 
+    public ICollectionView SortedEmployeerPayments { get; }
+
+    public IEnumerable<string> UniqueWebsites
+    {
+        get
+        {
+            if(Employeer.TodoItems.Count == 0)
+            {
+                return new string[] { "https://" };
+            }
+            return Employeer.TodoItems
+                .GroupBy(item => item.Website)
+                .Select(g => g.Key)
+                .Where(g => g != null)
+                .OrderBy(site => site);
+        }
+    }
+
     public ICommand AddJobCommand { get; }  
     public ICommand LoadedCommand { get; }
     public ICommand DeleteJobCommand { get; }
@@ -153,7 +173,9 @@ public class TodoListTabViewModel : ViewModelBase
 
         PaymentsStatistic = new EmployeerPaymentsStatisticViewModel(Employeer);
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id };
-        
+        SortedEmployeerPayments = CollectionViewSource.GetDefaultView(Employeer.Payments);
+        SortedEmployeerPayments.SortDescriptions.Add(new SortDescription(nameof(EmployeerPaymentViewModel.TransferArrivalDate), ListSortDirection.Descending));
+
         Employeer.TodoItems.CollectionChanged += TodoItems_CollectionChanged;
         Employeer.TodoItems.ToList().ForEach(item =>
         {
@@ -169,6 +191,7 @@ public class TodoListTabViewModel : ViewModelBase
         IsLoading = true;
         LoadMonthPills();
         IsLoading = false;
+        SortedEmployeerPayments.Refresh();
     }
     
     private void AddEmployeerPayment(object obj)
@@ -177,6 +200,7 @@ public class TodoListTabViewModel : ViewModelBase
         Employeer.Payments.Insert(0, NewPayment);
         IsShowPaymentField = false;
         NewPayment = new EmployeerPaymentViewModel();
+        SortedEmployeerPayments.Refresh();
     }
     
     private void LoadMonthPills()

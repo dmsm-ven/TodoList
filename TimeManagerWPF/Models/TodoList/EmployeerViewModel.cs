@@ -5,6 +5,8 @@ using TodoList.WPF.ViewModels;
 using System.Linq;
 using AutoMapper;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace TodoList.WPF.Models;
 
@@ -24,6 +26,7 @@ public class EmployeerViewModel : ViewModelBase
         set => Set(ref name, value);
     }
     public DateTime Created { get; set; } = DateTime.Now;
+
     public ObservableCollection<EmployeerPaymentViewModel> Payments { get; init; }
 
     public ObservableCollection<JobItemViewModel> TodoItems { get; init; }

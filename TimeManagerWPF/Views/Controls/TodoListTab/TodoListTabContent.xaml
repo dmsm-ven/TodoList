@@ -83,21 +83,6 @@
                            VerticalAlignment="Center" HorizontalAlignment="Right" />
             </Grid>
 
-
-            <!--
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <icons:PackIconFontAwesome Kind="ListSolid" 
-                                       DockPanel.Dock="Left"
-                                       Foreground="{StaticResource ToolPanelBackground}" Style="{StaticResource TitleIconStyle}"/>
-
-                <TextBlock Text="Задачи" Style="{StaticResource ColumnTitleTextBlock}"/>
-                <TextBlock FontWeight="Bold" 
-                       TextDecorations="Underline"
-                       Text="{Binding SelectedMonthPill.DisplayName}" 
-                       Style="{StaticResource ColumnTitleTextBlock}"/>
-            </StackPanel>
-            -->
-
         </DockPanel>
 
         <!-- Список оплат от работодателя -->
@@ -175,7 +160,7 @@
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource ColumnBorderStyle}">
-                <ItemsControl ItemsSource="{Binding Employeer.Payments}">
+                <ItemsControl ItemsSource="{Binding SortedEmployeerPayments}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
