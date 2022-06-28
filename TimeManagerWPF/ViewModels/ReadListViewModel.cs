@@ -28,6 +28,13 @@ public class ReadListViewModel : ViewModelBase
             .Where(book => IsShowHidden ? true : book.DateEnded == null)
             .OrderByDescending(book => book.DateAdded);
     }
+    public IEnumerable<string> UniqueAuthors
+    {
+        get => Books.Count() > 0 ? 
+            Books.GroupBy(b => b.Author).Select(g => g.Key).Where(author => author != null).OrderBy(author => author) :
+            new string[] { "" };
+    }
+
 
     private readonly IBookToReadRepository repository;
     private readonly IMapper mapper;
@@ -156,6 +163,7 @@ public class ReadListViewModel : ViewModelBase
     {
         RaisePropertyChanged(nameof(ReadedBooks));
         RaisePropertyChanged(nameof(FilteredBooks));
+        RaisePropertyChanged(nameof(UniqueAuthors));
     }
 }
 

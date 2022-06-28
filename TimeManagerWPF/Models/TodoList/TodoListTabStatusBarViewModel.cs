@@ -8,13 +8,16 @@ public class TodoListTabStatusBarViewModel : ViewModelBase
 {
     private readonly IEnumerable<JobItemViewModel> jobItems;  
     public int ActiveTasks => jobItems?.Count(t => !t.IsCompleted) ?? 0;
-    public string ActiveTasksMessage => $"Активных задач: {ActiveTasks}";
-    public decimal TotalWorkCash => jobItems?.Sum(t => t.Price) ?? 0;
-    public string TotalWorkCashMessage => $"Всего задач на сумму: {TotalWorkCash:C0}";
-    public decimal AlreadyPayedTasksCash => jobItems?.Where(t => t.IsPayed).Sum(t => t.Price) ?? 0;
-    public string AlreadyPayedTasksCashMessage => $"Из них оплачено: {AlreadyPayedTasksCash:C0}";
-    public decimal NotPayedTasksCash => jobItems?.Where(t => !t.IsPayed).Sum(t => t.Price) ?? 0;
-    public string NotPayedTasksCashMessage => $"Должны оплатить еще: {NotPayedTasksCash:C0}";
+    public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {jobItems.Count()}";
+
+    public decimal TotalWorkCash => jobItems?.Where(t => t.IsCompleted).Sum(t => t.Price) ?? 0;
+    public string TotalWorkCashMessage => $"Итого: {TotalWorkCash:C0}";
+
+    public decimal AlreadyPayedTasksCash => jobItems?.Where(t => t.IsPayed && t.IsCompleted).Sum(t => t.Price) ?? 0;
+    public string AlreadyPayedTasksCashMessage => $"Оплачено: {AlreadyPayedTasksCash:C0}";
+
+    public decimal NotPayedTasksCash => TotalWorkCash - AlreadyPayedTasksCash;
+    public string NotPayedTasksCashMessage => $"Не оплачено: {NotPayedTasksCash:C0}";
 
     public TodoListTabStatusBarViewModel()
     {

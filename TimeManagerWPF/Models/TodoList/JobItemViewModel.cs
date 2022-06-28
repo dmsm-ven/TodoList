@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 
@@ -81,12 +82,26 @@ public class JobItemViewModel : ViewModelBase
     public int DaysAgo => (int)Math.Floor((DateTime.Now - StartDate).TotalDays);
 
     public ICommand OpenScreenshotsFolderCommand { get; }
+    public ICommand OpenWebsiteInBrowserCommand { get; }
+
     public bool HasScreenshots => true;
     public JobItemViewModel()
     {
+        OpenWebsiteInBrowserCommand = new LambdaCommand(OpenWebsiteInBrowser, 
+            e => Uri.IsWellFormedUriString(Website, UriKind.Absolute));
         OpenScreenshotsFolderCommand = new LambdaCommand(
             e => OnScreenshotsClicked?.Invoke(), 
             e => HasScreenshots);
+    }
+
+    private void OpenWebsiteInBrowser(object obj)
+    {
+        var myProcess = new ProcessStartInfo()
+        {
+            UseShellExecute = true,
+            FileName = Website,
+        };
+        Process.Start(myProcess);
     }
 
     internal bool HasText(string searchText)

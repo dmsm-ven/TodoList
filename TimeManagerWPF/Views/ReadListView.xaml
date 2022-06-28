@@ -73,6 +73,8 @@
                             <icons:PackIconFontAwesome Kind="TimesSolid" Style="{StaticResource ExtraSmallIconSize}" />
                         </Button>
                     </StackPanel>
+                    
+                    <!-- Скрытая панель добавления новой книги, отображается после нажатия '+' -->
                     <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
                                 Visibility="{Binding IsAddNewBookPanelShow, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
