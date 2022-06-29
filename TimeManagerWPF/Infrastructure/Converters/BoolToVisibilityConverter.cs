@@ -1,23 +1,11 @@
-﻿using MahApps.Metro.IconPacks;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
 namespace TodoList.WPF.Infrastructure.Converters;
 
-public class BoolToIconKindConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return (bool)value ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.TimesSolid;
-    }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
 public class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -38,10 +26,18 @@ public class BoolToVisibilityConverter : IValueConverter
         }
 
         // inverse
-        if (parameter != null)
+        if (parameter is string strParam)
         {
-            result = (result == Visibility.Visible) ? Visibility.Collapsed : Visibility.Visible;
+            if (strParam == "inverse" || strParam == "reverse" || strParam == "invert")
+            {
+                result = (result == Visibility.Visible) ? Visibility.Collapsed : Visibility.Visible;
+            }
+            if(strParam == "hidden")
+            {
+                result = (result == Visibility.Collapsed) ? Visibility.Hidden : result;
+            }
         }
+
 
         return result;
        

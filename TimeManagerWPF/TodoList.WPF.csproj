@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Login\login-background.jpeg" />
+    <None Remove="Assets\Images\Login\login-logo.png" />
     <None Remove="Assets\Images\ReadList\book-placeholder.png" />
     <None Remove="Assets\Images\ReadList\texture-1.png" />
     <None Remove="Assets\Images\ReadList\texture-2.jpg" />
@@ -17,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="LoadingSpinner.WPF" Version="1.0.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.11.0" />
@@ -27,6 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Images\Login\login-background.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Login\login-logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\ReadList\book-placeholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

@@ -36,6 +36,7 @@ public partial class App : Application
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
+        services.AddTransient<IUserRepository, BCryptUserValidator>();
         services.AddTransient<IBookToReadRepository, BookToReadRepository>();
         services.AddTransient<IEmployeerRepository, EmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
@@ -44,7 +45,10 @@ public partial class App : Application
     }
 
     private void ConfigureViewModels(IServiceCollection services)
-    {      
+    {
+        services.AddSingleton<LoginWindow>();
+        services.AddSingleton<LoginWindowViewModel>();
+
         services.AddSingleton<NavigationLocator>();
         services.AddTransient<ConnectionErrorViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();
@@ -64,6 +68,33 @@ public partial class App : Application
 
         await host.StartAsync();
 
+        var userRepository = host.Services.GetRequiredService<IUserRepository>();
+
+        if (userRepository.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
+        {
+            ShowMainWindow();
+        }
+        else
+        {
+            ShowLoginWindow();
+        }
+    }
+
+    private void ShowLoginWindow()
+    {
+        var loginWindowVm = host.Services.GetRequiredService<LoginWindowViewModel>();
+        var loginWindow = host.Services.GetRequiredService<LoginWindow>();
+        loginWindow.DataContext = loginWindowVm;
+        loginWindowVm.OnUserEnter += () =>
+        {
+            ShowMainWindow();
+            loginWindow.Close();
+        };
+        loginWindow.Show();
+    }
+
+    private void ShowMainWindow()
+    {
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.DataContext = host.Services.GetRequiredService<MainWindowViewModel>();
         mainWindow.Show();
