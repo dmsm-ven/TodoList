@@ -8,7 +8,7 @@
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance Type=vm:ShoppingListViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="900">
+             d:DesignHeight="500" d:DesignWidth="1000">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
             <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -53,6 +53,22 @@
                              VerticalContentAlignment="Bottom"
                              HorizontalContentAlignment="Left"
                              BorderThickness="0 0 0 1" BorderBrush="White" Background="Transparent" />
+
+                    <TextBlock Text="в категорию" VerticalAlignment="Center" Margin="12 2 2 2" Foreground="White"/>
+                    <ComboBox Width="250"
+                              ItemsSource="{Binding UniqueCategories}"
+                              SelectedValue="{Binding SelectedNewItemCategory}"
+                              DisplayMemberPath="Name"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              FontSize="14"
+                              VerticalAlignment="Center"
+                              Foreground="Black"
+                              Margin="12 2 2 2"
+                              VerticalContentAlignment="Bottom"
+                              HorizontalContentAlignment="Left"
+                              BorderThickness="0 0 0 1" BorderBrush="White" Background="Transparent" />
+
                 </StackPanel>
              
                 <Button Grid.Column="2" Command="{Binding ShowHiddenToggleCommand}" Style="{StaticResource ToolButtonStyle}" >
@@ -62,63 +78,84 @@
                     </StackPanel>
                 </Button>
             </Grid>
-            
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredItems}" 
-                          Margin="10 40"
-                          ScrollViewer.VerticalScrollBarVisibility="Visible"
-                          HorizontalAlignment="Center">
+
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="#0AEFD2"/>
-                                    <Setter Property="VerticalAlignment" Value="Bottom" />
-                                    <Setter Property="Padding" Value="0 0 0 6"/>
-                                    <Setter Property="Margin" Value="8 2 8 2"/>
-                                </Style>
-                            </Grid.Resources>
+                        <Border BorderBrush="#386C7D" Margin="10 20 10 20"
+                                BorderThickness="1" CornerRadius="6">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="{Binding Key}" 
+                                       Foreground="#C9C9B8"
+                                       FontWeight="Bold"
+                                       FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ItemsControl ItemsSource="{Binding Value}" 
+                                          Margin="10 40"
+                                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                          HorizontalAlignment="Center">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#0AEFD2"/>
+                                                    <Setter Property="VerticalAlignment" Value="Bottom" />
+                                                    <Setter Property="Padding" Value="0 0 0 6"/>
+                                                    <Setter Property="Margin" Value="8 2 8 2"/>
+                                                </Style>
+                                            </Grid.Resources>
 
-                            <TextBlock Grid.Column="0" 
-                                       Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}"
-                                       ToolTip="Дата создания"/>
-                            <TextBox Text="{Binding Name}" 
-                                     Width="400"
-                                     IsReadOnly="True"
-                                     Grid.Column="1"
-                                     Margin="4"
-                                     FontSize="18"
-                                     Padding="3 5"
-                                     Foreground="White"
-                                     Background="Transparent"
-                                     BorderThickness="0 0 0 1"
-                                     BorderBrush="#A9DE1F"/>
+                                            <TextBlock Grid.Column="0" 
+                                                       Text="{Binding DateAdded, StringFormat=dd.MM.yyyy}"
+                                                       ToolTip="Дата создания"/>
+                                            <TextBox Text="{Binding Name}" 
+                                                     Width="400"
+                                                     IsReadOnly="True"
+                                                     Grid.Column="1"
+                                                     Margin="4"
+                                                     FontSize="18"
+                                                     Padding="3 5"
+                                                     Foreground="White"
+                                                     Background="Transparent"
+                                                     BorderThickness="0 0 0 1"
+                                                     BorderBrush="#A9DE1F"/>
 
-                            <Button Grid.Column="2" Command="{Binding ToggleStatusCommand}" 
-                                    ToolTip="Отметить как выполненное"
-                                    Foreground="#A4AE3F"
-                                    BorderThickness="0"
-                                    Margin="12 2 2 2"
-                                    Cursor="Hand"
-                                    Background="Transparent">
-                                <icons:PackIconFontAwesome Kind="{Binding StateIcon}" />
-                            </Button>
-                            
-                            <TextBlock Grid.Column="3" 
-                                       Visibility="{Binding IsPurchased, Converter={StaticResource BoolToVisibilityConverter}}"
-                                       Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}"
-                                       ToolTip="Дата выполнения"/>
-                        </Grid>
+                                            <Button Grid.Column="2" Command="{Binding ToggleStatusCommand}" 
+                                                    ToolTip="Отметить как выполненное"
+                                                    Foreground="#A4AE3F"
+                                                    BorderThickness="0"
+                                                    Margin="12 2 2 2"
+                                                    Cursor="Hand"
+                                                    Background="Transparent">
+                                                <icons:PackIconFontAwesome Kind="{Binding StateIcon}" />
+                                            </Button>
 
+                                            <TextBlock Grid.Column="3" 
+                                                       Visibility="{Binding IsPurchased, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                       Text="{Binding DatePurchased,  StringFormat=dd.MM.yyyy}"
+                                                       ToolTip="Дата выполнения"/>
+                                        </Grid>
+
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DockPanel>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
         </Grid>
     </Grid>
 </UserControl>

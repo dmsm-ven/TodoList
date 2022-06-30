@@ -17,16 +17,33 @@ internal class ShoppingListViewModel : ViewModelBase
 
     public ObservableCollection<ShoppingItemViewModel> Items { get; }
 
-    public List<ShoppingItemViewModel> FilteredItems
+    public Dictionary<string, List<ShoppingItemViewModel>> FilteredItems
     {
         get
         {
             var source = Items
                 .Where(item => ShowHidden ? true : item.IsPurchased == false)
                 .OrderByDescending(item => item.DateAdded)
-                .ToList();
+                .GroupBy(item => item.CategoryName ?? "Другое")
+                .ToDictionary(g => g.Key, g => g.ToList());
+
             return source;
         }
+    }
+
+    public List<ShoppingItemCategory> UniqueCategories
+    {
+        get => Items
+            .GroupBy(item => item.CategoryId)
+            .Select(g => new ShoppingItemCategory() { Id = g.Key, Name = g.FirstOrDefault()?.CategoryName ?? "NULL" })
+            .ToList();
+    }
+
+    ShoppingItemCategory selectedNewItemCategory;
+    public ShoppingItemCategory SelectedNewItemCategory
+    {
+        get => selectedNewItemCategory;
+        set => Set(ref selectedNewItemCategory, value);
     }
 
     bool showHidden;
@@ -62,6 +79,7 @@ internal class ShoppingListViewModel : ViewModelBase
     public ICommand ShowHiddenToggleCommand { get; }
     public ICommand AddNewItemCommand { get; }
     public ICommand LoadedCommand { get; }
+
     public ShoppingListViewModel(IShoppingItemsRepository repository, IMapper mapper) : this()
     {
         this.repository = repository;
@@ -73,15 +91,28 @@ internal class ShoppingListViewModel : ViewModelBase
         ShowHiddenToggleCommand = new LambdaCommand(e => ShowHidden = !ShowHidden);
         AddNewItemCommand = new LambdaCommand(AddNewItem, e => !string.IsNullOrWhiteSpace(NewItemText));
         LoadedCommand = new LambdaCommand(Loaded);
-        Items = new ObservableCollection<ShoppingItemViewModel>()
-        {
-            new ShoppingItemViewModel(){ Name = "Товар 1", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
-            new ShoppingItemViewModel(){ Name = "Товар 2", DateAdded = DateTime.Now, DatePurchased = null, IsPurchased = false },
-            new ShoppingItemViewModel(){ Name = "Товар 3", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
-            new ShoppingItemViewModel(){ Name = "Товар 4", DateAdded = DateTime.Now, DatePurchased = null, IsPurchased = false },
-            new ShoppingItemViewModel(){ Name = "Товар 5", DateAdded = DateTime.Now, DatePurchased = DateTime.Now, IsPurchased = true },
-        };
+        Items = new ObservableCollection<ShoppingItemViewModel>();
+        AddDesignTimeItems();
         Items.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(FilteredItems));
+    }
+
+    private void AddDesignTimeItems()
+    {
+        var categories = new[] { "Дом", "Одежда", "Другое" };
+        foreach(var cat in categories)
+        {
+            for(int i = 0; i < 10; i++)
+            {
+                Items.Add(new ShoppingItemViewModel()
+                {
+                    Name = $"{cat} item {i + 1}",
+                    DateAdded = DateTime.Now,
+                    IsPurchased = new Random().Next(2) == 0 ? true : false,
+                    CategoryName = cat
+                });
+            }
+        }
+        RaisePropertyChanged(nameof(FilteredItems));
     }
 
     private void Loaded(object obj)
@@ -97,6 +128,8 @@ internal class ShoppingListViewModel : ViewModelBase
                 Items.Add(vmItem);
                 vmItem.PropertyChanged += Item_PropertyChanged;
             });
+
+        RaisePropertyChanged(nameof(UniqueCategories));
     }
 
     private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -104,6 +137,7 @@ internal class ShoppingListViewModel : ViewModelBase
         if (e.PropertyName == nameof(ShoppingItemViewModel.IsPurchased))
         {
             RaisePropertyChanged(nameof(FilteredItems));
+            RaisePropertyChanged(nameof(UniqueCategories));
             repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(sender as ShoppingItemViewModel));
         }
     }
@@ -113,14 +147,16 @@ internal class ShoppingListViewModel : ViewModelBase
         var item = new ShoppingItemViewModel()
         {
             DateAdded = DateTime.Now,
-            Name = NewItemText
+            Name = NewItemText,
+            CategoryId = SelectedNewItemCategory.Id,
+            CategoryName = SelectedNewItemCategory.Name
         };
         item.Id = repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(item));
         item.PropertyChanged += Item_PropertyChanged;
         Items.Insert(0, item);
 
         NewItemText = string.Empty;
+        SelectedNewItemCategory = null;
+        
     }
-
-
 }

@@ -12,7 +12,7 @@ public class AppUserEntity
 
     public string Name { get; set; }
 
-    public string Password { get; set; }
+    public string Password { get; set; }  
 
     public DateTime? SavePasswordTicksState { get; set; }
 }

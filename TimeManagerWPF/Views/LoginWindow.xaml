@@ -47,6 +47,7 @@
                         <Setter Property="BorderThickness" Value="0 0 0 1"/>
                         <Setter Property="BorderBrush" Value="#85D1DC"/>
                         <Setter Property="Margin" Value="4"/>
+                        <Setter Property="FontSize" Value="16"/>
                     </Style>
 
                     <Style TargetType="PasswordBox">
@@ -55,6 +56,7 @@
                         <Setter Property="BorderThickness" Value="0 0 0 1"/>
                         <Setter Property="BorderBrush" Value="#85D1DC"/>
                         <Setter Property="Margin" Value="4"/>
+                        <Setter Property="FontSize" Value="16"/>
                     </Style>
                     <Style TargetType="{x:Type icons:PackIconFontAwesome}">
                         <Setter Property="Foreground" Value="Gray"/>

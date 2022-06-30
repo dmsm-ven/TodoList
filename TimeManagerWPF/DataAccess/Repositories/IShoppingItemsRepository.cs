@@ -22,12 +22,13 @@ public class ShoppingItemsRepository : IShoppingItemsRepository
     }
     public int AddOrUpdate(ShoppingItemEntity item)
     {
-        string sql = @"INSERT INTO shopping_item (Id, Name, IsPurchased, DatePurchased) 
-                        VALUES(@Id, @Name, @IsPurchased, @DatePurchased) 
+        string sql = @"INSERT INTO shopping_item (Id, Name, IsPurchased, DatePurchased, CategoryId) 
+                        VALUES(@Id, @Name, @IsPurchased, @DatePurchased, @CategoryId) 
                         ON DUPLICATE KEY UPDATE 
                             Name = @Name,
                             IsPurchased = @IsPurchased,
-                            DatePurchased = @DatePurchased";
+                            DatePurchased = @DatePurchased,
+                            CategoryId = @CategoryId";
     
 
         database.Execute(sql, item);
@@ -47,7 +48,9 @@ public class ShoppingItemsRepository : IShoppingItemsRepository
 
     public IEnumerable<ShoppingItemEntity> GetAll()
     {
-        string sql = "SELECT * FROM shopping_item";
+        string sql = @"SELECT sa.*, sac.Name as CategoryName, sac.Id as CategoryId
+                       FROM shopping_item sa
+                       LEFT JOIN shopping_item_category sac ON (sa.CategoryId = sac.Id)";
 
         var items = database.GetList<ShoppingItemEntity>(sql);
         return items;

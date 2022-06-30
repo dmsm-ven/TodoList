@@ -12,12 +12,16 @@ namespace TodoList.WPF.Models.ShoppingItem;
 internal class ShoppingItemViewModel : ViewModelBase
 {
     public int Id { get; set; }
+    public int? CategoryId { get; set; }
+    public string? CategoryName { get; set; }
+
     string name;
     public string Name
     {
         get => name;
         set => Set(ref name, value);
     }
+
     bool isPurchased;
     public bool IsPurchased
     {
