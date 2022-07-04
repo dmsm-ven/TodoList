@@ -61,6 +61,8 @@ public partial class App : Application
         services.AddSingleton<LoginWindow>();
         services.AddSingleton<LoginWindowViewModel>();
 
+        services.AddSingleton<SettingsViewModel>();
+
         services.AddSingleton<NavigationLocator>();
         services.AddTransient<ConnectionErrorViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();

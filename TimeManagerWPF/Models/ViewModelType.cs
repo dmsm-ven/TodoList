@@ -6,5 +6,6 @@ public enum ViewModelType
     AddEmployeer,
     ShoppingList,
     ReadList,
-    ErrorView
+    ErrorView,
+    SettingsView
 }

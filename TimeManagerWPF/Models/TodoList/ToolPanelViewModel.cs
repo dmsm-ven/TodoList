@@ -11,13 +11,15 @@ public class ToolPanelViewModel : ViewModelBase
     public ICommand MoveToTodoListCommand { get; }
     public ICommand MoveToShoppingListCommand { get; }
     public ICommand MoveToReadListCommand { get; }
+    public ICommand MoveToSettingsViewCommand { get; }
 
     public ToolPanelViewModel()
     {
         MoveToTodoListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.TodoList));
         MoveToShoppingListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ShoppingList));
         AddEmployeerCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.AddEmployeer));
-        MoveToReadListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ReadList));      
+        MoveToReadListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ReadList));
+        MoveToSettingsViewCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.SettingsView));      
     }
 
     public ToolPanelViewModel(NavigationLocator navigationLocator) : this()

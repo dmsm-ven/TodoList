@@ -46,6 +46,7 @@ public class NavigationLocator : ViewModelBase
             [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
             [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
             [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorViewModel>(),
+            [ViewModelType.SettingsView] = host.Services.GetService<SettingsViewModel>(),
         });
     }
 }
