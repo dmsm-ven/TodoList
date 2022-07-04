@@ -5,13 +5,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess.Repositories;
+using TodoList.WPF.Models;
 
 namespace TodoList.WPF.ViewModels;
 
 
 internal class LoginWindowViewModel : ViewModelBase
 {
-    private readonly IUserRepository userRepository;
+    private readonly UserManager userManager;
+
     public event Action OnUserEnter;
 
     bool hasErrors;
@@ -58,9 +60,9 @@ internal class LoginWindowViewModel : ViewModelBase
         LoginCommand = new LambdaCommand(SignIn, e => !string.IsNullOrWhiteSpace(login));
     }
 
-    public LoginWindowViewModel(IUserRepository userRepository) : this()
+    public LoginWindowViewModel(UserManager userManager) : this()
     {
-        this.userRepository = userRepository;
+        this.userManager = userManager;
     }
 
     private void SignIn(object o)
@@ -69,7 +71,7 @@ internal class LoginWindowViewModel : ViewModelBase
 
         var password = (o as PasswordBox).Password;
 
-        if(userRepository.Login(Login, password, IsSavePassword))
+        if(userManager.Login(Login, password, IsSavePassword))
         {
             OnUserEnter?.Invoke();
         }

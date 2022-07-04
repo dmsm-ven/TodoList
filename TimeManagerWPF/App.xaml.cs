@@ -5,9 +5,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Repositories;
+using TodoList.WPF.Models;
 using TodoList.WPF.ViewModels;
 using TodoList.WPF.Views;
 
@@ -21,31 +23,31 @@ public partial class App : Application
 
     public App()
     {
-        try
-        {
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(this.GetType().Assembly.Location));
+        Assembly assembly = this.GetType().Assembly;
 
-            host = Host.CreateDefaultBuilder()
-           .ConfigureServices((context, services) =>
-           {
-               services.AddAutoMapper(this.GetType().Assembly);
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location));
 
-               string connectionString = context.Configuration.GetConnectionString("default");
-               services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
+        host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(options =>
+            {
+                options.AddUserSecrets(assembly, optional: true);
+            })
+            .ConfigureServices((context, services) =>
+            {
+                string connectionString = context.Configuration.GetConnectionString("default");              
+                services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
 
-               ConfigureDatabaseRepositories(services);
-               ConfigureViewModels(services);
-           })
-           .Build();
-        }
-        catch(Exception ex)
-        {
-            MessageBox.Show(ex.Message);
-        }
+                ConfigureDatabaseRepositories(services);
+                ConfigureServices(services);
+                ConfigureViewModels(services);
+                services.AddAutoMapper(assembly);
+            })
+            .Build();
     }
-
+  
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
+        services.AddTransient<IAppLogger, AppLogger>();
         services.AddTransient<IUserRepository, BCryptUserValidator>();
         services.AddTransient<IBookToReadRepository, BookToReadRepository>();
         services.AddTransient<IEmployeerRepository, EmployeerRepository>();
@@ -72,6 +74,11 @@ public partial class App : Application
         services.AddSingleton<MainWindow>();
     }
 
+    private void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<UserManager>();
+    }
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         try
@@ -80,9 +87,9 @@ public partial class App : Application
 
             await host.StartAsync();
 
-            var userRepository = host.Services.GetRequiredService<IUserRepository>();
+            var userManager = host.Services.GetRequiredService<UserManager>();
 
-            if (userRepository.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
+            if (userManager.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
             {
                 ShowMainWindow();
             }
@@ -130,6 +137,7 @@ public partial class App : Application
 
     protected override async void OnExit(ExitEventArgs e)
     {
+        host.Services.GetRequiredService<UserManager>().ApplicationClosed();
         await host.StopAsync();
         base.OnExit(e);
     }

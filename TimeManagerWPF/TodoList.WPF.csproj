@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <UserSecretsId>61ea3258-ff2f-47bc-98ac-f0e942e0f6e4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,7 @@
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="LoadingSpinner.WPF" Version="1.0.0" />
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="4.11.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />

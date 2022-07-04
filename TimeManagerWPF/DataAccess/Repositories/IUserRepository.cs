@@ -5,20 +5,22 @@ using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-internal interface IUserRepository
+public interface IUserRepository
 {
     bool Login(string name, string password, bool savePassword);
 
-    bool TryLoginWithSavedPassword();
+    string TryLoginWithSavedPassword();
 }
 
 public class BCryptUserValidator : IUserRepository
 {
     private readonly IDapperDatabaseAccess database;
+    private readonly IAppLogger logger;
 
-    public BCryptUserValidator(IDapperDatabaseAccess database)
+    public BCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
     {
         this.database = database;
+        this.logger = logger;
     }
 
     public bool Login(string name, string password, bool savePassword)
@@ -33,9 +35,8 @@ public class BCryptUserValidator : IUserRepository
                 if (savePassword)
                 {
                     DateTime dt = GetStartupDateTime();
-
-                    database.Execute("UPDATE app_user SET SavePasswordTicksState = @ticksAfterTurnOn WHERE Name = @name", 
-                        new { ticksAfterTurnOn = dt, name });
+                    string sql = "UPDATE app_user SET SavePasswordTicksState = @ticksAfterTurnOn WHERE Name = @name";
+                    database.Execute(sql, new { ticksAfterTurnOn = dt, name });                    
                 }
                 else
                 {
@@ -50,14 +51,18 @@ public class BCryptUserValidator : IUserRepository
 
     }
 
-    public bool TryLoginWithSavedPassword()
+    public string TryLoginWithSavedPassword()
     {
-        string sql = "SELECT SavePasswordTicksState FROM app_user WHERE SavePasswordTicksState IS NOT  null LIMIT 1";
+        string sql = "SELECT * FROM app_user WHERE SavePasswordTicksState IS NOT null LIMIT 1";
         DateTime dt = GetStartupDateTime();
-        var savedDate = database.GetSingle<DateTime>(sql);
+        var user = database.GetSingle<AppUserEntity>(sql);
 
-        bool sameTime = Math.Abs((decimal)(dt - savedDate).TotalMinutes) <= 1;
-        return sameTime;
+        if (user?.SavePasswordTicksState != null)
+        {
+            bool sameTime = Math.Abs((decimal)(dt - user.SavePasswordTicksState.Value).TotalMinutes) <= 1;
+            return sameTime ? user.Name : null;
+        }
+        return null;
     }
 
     private DateTime GetStartupDateTime()
