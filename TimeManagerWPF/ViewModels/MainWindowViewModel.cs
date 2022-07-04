@@ -4,7 +4,6 @@ namespace TodoList.WPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     public NavigationLocator NavigationLocator { get; }
-    public TodoListViewModel TodoListViewModel { get; }
     public ToolPanelViewModel ToolPanelViewModel { get; }
     
     public ICommand LoadedCommand { get; }
@@ -14,11 +13,8 @@ public class MainWindowViewModel : ViewModelBase
         LoadedCommand = new LambdaCommand(Loaded);
     }
 
-    public MainWindowViewModel(TodoListViewModel todoListViewModel, 
-        ToolPanelViewModel toolPanelViewModel,
-        NavigationLocator navigationLocator) : this()
+    public MainWindowViewModel(ToolPanelViewModel toolPanelViewModel, NavigationLocator navigationLocator) : this()
     {
-        TodoListViewModel = todoListViewModel;
         NavigationLocator = navigationLocator; 
         ToolPanelViewModel = toolPanelViewModel;
     }

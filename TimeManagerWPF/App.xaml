@@ -21,7 +21,9 @@
                 
                 <ResourceDictionary Source="/Resources/Brushes.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="/Resources/Buttons.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="/Resources/CustomComboBox.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Resources/Icons.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Resources/Borders.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Resources/TextBlocks.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

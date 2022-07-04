@@ -210,14 +210,13 @@ public class TodoListTabViewModel : ViewModelBase
             .GroupBy(i => $"{i.Year}-{i.Month}")
             .Select(i => i.First())
             .OrderByDescending(i => i.Year)
-            .ThenByDescending(i => i.Month)
-            .ToDictionary(i => i.Year, i => i.Month);
+            .ThenByDescending(i => i.Month);
 
         MonthPills.Clear();
 
         foreach (var kvp in pillsData)
         {
-            var pill = new MonthPillModel(kvp.Key, kvp.Value);
+            var pill = new MonthPillModel(kvp.Year, kvp.Month);
             MonthPills.Add(pill);
             pill.OnClicked += () =>
             {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using TodoList.WPF.DataAccess;
@@ -20,18 +21,27 @@ public partial class App : Application
 
     public App()
     {
-        host = Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddAutoMapper(this.GetType().Assembly);
+        try
+        {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(this.GetType().Assembly.Location));
 
-                string connectionString = context.Configuration.GetConnectionString("default");
-                services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
+            host = Host.CreateDefaultBuilder()
+           .ConfigureServices((context, services) =>
+           {
+               services.AddAutoMapper(this.GetType().Assembly);
 
-                ConfigureDatabaseRepositories(services);
-                ConfigureViewModels(services);           
-            })
-            .Build();
+               string connectionString = context.Configuration.GetConnectionString("default");
+               services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
+
+               ConfigureDatabaseRepositories(services);
+               ConfigureViewModels(services);
+           })
+           .Build();
+        }
+        catch(Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
@@ -64,19 +74,26 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        ApplicationAlreadyRunningCheck();
-
-        await host.StartAsync();
-
-        var userRepository = host.Services.GetRequiredService<IUserRepository>();
-
-        if (userRepository.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
+        try
         {
-            ShowMainWindow();
+            ApplicationAlreadyRunningCheck();
+
+            await host.StartAsync();
+
+            var userRepository = host.Services.GetRequiredService<IUserRepository>();
+
+            if (userRepository.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
+            {
+                ShowMainWindow();
+            }
+            else
+            {
+                ShowLoginWindow();
+            }
         }
-        else
+        catch(Exception ex)
         {
-            ShowLoginWindow();
+            MessageBox.Show(ex.Message + "; cs = " + host.Services.GetRequiredService<IConfiguration>().GetConnectionString("default"));
         }
     }
 
@@ -104,7 +121,7 @@ public partial class App : Application
     {
         Process proc = Process.GetCurrentProcess();
         int count = Process.GetProcesses().Where(p =>p.ProcessName == proc.ProcessName).Count();
-
+        
         if (count > 1)
         {
             App.Current.Shutdown();

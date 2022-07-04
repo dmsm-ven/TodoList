@@ -38,7 +38,6 @@ public class NavigationLocator : ViewModelBase
         ActiveViewModel = availableViewModels.Value[type];
     }
 
-
     public NavigationLocator(IHost host)
     {
         availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() => new Dictionary<ViewModelType, ViewModelBase>()
