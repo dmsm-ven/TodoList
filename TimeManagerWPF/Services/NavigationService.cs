@@ -34,8 +34,18 @@ public class NavigationLocator : ViewModelBase
 
     public void MoveTo(ViewModelType type)
     {
-        ActiveViewModelType = type;
-        ActiveViewModel = availableViewModels.Value[type];
+        try
+        {
+            ActiveViewModelType = type;
+            ActiveViewModel = availableViewModels.Value[type];
+        }
+        catch(Exception ex)
+        {
+            ActiveViewModelType = ViewModelType.ErrorView;
+            ActiveViewModel = availableViewModels.Value[ActiveViewModelType];
+            (ActiveViewModel as ConnectionErrorViewModel).ErrorMessage = ex.Message;
+        }
+      
     }
 
     public NavigationLocator(IHost host)

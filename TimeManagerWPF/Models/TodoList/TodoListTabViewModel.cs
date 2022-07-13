@@ -247,7 +247,8 @@ public class TodoListTabViewModel : ViewModelBase
     
     internal void DeleteSelectedJobItem(object o)
     {
-        var answer = MessageBox.Show("Удалить выделенное задание ?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if(SelectedJobItem == null) { return; }
+        var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{SelectedJobItem.Title}' от [{SelectedJobItem.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) { return; }
 
         var temp = SelectedJobItem;

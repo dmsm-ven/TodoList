@@ -58,6 +58,7 @@
                     <ComboBox Width="250"
                               ItemsSource="{Binding UniqueCategories}"
                               SelectedValue="{Binding SelectedNewItemCategory}"
+                              Text="{Binding SelectedNewItemCategory.Name}"
                               DisplayMemberPath="Name"
                               IsEditable="True"
                               IsTextSearchEnabled="True"
@@ -82,7 +83,7 @@
             <ItemsControl Grid.Row="1" ItemsSource="{Binding FilteredItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <WrapPanel IsItemsHost="True"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>

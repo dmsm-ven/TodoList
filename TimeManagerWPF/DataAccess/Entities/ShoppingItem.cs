@@ -16,3 +16,5 @@ public class ShoppingItemEntity
     public DateTime DateAdded { get; set; }
     public DateTime? DatePurchased { get; set; }
 }
+
+

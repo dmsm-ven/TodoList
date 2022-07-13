@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TodoList.DataAccess;
 using TodoList.WPF.DataAccess;
+using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess;
 
@@ -9,7 +10,7 @@ public interface IShoppingItemsRepository
     IEnumerable<ShoppingItemEntity> GetAll();
     int AddOrUpdate(ShoppingItemEntity item);
     void Delete(int id);
-
+    int AddCategory(string name);
 }
 
 public class ShoppingItemsRepository : IShoppingItemsRepository
@@ -20,6 +21,16 @@ public class ShoppingItemsRepository : IShoppingItemsRepository
     {
         this.database = database;
     }
+
+    public int AddCategory(string name)
+    {
+        database.Execute("INSERT INTO shopping_item_category (Name) VALUES (@name)", new { name });
+
+        int id = database.GetSingle<int>("SELECT MAX(Id) FROM shopping_item_category");
+
+        return id;
+    }
+
     public int AddOrUpdate(ShoppingItemEntity item)
     {
         string sql = @"INSERT INTO shopping_item (Id, Name, IsPurchased, DatePurchased, CategoryId) 
@@ -38,6 +49,11 @@ public class ShoppingItemsRepository : IShoppingItemsRepository
             database.GetSingle<int>("SELECT MAX(Id) FROM shopping_item");
 
         return id;
+    }
+
+    public int AddOrUpdate(ShoppingItemCategoryEntity category, ShoppingItemEntity item)
+    {
+        throw new System.NotImplementedException();
     }
 
     public void Delete(int id)

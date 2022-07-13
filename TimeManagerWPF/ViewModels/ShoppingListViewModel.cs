@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using TodoList.WPF.DataAccess;
+using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.Models.ShoppingItem;
 
 namespace TodoList.WPF.ViewModels;
@@ -138,7 +139,10 @@ internal class ShoppingListViewModel : ViewModelBase
         {
             RaisePropertyChanged(nameof(FilteredItems));
             RaisePropertyChanged(nameof(UniqueCategories));
-            repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(sender as ShoppingItemViewModel));
+
+            var item = mapper.Map<ShoppingItemEntity>(sender as ShoppingItemViewModel);
+            
+            repository.AddOrUpdate(item);
         }
     }
 
@@ -148,10 +152,19 @@ internal class ShoppingListViewModel : ViewModelBase
         {
             DateAdded = DateTime.Now,
             Name = NewItemText,
-            CategoryId = SelectedNewItemCategory.Id,
-            CategoryName = SelectedNewItemCategory.Name
+            CategoryId = SelectedNewItemCategory?.Id
         };
-        item.Id = repository.AddOrUpdate(mapper.Map<ShoppingItemEntity>(item));
+
+        if((selectedNewItemCategory?.Id ?? 0) == 0)
+        {
+            item.CategoryId = repository.AddCategory(SelectedNewItemCategory?.Name);
+            UniqueCategories.Insert(0, new ShoppingItemCategory() { Id = item.CategoryId, Name = item.CategoryName });
+            SelectedNewItemCategory = UniqueCategories.First();
+        }
+
+        var itemEntity = mapper.Map<ShoppingItemEntity>(item);
+
+        item.Id = repository.AddOrUpdate(itemEntity);
         item.PropertyChanged += Item_PropertyChanged;
         Items.Insert(0, item);
 

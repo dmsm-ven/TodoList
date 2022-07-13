@@ -44,7 +44,34 @@ public partial class App : Application
             })
             .Build();
     }
-  
+
+    protected override async void OnStartup(StartupEventArgs e)
+    {
+        // Проверяем, запущена ли уже копия приложения, если да - закрываем эту копию
+        ApplicationAlreadyRunningCheck();
+
+        await host.StartAsync();
+       
+        try
+        {
+            bool alreadyLoginToday = host.Services.GetRequiredService<UserManager>().TryLoginWithSavedPassword();
+            
+            if (alreadyLoginToday)
+            {
+                ShowMainWindow();
+            }
+            else
+            {
+                ShowLoginWindow();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Нет соединения с базой данных.\r\n" +  ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown();
+        }
+    }
+
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
         services.AddTransient<IAppLogger, AppLogger>();
@@ -81,31 +108,6 @@ public partial class App : Application
         services.AddSingleton<UserManager>();
     }
 
-    protected override async void OnStartup(StartupEventArgs e)
-    {
-        try
-        {
-            ApplicationAlreadyRunningCheck();
-
-            await host.StartAsync();
-
-            var userManager = host.Services.GetRequiredService<UserManager>();
-
-            if (userManager.TryLoginWithSavedPassword()) // ок - зашли без пароля, т.к. сегодня уже пароль был успешно введен
-            {
-                ShowMainWindow();
-            }
-            else
-            {
-                ShowLoginWindow();
-            }
-        }
-        catch(Exception ex)
-        {
-            MessageBox.Show(ex.Message + "; cs = " + host.Services.GetRequiredService<IConfiguration>().GetConnectionString("default"));
-        }
-    }
-
     private void ShowLoginWindow()
     {
         var loginWindowVm = host.Services.GetRequiredService<LoginWindowViewModel>();
@@ -139,8 +141,17 @@ public partial class App : Application
 
     protected override async void OnExit(ExitEventArgs e)
     {
-        host.Services.GetRequiredService<UserManager>().ApplicationClosed();
-        await host.StopAsync();
-        base.OnExit(e);
+        try
+        {
+            if (Application.Current.MainWindow != null)
+            {
+                host.Services.GetRequiredService<UserManager>().ApplicationClosed();               
+            }
+            await host.StopAsync();
+        }
+        catch
+        {
+
+        }
     }
 }
