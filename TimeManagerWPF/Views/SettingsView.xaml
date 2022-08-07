@@ -6,6 +6,7 @@
              xmlns:v="clr-namespace:TodoList.WPF.Views"
              xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance Type=v:SettingsView, IsDesignTimeCreatable=True}"
+             d:Background="White"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <beh:Interaction.Triggers>
@@ -19,8 +20,19 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Журнал приложения" FontSize="24" HorizontalAlignment="Center" Foreground="White"/>
-        <DataGrid Grid.Row="1" IsReadOnly="True" 
+        <Grid Grid.Row="0">
+            <CheckBox Content="Поверх всех окон" 
+                      IsChecked="{Binding IsTopmost, UpdateSourceTrigger=PropertyChanged}"
+                      VerticalAlignment="Center" Margin="4"/>
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Журнал приложения" FontSize="24" HorizontalAlignment="Center" Foreground="White"/>
+            <DataGrid Grid.Row="1" IsReadOnly="True" 
                   VerticalGridLinesBrush="Transparent"
                   HorizontalGridLinesBrush="LightGray"
                   FontSize="16"
@@ -28,17 +40,19 @@
                   HorizontalScrollBarVisibility="Hidden"
                   AutoGenerateColumns="False" 
                   ItemsSource="{Binding LogEntries}">
-            <DataGrid.CellStyle>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="Padding" Value="20"/>
-                </Style>
-            </DataGrid.CellStyle>
-            <DataGrid.Columns>
-                <DataGridTextColumn 
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="20"/>
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn 
                     Foreground="Blue"
                     Binding="{Binding DateTime, ConverterCulture=ru-RU}" Header="Дата/Время" />
-                <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*" />
-            </DataGrid.Columns>
-        </DataGrid>
+                    <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+               
     </Grid>
 </UserControl>

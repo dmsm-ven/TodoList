@@ -5,6 +5,7 @@ using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
+
 public interface IUserRepository
 {
     bool Login(string name, string password, bool savePassword);

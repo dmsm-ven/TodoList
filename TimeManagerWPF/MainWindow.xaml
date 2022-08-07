@@ -9,7 +9,7 @@
         xmlns:v="clr-namespace:TodoList.WPF.Views"
         xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Topmost="True"
+        Topmost="{Binding IsTopmost}"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
