@@ -8,7 +8,10 @@ namespace TodoList.WPF.ViewModels;
 
 public class JobItemViewModel : ViewModelBase
 {
-    public event Action OnScreenshotsClicked;
+    public event EventHandler OnScreenshotsClicked;
+    public event EventHandler OnShowHistoryClicked;
+
+
     public int Id { get; set; }
 
     public int EmployeerId { get; set; }
@@ -83,15 +86,16 @@ public class JobItemViewModel : ViewModelBase
 
     public ICommand OpenScreenshotsFolderCommand { get; }
     public ICommand OpenWebsiteInBrowserCommand { get; }
+    public ICommand ShowChangeHistoryCommand { get; }
 
-    public bool HasScreenshots => true;
     public JobItemViewModel()
     {
+        ShowChangeHistoryCommand = new LambdaCommand(e => OnShowHistoryClicked?.Invoke(this, null));
+        OpenScreenshotsFolderCommand = new LambdaCommand(e => OnScreenshotsClicked?.Invoke(this, null));
+
         OpenWebsiteInBrowserCommand = new LambdaCommand(OpenWebsiteInBrowser, 
             e => Uri.IsWellFormedUriString(Website, UriKind.Absolute));
-        OpenScreenshotsFolderCommand = new LambdaCommand(
-            e => OnScreenshotsClicked?.Invoke(), 
-            e => HasScreenshots);
+        
     }
 
     private void OpenWebsiteInBrowser(object obj)

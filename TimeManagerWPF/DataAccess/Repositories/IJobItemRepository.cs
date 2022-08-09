@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TodoList.DataAccess;
+using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess;
 
@@ -9,6 +10,9 @@ public interface IJobItemRepository
     JobItemEntity GetJobItem(int id);
     void DeleteJobItem(int id);
     int AddOrUpdateJobItem(JobItemEntity entity);
+
+    void AddHistoryChanges(int job_item_id, string propertyName, string newValue);
+    IEnumerable<JobItemHistoryEntity> GetHistoryChangesForJobItem(int job_item_id);
 }
 
 public class JobItemRepository : IJobItemRepository
@@ -18,6 +22,13 @@ public class JobItemRepository : IJobItemRepository
     public JobItemRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
+    }
+
+    public void AddHistoryChanges(int job_item_id, string propertyName, string newValue)
+    {
+        string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
+                                                    (@job_item_id, @propertyName, @newValue)";
+        database.Execute(sql, new { job_item_id , propertyName, newValue });
     }
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
@@ -52,6 +63,16 @@ public class JobItemRepository : IJobItemRepository
     public IEnumerable<JobItemEntity> GetAllJobItems(int employeer_id)
     {
         var items = database.GetList<JobItemEntity>("SELECT * FROM job_item WHERE EmployeerId = @employeer_id", new { employeer_id });
+        return items;
+    }
+
+    public IEnumerable<JobItemHistoryEntity> GetHistoryChangesForJobItem(int job_item_id)
+    {
+        string sql = @"SELECT * 
+                        FROM job_item_history 
+                        WHERE job_item_id = @job_item_id
+                        ORDER BY date_time DESC";
+        var items = database.GetList<JobItemHistoryEntity>(sql, new { job_item_id });
         return items;
     }
 

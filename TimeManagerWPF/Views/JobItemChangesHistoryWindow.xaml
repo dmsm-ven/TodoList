@@ -1,0 +1,42 @@
+﻿<Window x:Class="TodoList.WPF.Views.JobItemChangesHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+        xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:JobItemChangesHistoryWindowViewModel, IsDesignTimeCreatable=False}"
+        Title="Журнал изменений задачи" Height="450" Width="593">
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/Images/TodoList/geometric-seamless-pattern_97458.jpg" 
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
+        <DataGrid ItemsSource="{Binding HistoryItems}" 
+                  VerticalGridLinesBrush="Transparent"
+                  HorizontalGridLinesBrush="LightGray"
+                  AlternatingRowBackground="#8EE5EDF1"
+                  RowBackground="#8Effffff"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  AutoGenerateColumns="False">
+            <DataGrid.Background>
+                <SolidColorBrush Color="White" Opacity="0.7"/>
+            </DataGrid.Background>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Дата/Время" 
+                                    Binding="{Binding DateTime, ConverterCulture=ru-RU}" Width="*"/>
+                <DataGridTextColumn Header="Измененное поле" 
+                                    Binding="{Binding ChangedPropertyName}" Width="*"/>
+                <DataGridTextColumn Header="Новое значение" 
+                                    Binding="{Binding NewValue}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

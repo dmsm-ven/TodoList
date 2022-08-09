@@ -2,17 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using TodoList.DataAccess;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models;
+using TodoList.WPF.Views;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -179,11 +180,12 @@ public class TodoListTabViewModel : ViewModelBase
         Employeer.TodoItems.CollectionChanged += TodoItems_CollectionChanged;
         Employeer.TodoItems.ToList().ForEach(item =>
         {
-            item.OnScreenshotsClicked += () => OpenScreenshotFolder(item);
+            item.OnShowHistoryClicked += Item_OnShowHistoryClicked;
+            item.OnScreenshotsClicked += Item_OnScreenshotsClicked;
             item.PropertyChanged += Item_PropertyChanged;
         });
     }
-    
+
     private void Loaded(object o)
     {
         if (Employeer == null) { return; }
@@ -258,25 +260,38 @@ public class TodoListTabViewModel : ViewModelBase
         SelectedJobItem = null;
     }
     
-    private void OpenScreenshotFolder(JobItemViewModel item)
+    private void OpenScreenshotFolder(string job_item_id)
     {
         string folder = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location),
             "screenshots",
             Employeer.Name,
             $"{SelectedMonthPill.Year}-{SelectedMonthPill.MonthName}",
-            item.Id.ToString());
+            job_item_id);
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
         }
         Process.Start("explorer.exe", folder);
     }
-    
-    private void TodoItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+
+    private void Item_OnScreenshotsClicked(object? sender, EventArgs e)
+    {
+        OpenScreenshotFolder((sender as JobItemViewModel).Id.ToString());
+    }
+
+    private void Item_OnShowHistoryClicked(object? sender, EventArgs e)
+    {
+        int id = (sender as JobItemViewModel).Id;
+        var window = new JobItemChangesHistoryWindow();
+        window.DataContext = new JobItemChangesHistoryWindowViewModel(id, jobItemRepository, mapper);
+        window.ShowDialog();
+    }
+
+    private void TodoItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         RaisePropertyChanged(nameof(FilteredTodoItems));
-        
-        if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+
+        if (e.Action == NotifyCollectionChangedAction.Add)
         {
             var newItem = ((IEnumerable<JobItemViewModel>)sender).Last();
             bool hasPill = Employeer.TodoItems.Any(i => i != newItem && i.StartDate.Year == newItem.StartDate.Year && i.StartDate.Month == newItem.StartDate.Month);
@@ -286,17 +301,23 @@ public class TodoListTabViewModel : ViewModelBase
                 SelectedMonthPill = MonthPills[0];
             }
 
-            newItem.OnScreenshotsClicked += () => OpenScreenshotFolder(newItem);
+            newItem.OnScreenshotsClicked += Item_OnScreenshotsClicked;
+            newItem.OnShowHistoryClicked += Item_OnShowHistoryClicked;
             newItem.PropertyChanged += Item_PropertyChanged;
         }
     }
-    
-    private void Item_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+
+    private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         IsLoading = true;
         try
         {
-            jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(sender));
+            var item = mapper.Map<JobItemEntity>(sender);
+            jobItemRepository.AddOrUpdateJobItem(item);
+
+            string? newValue = sender.GetType()?.GetProperty(e.PropertyName).GetValue(sender)?.ToString() ?? string.Empty;
+
+            jobItemRepository.AddHistoryChanges(item.Id, e.PropertyName, newValue);
             if (e.PropertyName == nameof(JobItemViewModel.IsCompleted))
             {
                 RaisePropertyChanged(nameof(HasActiveTasks));

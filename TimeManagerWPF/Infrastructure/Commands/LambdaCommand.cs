@@ -21,6 +21,12 @@ public class LambdaCommand : Command
     private readonly Func<object, bool> canExecute;
     private string? login;
     private Func<object, bool> p;
+    private ICommand? loaded;
+
+    public LambdaCommand(ICommand? loaded)
+    {
+        this.loaded = loaded;
+    }
 
     public LambdaCommand(Action<object> action, Func<object, bool> canExecute = null)
     {

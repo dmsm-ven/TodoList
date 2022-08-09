@@ -179,6 +179,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="his">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource ToolButtonStyle}"
+                                        Padding="2"
+                                        Command="{Binding ShowChangeHistoryCommand}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <icons:PackIconFontAwesome Kind="ListSolid" Foreground="LightGray" Width="16" Height="16"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         
