@@ -85,13 +85,16 @@ public partial class App : Application
 
     private void ConfigureViewModels(IServiceCollection services)
     {
+        services.AddSingleton<ConnectionErrorWindow>();
+        services.AddSingleton<ConnectionErrorWindowViewModel>();
+        
         services.AddSingleton<LoginWindow>();
         services.AddSingleton<LoginWindowViewModel>();
 
         services.AddSingleton<NavigationLocator>();
 
         services.AddSingleton<SettingsViewModel>();        
-        services.AddTransient<ConnectionErrorViewModel>();
+        services.AddTransient<ConnectionErrorWindowViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();
         services.AddTransient<AddEmployeerWindow>();      
         services.AddSingleton<ReadListViewModel>();
@@ -110,8 +113,8 @@ public partial class App : Application
 
     private void ShowErrorWindow(string errorMessage)
     {
-        var errorWindow = host.Services.GetRequiredService<ConnectionErrorView>();
-        var vm = host.Services.GetRequiredService<ConnectionErrorViewModel>();
+        var errorWindow = host.Services.GetRequiredService<ConnectionErrorWindow>();
+        var vm = host.Services.GetRequiredService<ConnectionErrorWindowViewModel>();
         vm.ErrorMessage = errorMessage;
         errorWindow.DataContext = vm;
         errorWindow.Show();

@@ -2,14 +2,14 @@
 
 namespace TodoList.WPF.ViewModels;
 
-public class ConnectionErrorViewModel : ViewModelBase
+public class ConnectionErrorWindowViewModel : ViewModelBase
 {
     string errorMessage;
     public string ErrorMessage { get => errorMessage; set => Set(ref errorMessage, value); }
 
     public ICommand CloseApplicationCommand { get; }
 
-    public ConnectionErrorViewModel()
+    public ConnectionErrorWindowViewModel()
     {
         CloseApplicationCommand = new LambdaCommand((o) => App.Current.Shutdown(), (o) => true);
     }

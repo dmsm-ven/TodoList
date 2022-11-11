@@ -43,7 +43,7 @@ public class NavigationLocator : ViewModelBase
         {
             ActiveViewModelType = ViewModelType.ErrorView;
             ActiveViewModel = availableViewModels.Value[ActiveViewModelType];
-            (ActiveViewModel as ConnectionErrorViewModel).ErrorMessage = ex.Message;
+            (ActiveViewModel as ConnectionErrorWindowViewModel).ErrorMessage = ex.Message;
         }
       
     }
@@ -56,7 +56,7 @@ public class NavigationLocator : ViewModelBase
             [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),            
             [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
             [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
-            [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorViewModel>(),
+            [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorWindowViewModel>(),
             [ViewModelType.SettingsView] = host.Services.GetService<SettingsViewModel>(),
         });
     }
