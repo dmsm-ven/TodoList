@@ -187,7 +187,7 @@
                                         Command="{Binding ShowChangeHistoryCommand}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center">
-                                <icons:PackIconFontAwesome Kind="ListSolid" Foreground="LightGray" Width="16" Height="16"/>
+                                <icons:PackIconFontAwesome Kind="ListSolid" Foreground="#6D5B51" Width="16" Height="16"/>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -206,7 +206,7 @@
                             Foreground="#AAAAAA" 
                             FontSize="14" Grid.Row="0"/>
             <TextBox Grid.Row="1" Text="{Binding SelectedJobItem.Description, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                         Margin="4" Padding="4" BorderBrush="#B3B3C9" BorderThickness="0 0 0 1">
+                         Margin="4" Padding="4" BorderBrush="#7373D4" BorderThickness="0 0 0 1">
             </TextBox>
         </Grid>
     </Grid>

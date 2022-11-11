@@ -67,8 +67,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Нет соединения с базой данных.\r\n" +  ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown();
+            ShowErrorWindow(ex.Message);           
         }
     }
 
@@ -107,6 +106,15 @@ public partial class App : Application
     private void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<UserManager>();
+    }
+
+    private void ShowErrorWindow(string errorMessage)
+    {
+        var errorWindow = host.Services.GetRequiredService<ConnectionErrorView>();
+        var vm = host.Services.GetRequiredService<ConnectionErrorViewModel>();
+        vm.ErrorMessage = errorMessage;
+        errorWindow.DataContext = vm;
+        errorWindow.Show();
     }
 
     private void ShowLoginWindow()

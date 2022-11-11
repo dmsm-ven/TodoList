@@ -50,7 +50,8 @@ public class NavigationLocator : ViewModelBase
 
     public NavigationLocator(IHost host)
     {
-        availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() => new Dictionary<ViewModelType, ViewModelBase>()
+        availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() => 
+            new Dictionary<ViewModelType, ViewModelBase>()
         {
             [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),            
             [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),

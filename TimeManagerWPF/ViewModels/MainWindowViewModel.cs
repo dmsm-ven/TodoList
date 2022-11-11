@@ -24,7 +24,9 @@ public class MainWindowViewModel : ViewModelBase
         LoadedCommand = new LambdaCommand(Loaded);
     }
 
-    public MainWindowViewModel(ToolPanelViewModel toolPanelViewModel, NavigationLocator navigationLocator, ISettingsRepository settings) : this()
+    public MainWindowViewModel(ToolPanelViewModel toolPanelViewModel, 
+        NavigationLocator navigationLocator, 
+        ISettingsRepository settings) : this()
     {
         NavigationLocator = navigationLocator;       
         ToolPanelViewModel = toolPanelViewModel;
@@ -37,7 +39,9 @@ public class MainWindowViewModel : ViewModelBase
         NavigationLocator.MoveTo(ViewModelType.TodoList);
 
         Dictionary<string, string> settingsDictionary = settings.GetAll();
-        IsTopmost = settingsDictionary.ContainsKey(nameof(IsTopmost)) ? bool.Parse(settingsDictionary[nameof(IsTopmost)]) : false;
+        IsTopmost = settingsDictionary.ContainsKey(nameof(IsTopmost)) ? 
+            bool.Parse(settingsDictionary[nameof(IsTopmost)]) : 
+            false;
     }
 
 }

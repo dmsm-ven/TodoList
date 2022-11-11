@@ -13,8 +13,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Ошибка соединения"
+        <TextBlock Text="Ошибка"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="16"
@@ -35,5 +36,9 @@
                    FontSize="14"
                    Foreground="Orange"
                    />
+        <Button Command="{Binding CloseApplicationCommand}" Grid.Row="0" HorizontalAlignment="Right"
+                Style="{StaticResource ToolButtonStyle}">
+            <i:PackIconFontAwesome Kind="TimesSolid" Width="40" Height="40" Foreground="White"/>
+        </Button>
     </Grid>
 </UserControl>
