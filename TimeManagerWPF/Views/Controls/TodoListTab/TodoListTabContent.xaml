@@ -51,6 +51,17 @@
                 Style="{StaticResource ColumnTitleTextBlock}"
                 Text="Добавить задачу" />
 
+            <ToggleButton
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                DockPanel.Dock="Right"
+                Foreground="Gray"
+                IsChecked="{Binding IsCardView}"
+                ToolTip="Переключение режима Table/Card">
+                <icons:PackIconFontAwesome Kind="StickyNoteSolid" Style="{StaticResource LargeIconSize}" />
+            </ToggleButton>
+
             <icons:PackIconFontAwesome
                 Width="28"
                 Height="28"
@@ -139,7 +150,30 @@
             Grid.Row="1"
             Grid.Column="0"
             Style="{StaticResource ColumnBorderStyle}">
-            <con:TodoListTabTableView DataContext="{Binding}" />
+
+            <Border.Resources>
+                <DataTemplate x:Key="TableView" DataType="{x:Type vm:TodoListTabViewModel}">
+                    <con:TodoListTabTableView DataContext="{Binding}" />
+                </DataTemplate>
+
+                <DataTemplate x:Key="CardView" DataType="{x:Type vm:TodoListTabViewModel}">
+                    <con:TodoListTabCardView DataContext="{Binding}" />
+                </DataTemplate>
+
+            </Border.Resources>
+
+            <ContentControl Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource TableView}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCardView}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource CardView}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
         </Border>
 
         <!--  Статистика по оплатам  -->

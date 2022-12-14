@@ -24,29 +24,29 @@ public class TodoListTabViewModel : ViewModelBase
     private readonly IMapper mapper;
 
     private bool isShowPaymentField;
-    public bool IsShowPaymentField 
-    { 
+    public bool IsShowPaymentField
+    {
         get => isShowPaymentField;
-        set => Set(ref isShowPaymentField, value); 
+        set => Set(ref isShowPaymentField, value);
     }
 
     private bool isLoading;
-    public bool IsLoading 
-    { 
-        get => isLoading; 
-        set => Set(ref isLoading, value); 
+    public bool IsLoading
+    {
+        get => isLoading;
+        set => Set(ref isLoading, value);
     }
 
-    TodoListTabStatusBarViewModel statusBarData;  
+    TodoListTabStatusBarViewModel statusBarData;
     public TodoListTabStatusBarViewModel StatusBarData
     {
         get => statusBarData;
         set => Set(ref statusBarData, value);
     }
-    
+
     public EmployeerViewModel Employeer { get; init; }
     EmployeerPaymentsStatisticViewModel paymentsStatistic;
-    
+
     public EmployeerPaymentsStatisticViewModel PaymentsStatistic
     {
         get => paymentsStatistic;
@@ -67,14 +67,14 @@ public class TodoListTabViewModel : ViewModelBase
             }
         }
     }
-    
+
     JobItemViewModel selectedJobItem;
     public JobItemViewModel SelectedJobItem
     {
         get => selectedJobItem;
         set => Set(ref selectedJobItem, value);
     }
-    
+
     public List<JobItemViewModel> FilteredTodoItems
     {
         get
@@ -103,7 +103,7 @@ public class TodoListTabViewModel : ViewModelBase
             return new List<JobItemViewModel>();
         }
     }
-    
+
     EmployeerPaymentViewModel newPayment;
     public EmployeerPaymentViewModel NewPayment
     {
@@ -117,13 +117,20 @@ public class TodoListTabViewModel : ViewModelBase
         get => searchText;
         set
         {
-            if(Set(ref searchText, value))
+            if (Set(ref searchText, value))
             {
                 IsLoading = true;
                 RaisePropertyChanged(nameof(FilteredTodoItems));
                 IsLoading = false;
             }
         }
+    }
+
+    bool isCardView;
+    public bool IsCardView
+    {
+        get => isCardView;
+        set => Set(ref isCardView, value);
     }
 
     public bool HasActiveTasks
@@ -137,7 +144,7 @@ public class TodoListTabViewModel : ViewModelBase
     {
         get
         {
-            if(Employeer.TodoItems.Count == 0)
+            if (Employeer.TodoItems.Count == 0)
             {
                 return new string[] { "https://" };
             }
@@ -149,12 +156,12 @@ public class TodoListTabViewModel : ViewModelBase
         }
     }
 
-    public ICommand AddJobCommand { get; }  
+    public ICommand AddJobCommand { get; }
     public ICommand LoadedCommand { get; }
     public ICommand DeleteJobCommand { get; }
     public ICommand ShowPaymentFieldCommand { get; }
     public ICommand AddEmployeerPaymentCommand { get; }
-   
+
     public TodoListTabViewModel()
     {
         LoadedCommand = new LambdaCommand(Loaded);
@@ -164,8 +171,11 @@ public class TodoListTabViewModel : ViewModelBase
         AddEmployeerPaymentCommand = new LambdaCommand(AddEmployeerPayment, e => (NewPayment?.Amount ?? 0) != 0);
         MonthPills = new ObservableCollection<MonthPillModel>();
     }
-   
-    public TodoListTabViewModel(EmployeerViewModel employeer, IJobItemRepository jobItemRepository, IEmployeerPaymentRepository paymentRepository, IMapper mapper) : this()
+
+    public TodoListTabViewModel(EmployeerViewModel employeer,
+        IJobItemRepository jobItemRepository,
+        IEmployeerPaymentRepository paymentRepository,
+        IMapper mapper) : this()
     {
         this.jobItemRepository = jobItemRepository;
         this.paymentRepository = paymentRepository;
@@ -195,7 +205,7 @@ public class TodoListTabViewModel : ViewModelBase
         IsLoading = false;
         SortedEmployeerPayments.Refresh();
     }
-    
+
     private void AddEmployeerPayment(object obj)
     {
         paymentRepository.AddPayment(mapper.Map<EmployeerPaymentEntity>(NewPayment));
@@ -204,7 +214,7 @@ public class TodoListTabViewModel : ViewModelBase
         NewPayment = new EmployeerPaymentViewModel();
         SortedEmployeerPayments.Refresh();
     }
-    
+
     private void LoadMonthPills()
     {
         var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
@@ -233,7 +243,7 @@ public class TodoListTabViewModel : ViewModelBase
             SelectedMonthPill.IsActive = true;
         }
     }
-    
+
     public void AddJobItem(object o)
     {
         var item = new JobItemViewModel()
@@ -246,10 +256,10 @@ public class TodoListTabViewModel : ViewModelBase
         item.Id = jobItemRepository.AddOrUpdateJobItem(mapper.Map<JobItemEntity>(item));
         Employeer.TodoItems.Add(item);
     }
-    
+
     internal void DeleteSelectedJobItem(object o)
     {
-        if(SelectedJobItem == null) { return; }
+        if (SelectedJobItem == null) { return; }
         var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{SelectedJobItem.Title}' от [{SelectedJobItem.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) { return; }
 
@@ -259,7 +269,7 @@ public class TodoListTabViewModel : ViewModelBase
 
         SelectedJobItem = null;
     }
-    
+
     private void OpenScreenshotFolder(string job_item_id)
     {
         string folder = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location),
