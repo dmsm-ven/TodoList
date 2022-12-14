@@ -4,9 +4,9 @@ namespace TodoList.WPF.Controls;
 /// <summary>
 /// Interaction logic for TodoListTabMainTable.xaml
 /// </summary>
-public partial class TodoListTabMainTable : UserControl
+public partial class TodoListTabCardView : UserControl
 {
-    public TodoListTabMainTable()
+    public TodoListTabCardView()
     {
         InitializeComponent();
     }
