@@ -4,10 +4,10 @@ namespace TodoList.WPF.DataAccess.Entities;
 
 public class BookToReadEntity
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Author { get; set; }
-    public string Image { get; set; }
-    public DateTime DateAdded { get; set; }
-    public DateTime? DateEnded { get; set; }
+    public int id { get; set; }
+    public string name { get; set; }
+    public string author { get; set; }
+    public string image { get; set; }
+    public DateTime date_added { get; set; }
+    public DateTime? date_ended { get; set; }
 }

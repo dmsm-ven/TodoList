@@ -5,9 +5,8 @@ namespace TodoList.DataAccess;
 
 public class EmployeerPaymentEntity
 {
-    [Key]
-    public int Id { get; set; }
-    public int EmployeerId { get; set; }
-    public DateTime TransferArrivalDate { get; set; }
+    public int id { get; set; }
+    public int employeer_id { get; set; }
+    public DateTime transfer_arrival_date { get; set; }
     public decimal Amount { get; set; }
 }

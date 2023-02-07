@@ -74,13 +74,13 @@ public partial class App : Application
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
         services.AddTransient<IAppLogger, AppLogger>();
-        services.AddTransient<IUserRepository, BCryptUserValidator>();
-        services.AddTransient<IBookToReadRepository, BookToReadRepository>();
-        services.AddTransient<IEmployeerRepository, EmployeerRepository>();
-        services.AddTransient<IEmployeerPaymentRepository, EmployeerPaymentRepository>();
-        services.AddTransient<IJobItemRepository, JobItemRepository>();
-        services.AddTransient<IShoppingItemsRepository, ShoppingItemsRepository>();
-        services.AddTransient<ISettingsRepository, SettingsRepository>();
+        services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
+        services.AddTransient<IBookToReadRepository, MySqlBookToReadRepository>();
+        services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
+        services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
+        services.AddTransient<IJobItemRepository, MySqlJobItemRepository>();
+        services.AddTransient<IShoppingItemsRepository, MySqlShoppingItemsRepository>();
+        services.AddTransient<ISettingsRepository, MySqlSettingsRepository>();
     }
 
     private void ConfigureViewModels(IServiceCollection services)

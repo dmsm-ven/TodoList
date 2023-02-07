@@ -8,13 +8,13 @@ namespace TodoList.WPF.DataAccess;
 
 public class ShoppingItemEntity
 {
-    public int Id { get; set; }
-    public int? CategoryId { get; set; }
-    public string Name { get; set; }
-    public string? CategoryName { get; set; }
-    public bool IsPurchased { get; set; }
-    public DateTime DateAdded { get; set; }
-    public DateTime? DatePurchased { get; set; }
+    public int id { get; set; }
+    public int? category_id { get; set; }
+    public string name { get; set; }
+    public string? category_name { get; set; }
+    public bool is_purchased { get; set; }
+    public DateTime date_added { get; set; }
+    public DateTime? date_purchased { get; set; }
 }
 
 

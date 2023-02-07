@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-public interface IAppLogger
-{
-    void WriteLog(string message);
-    List<LogEntryEntity> GetLastRows(int takeCount);
-}
-
-public class AppLogger : IAppLogger
+public class PostgresAppLogger : IAppLogger
 {
     private readonly IDapperDatabaseAccess dapper;
 
-    public AppLogger(IDapperDatabaseAccess dapper)
+    public PostgresAppLogger(IDapperDatabaseAccess dapper)
     {
         this.dapper = dapper;
     }
@@ -34,4 +24,6 @@ public class AppLogger : IAppLogger
         dapper.Execute("INSERT INTO log_entry (message) VALUES (@message)", new { message });
     }
 }
+
+
 

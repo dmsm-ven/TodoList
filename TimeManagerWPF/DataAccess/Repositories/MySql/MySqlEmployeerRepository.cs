@@ -3,19 +3,11 @@ using TodoList.DataAccess;
 
 namespace TodoList.WPF.DataAccess;
 
-public interface IEmployeerRepository
-{
-    IEnumerable<EmployeerEntity> GetAllEmployeer();
-    EmployeerEntity GetEmployeer(int id);
-    void DeleteEmployeer(int id);
-    int AddOrUpdateEmployeer(EmployeerEntity entity);
-}
-
-public class EmployeerRepository : IEmployeerRepository
+public class PostgresEmployeerRepository : IEmployeerRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public EmployeerRepository(IDapperDatabaseAccess database)
+    public PostgresEmployeerRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }

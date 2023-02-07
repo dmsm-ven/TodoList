@@ -39,25 +39,25 @@ public class NavigationLocator : ViewModelBase
             ActiveViewModelType = type;
             ActiveViewModel = availableViewModels.Value[type];
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ActiveViewModelType = ViewModelType.ErrorView;
             ActiveViewModel = availableViewModels.Value[ActiveViewModelType];
             (ActiveViewModel as ConnectionErrorWindowViewModel).ErrorMessage = ex.Message;
         }
-      
+
     }
 
     public NavigationLocator(IHost host)
     {
-        availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() => 
+        availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() =>
             new Dictionary<ViewModelType, ViewModelBase>()
-        {
-            [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),            
-            [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
-            [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
-            [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorWindowViewModel>(),
-            [ViewModelType.SettingsView] = host.Services.GetService<SettingsViewModel>(),
-        });
+            {
+                [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),
+                [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
+                [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
+                [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorWindowViewModel>(),
+                [ViewModelType.SettingsView] = host.Services.GetService<SettingsViewModel>(),
+            });
     }
 }

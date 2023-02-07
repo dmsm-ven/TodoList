@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-
-public interface IUserRepository
-{
-    bool Login(string name, string password, bool savePassword);
-
-    string TryLoginWithSavedPassword();
-}
-
-public class BCryptUserValidator : IUserRepository
+public class PostgresBCryptUserValidator : IUserRepository
 {
     private readonly IDapperDatabaseAccess database;
     private readonly IAppLogger logger;
 
-    public BCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
+    public PostgresBCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
     {
         this.database = database;
         this.logger = logger;
@@ -29,15 +19,15 @@ public class BCryptUserValidator : IUserRepository
         var findedUser = database.GetSingle<AppUserEntity>("SELECT * FROM app_user WHERE Name = @name", new { name });
         if (findedUser == null) { return false; }
 
-        if(findedUser != null)
+        if (findedUser != null)
         {
-            if(BCrypt.Net.BCrypt.Verify(password, findedUser.Password))
+            if (BCrypt.Net.BCrypt.Verify(password, findedUser.Password))
             {
                 if (savePassword)
                 {
                     DateTime dt = GetStartupDateTime();
                     string sql = "UPDATE app_user SET SavePasswordTicksState = @ticksAfterTurnOn WHERE Name = @name";
-                    database.Execute(sql, new { ticksAfterTurnOn = dt, name });                    
+                    database.Execute(sql, new { ticksAfterTurnOn = dt, name });
                 }
                 else
                 {

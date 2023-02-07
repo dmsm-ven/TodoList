@@ -4,7 +4,7 @@ namespace TodoList.WPF.DataAccess.Entities;
 
 public class LogEntryEntity
 {
-    public int Id { get; set; }
-    public DateTime DateTime { get; set; }
-    public string Message { get; set; }
+    public int id { get; set; }
+    public DateTime date_time { get; set; }
+    public string message { get; set; }
 }

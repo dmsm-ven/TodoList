@@ -6,15 +6,14 @@ namespace TodoList.DataAccess;
 
 public class JobItemEntity
 {
-    [Key]
-    public int Id { get; set; }
-    public int EmployeerId { get; set; }
-    public string Title { get; set; }
-    public string? Description { get; set; }
-    public string? Website { get; set; }
-    public bool IsCompleted { get; set; }
-    public bool IsPayed { get; set; }
-    public decimal Price { get; set; }
-    public DateTime StartDate { get; set; } = DateTime.Now;
-    public DateTime? EndDate { get; set; }
+    public int id { get; set; }
+    public int employeer_id { get; set; }
+    public string title { get; set; }
+    public string? description { get; set; }
+    public string? website { get; set; }
+    public bool is_completed { get; set; }
+    public bool is_payed { get; set; }
+    public decimal price { get; set; }
+    public DateTime start_date { get; set; } = DateTime.Now;
+    public DateTime? end_date { get; set; }
 }

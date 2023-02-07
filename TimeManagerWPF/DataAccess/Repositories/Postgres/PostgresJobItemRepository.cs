@@ -4,22 +4,11 @@ using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess;
 
-public interface IJobItemRepository
-{
-    IEnumerable<JobItemEntity> GetAllJobItems(int employeer_id);
-    JobItemEntity GetJobItem(int id);
-    void DeleteJobItem(int id);
-    int AddOrUpdateJobItem(JobItemEntity entity);
-
-    void AddHistoryChanges(int job_item_id, string propertyName, string newValue);
-    IEnumerable<JobItemHistoryEntity> GetHistoryChangesForJobItem(int job_item_id);
-}
-
-public class JobItemRepository : IJobItemRepository
+public class PostgresJobItemRepository : IJobItemRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public JobItemRepository(IDapperDatabaseAccess database)
+    public PostgresJobItemRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }
@@ -28,7 +17,7 @@ public class JobItemRepository : IJobItemRepository
     {
         string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
                                                     (@job_item_id, @propertyName, @newValue)";
-        database.Execute(sql, new { job_item_id , propertyName, newValue });
+        database.Execute(sql, new { job_item_id, propertyName, newValue });
     }
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
@@ -48,8 +37,8 @@ public class JobItemRepository : IJobItemRepository
 
         database.Execute(sql, entity);
 
-        int id = entity.Id != 0 ? 
-            entity.Id : 
+        int id = entity.Id != 0 ?
+            entity.Id :
             database.GetSingle<int>("SELECT MAX(Id) FROM job_item");
 
         return id;

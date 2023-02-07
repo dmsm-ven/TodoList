@@ -1,18 +1,10 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 namespace TodoList.WPF.DataAccess;
-
-public interface IDapperDatabaseAccess
-{
-    List<T> GetList<T>(string sql, object parameters = null);
-    T GetSingle<T>(string sql, object parameters = null);
-    void Execute(string sql, object parameters = null);
-}
 
 public class MySqlDapperDatabaseAccess : IDapperDatabaseAccess
 {

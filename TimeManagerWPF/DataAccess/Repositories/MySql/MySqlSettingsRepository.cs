@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-public interface ISettingsRepository
-{
-    Dictionary<string, string> GetAll();
-    void Set(string name, string value);
-}
-
-public class SettingsRepository : ISettingsRepository
+public class MySqlSettingsRepository : ISettingsRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public SettingsRepository(IDapperDatabaseAccess database)
+    public MySqlSettingsRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }

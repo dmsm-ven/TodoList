@@ -8,9 +8,10 @@ namespace TodoList.DataAccess;
 
 public class EmployeerEntity
 {
-    [Key]
-    public int Id { get; set; }  
-    [Required]
-    public string Name { get; set; } = String.Empty;
-    public DateTime Created { get; set; } = DateTime.Now;
+    public int id { get; set; }
+    public string name { get; set; } = String.Empty;
+    public string icon { get; set; } = String.Empty;
+    public string email { get; set; } = String.Empty;
+    public string phone_number { get; set; } = String.Empty;
+    public DateTime created { get; set; } = DateTime.Now;
 }

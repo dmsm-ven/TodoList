@@ -3,17 +3,11 @@ using TodoList.DataAccess;
 
 namespace TodoList.WPF.DataAccess;
 
-public interface IEmployeerPaymentRepository
-{
-    IEnumerable<EmployeerPaymentEntity> GetAllPaymentsForEmployeer(int employeer_id);
-    void AddPayment(EmployeerPaymentEntity payment);
-}
-
-public class EmployeerPaymentRepository : IEmployeerPaymentRepository
+public class PostgresEmployeerPaymentRepository : IEmployeerPaymentRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public EmployeerPaymentRepository(IDapperDatabaseAccess database)
+    public PostgresEmployeerPaymentRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }
@@ -27,7 +21,7 @@ public class EmployeerPaymentRepository : IEmployeerPaymentRepository
     public void AddPayment(EmployeerPaymentEntity payment)
     {
         string sql = @"INSERT INTO employeer_payment (EmployeerId, Amount, TransferArrivalDate) VALUES
-                                                     (@EmployeerId, @Amount, @TransferArrivalDate)"; 
+                                                     (@EmployeerId, @Amount, @TransferArrivalDate)";
 
         database.Execute(sql, payment);
     }

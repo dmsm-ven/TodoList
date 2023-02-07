@@ -3,18 +3,11 @@ using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-public interface IBookToReadRepository
-{
-    IEnumerable<BookToReadEntity> GetAll();
-    int AddOrUpdate(BookToReadEntity item);
-    void Delete(int id);
-}
-
-public class BookToReadRepository : IBookToReadRepository
+public class MySqlBookToReadRepository : IBookToReadRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public BookToReadRepository(IDapperDatabaseAccess database)
+    public MySqlBookToReadRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }
