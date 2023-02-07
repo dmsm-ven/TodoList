@@ -22,36 +22,36 @@ public class PostgresJobItemRepository : IJobItemRepository
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
     {
-        string sql = @"INSERT INTO job_item (Id, EmployeerId, Title, Description, Website, IsCompleted, IsPayed, Price, StartDate, EndDate) 
-                        VALUES(@Id, @EmployeerId, @Title, @Description, @Website, @IsCompleted, @IsPayed, @Price, @StartDate,  @EndDate) 
+        string sql = @"INSERT INTO job_item (id, employeer_id, title, description, website, is_completed, is_payed, price, start_date, end_date) 
+                        VALUES(@id, @employeer_id, @title, @description, @website, @is_completed, @is_payed, @price, @start_date,  @end_date) 
                         ON DUPLICATE KEY UPDATE 
-                            Title = @Title,
-                            EmployeerId = @EmployeerId,
-                            Description = @Description,
-                            Website = @Website,
-                            IsCompleted = @IsCompleted,
-                            IsPayed = @IsPayed,
-                            Price = @Price,
-                            StartDate = @StartDate,
-                            EndDate = @EndDate";
+                            title = @title,
+                            employeer_id = @employeer_id,
+                            description = @description,
+                            website = @website,
+                            is_completed = @is_completed,
+                            is_payed = @is_payed,
+                            price = @price,
+                            start_date = @start_date,
+                            end_date = @end_date";
 
         database.Execute(sql, entity);
 
         int id = entity.Id != 0 ?
             entity.Id :
-            database.GetSingle<int>("SELECT MAX(Id) FROM job_item");
+            database.GetSingle<int>("SELECT MAX(id) FROM job_item");
 
         return id;
     }
 
     public void DeleteJobItem(int id)
     {
-        database.Execute("DELETE FROM job_item WHERE Id = @id", new { id });
+        database.Execute("DELETE FROM job_item WHERE id = @id", new { id });
     }
 
     public IEnumerable<JobItemEntity> GetAllJobItems(int employeer_id)
     {
-        var items = database.GetList<JobItemEntity>("SELECT * FROM job_item WHERE EmployeerId = @employeer_id", new { employeer_id });
+        var items = database.GetList<JobItemEntity>("SELECT * FROM job_item WHERE employeer_id = @employeer_id", new { employeer_id });
         return items;
     }
 
@@ -67,7 +67,7 @@ public class PostgresJobItemRepository : IJobItemRepository
 
     public JobItemEntity GetJobItem(int id)
     {
-        var jobItem = database.GetSingle<JobItemEntity>("SELECT * FROM job_item WHERE Id = @id", new { id });
+        var jobItem = database.GetSingle<JobItemEntity>("SELECT * FROM job_item WHERE id = @id", new { id });
         return jobItem;
     }
 }

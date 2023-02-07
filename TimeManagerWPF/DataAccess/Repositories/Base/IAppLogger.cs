@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TodoList.WPF.DataAccess.Entities;
 
-namespace TodoList.WPF.DataAccess.Repositories;
+namespace TodoList.WPF.DataAccess;
 
 public interface IAppLogger
 {

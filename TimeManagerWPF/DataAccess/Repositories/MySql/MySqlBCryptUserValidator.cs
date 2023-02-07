@@ -3,12 +3,12 @@ using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
-public class PostgresBCryptUserValidator : IUserRepository
+public class MySqlBCryptUserValidator : IUserRepository
 {
     private readonly IDapperDatabaseAccess database;
     private readonly IAppLogger logger;
 
-    public PostgresBCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
+    public MySqlBCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
     {
         this.database = database;
         this.logger = logger;

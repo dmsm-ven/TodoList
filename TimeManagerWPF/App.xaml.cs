@@ -34,8 +34,8 @@ public partial class App : Application
             })
             .ConfigureServices((context, services) =>
             {
-                string connectionString = context.Configuration.GetConnectionString("default");              
-                services.AddTransient<IDapperDatabaseAccess>(x => new MySqlDapperDatabaseAccess(connectionString));
+                string connectionString = context.Configuration.GetConnectionString("default");
+                services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
 
                 ConfigureDatabaseRepositories(services);
                 ConfigureServices(services);
@@ -51,11 +51,11 @@ public partial class App : Application
         ApplicationAlreadyRunningCheck();
 
         await host.StartAsync();
-       
+
         try
         {
             bool alreadyLoginToday = host.Services.GetRequiredService<UserManager>().TryLoginWithSavedPassword();
-            
+
             if (alreadyLoginToday)
             {
                 ShowMainWindow();
@@ -67,36 +67,36 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            ShowErrorWindow(ex.Message);           
+            ShowErrorWindow(ex.Message);
         }
     }
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
     {
-        services.AddTransient<IAppLogger, AppLogger>();
+        services.AddTransient<IAppLogger, PostgresAppLogger>();
         services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IBookToReadRepository, MySqlBookToReadRepository>();
+        services.AddTransient<IBookToReadRepository, PostgresBookToReadRepository>();
         services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
-        services.AddTransient<IJobItemRepository, MySqlJobItemRepository>();
-        services.AddTransient<IShoppingItemsRepository, MySqlShoppingItemsRepository>();
-        services.AddTransient<ISettingsRepository, MySqlSettingsRepository>();
+        services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
+        services.AddTransient<IShoppingItemsRepository, PostgresShoppingItemsRepository>();
+        services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
     }
 
     private void ConfigureViewModels(IServiceCollection services)
     {
         services.AddSingleton<ConnectionErrorWindow>();
         services.AddSingleton<ConnectionErrorWindowViewModel>();
-        
+
         services.AddSingleton<LoginWindow>();
         services.AddSingleton<LoginWindowViewModel>();
 
         services.AddSingleton<NavigationLocator>();
 
-        services.AddSingleton<SettingsViewModel>();        
+        services.AddSingleton<SettingsViewModel>();
         services.AddTransient<ConnectionErrorWindowViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();
-        services.AddTransient<AddEmployeerWindow>();      
+        services.AddTransient<AddEmployeerWindow>();
         services.AddSingleton<ReadListViewModel>();
         services.AddSingleton<ToolPanelViewModel>();
         services.AddSingleton<AddEmployeerWindowViewModel>();
@@ -143,8 +143,8 @@ public partial class App : Application
     private void ApplicationAlreadyRunningCheck()
     {
         Process proc = Process.GetCurrentProcess();
-        int count = Process.GetProcesses().Where(p =>p.ProcessName == proc.ProcessName).Count();
-        
+        int count = Process.GetProcesses().Where(p => p.ProcessName == proc.ProcessName).Count();
+
         if (count > 1)
         {
             App.Current.Shutdown();
@@ -157,7 +157,7 @@ public partial class App : Application
         {
             if (Application.Current.MainWindow != null)
             {
-                host.Services.GetRequiredService<UserManager>().ApplicationClosed();               
+                host.Services.GetRequiredService<UserManager>().ApplicationClosed();
             }
             await host.StopAsync();
         }

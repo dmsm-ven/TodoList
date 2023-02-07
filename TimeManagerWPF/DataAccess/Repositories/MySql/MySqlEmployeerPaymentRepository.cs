@@ -3,11 +3,11 @@ using TodoList.DataAccess;
 
 namespace TodoList.WPF.DataAccess;
 
-public class PostgresEmployeerPaymentRepository : IEmployeerPaymentRepository
+public class MySqlEmployeerPaymentRepository : IEmployeerPaymentRepository
 {
     private readonly IDapperDatabaseAccess database;
 
-    public PostgresEmployeerPaymentRepository(IDapperDatabaseAccess database)
+    public MySqlEmployeerPaymentRepository(IDapperDatabaseAccess database)
     {
         this.database = database;
     }

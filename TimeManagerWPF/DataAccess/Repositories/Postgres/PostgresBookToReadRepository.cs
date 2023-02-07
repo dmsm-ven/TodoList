@@ -13,27 +13,27 @@ public class PostgresBookToReadRepository : IBookToReadRepository
     }
     public int AddOrUpdate(BookToReadEntity item)
     {
-        string sql = @"INSERT INTO book_to_read (Id, Name, Author, Image, DateEnded) 
-                        VALUES(@Id, @Name, @Author, @Image, @DateEnded) 
+        string sql = @"INSERT INTO book_to_read (id, name, author, image, date_ended) 
+                        VALUES(@id, @name, @author, @image, @date_ended) 
                         ON DUPLICATE KEY UPDATE 
-                            Name = @Name,
-                            Author = @Author,
-                            Image = @Image,
-                            DateEnded = @DateEnded";
+                            name = @name,
+                            author = @author,
+                            image = @image,
+                            date_ended = @date_ended";
 
 
         database.Execute(sql, item);
 
-        int id = item.Id != 0 ?
-            item.Id :
-            database.GetSingle<int>("SELECT MAX(Id) FROM book_to_read");
+        int id = item.id != 0 ?
+            item.id :
+            database.GetSingle<int>("SELECT MAX(id) FROM book_to_read");
 
         return id;
     }
 
     public void Delete(int id)
     {
-        string sql = "DELETE FROM book_to_read WHERE Id = @id";
+        string sql = "DELETE FROM book_to_read WHERE id = @id";
         database.Execute(sql, new { id });
     }
 

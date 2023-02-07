@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,7 +18,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
 
     public void Execute(string sql, object parameters = null)
     {
-        using IDbConnection connection = new MySqlConnection(connectionString);
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
 
         connection.Open();
 
@@ -26,7 +27,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
 
     public List<T> GetList<T>(string sql, object parameters = null)
     {
-        using IDbConnection connection = new MySqlConnection(connectionString);
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
 
         connection.Open();
 
@@ -37,7 +38,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
 
     public T GetSingle<T>(string sql, object parameters = null)
     {
-        using IDbConnection connection = new MySqlConnection(connectionString);
+        using IDbConnection connection = new NpgsqlConnection(connectionString);
 
         connection.Open();
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TodoList.WPF.DataAccess.Entities;
 
-namespace TodoList.WPF.DataAccess.Repositories;
+namespace TodoList.WPF.DataAccess;
 
 public interface IBookToReadRepository
 {

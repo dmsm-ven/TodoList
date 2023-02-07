@@ -13,29 +13,29 @@ public class PostgresShoppingItemsRepository : IShoppingItemsRepository
 
     public int AddCategory(string name)
     {
-        database.Execute("INSERT INTO shopping_item_category (Name) VALUES (@name)", new { name });
+        database.Execute("INSERT INTO shopping_item_category (name) VALUES (@name)", new { name });
 
-        int id = database.GetSingle<int>("SELECT MAX(Id) FROM shopping_item_category");
+        int id = database.GetSingle<int>("SELECT MAX(id) FROM shopping_item_category");
 
         return id;
     }
 
     public int AddOrUpdate(ShoppingItemEntity item)
     {
-        string sql = @"INSERT INTO shopping_item (Id, Name, IsPurchased, DatePurchased, CategoryId) 
-                        VALUES(@Id, @Name, @IsPurchased, @DatePurchased, @CategoryId) 
+        string sql = @"INSERT INTO shopping_item (id, name, is_purchased, date_purchased, category_id) 
+                        VALUES(@id, @name, @is_purchased, @date_purchased, @category_id) 
                         ON DUPLICATE KEY UPDATE 
-                            Name = @Name,
-                            IsPurchased = @IsPurchased,
-                            DatePurchased = @DatePurchased,
-                            CategoryId = @CategoryId";
+                            name = @name,
+                            is_purchased = @is_purchased,
+                            date_purchased = @date_purchased,
+                            category_id = @category_id";
 
 
         database.Execute(sql, item);
 
-        int id = item.Id != 0 ?
-            item.Id :
-            database.GetSingle<int>("SELECT MAX(Id) FROM shopping_item");
+        int id = item.id != 0 ?
+            item.id :
+            database.GetSingle<int>("SELECT MAX(id) FROM shopping_item");
 
         return id;
     }
@@ -47,15 +47,15 @@ public class PostgresShoppingItemsRepository : IShoppingItemsRepository
 
     public void Delete(int id)
     {
-        string sql = "DELETE FROM shopping_item WHERE Id = @id";
+        string sql = "DELETE FROM shopping_item WHERE id = @id";
         database.Execute(sql, new { id });
     }
 
     public IEnumerable<ShoppingItemEntity> GetAll()
     {
-        string sql = @"SELECT sa.*, sac.Name as CategoryName, sac.Id as CategoryId
+        string sql = @"SELECT sa.*, sac.name as CategoryName, sac.id as CategoryId
                        FROM shopping_item sa
-                       LEFT JOIN shopping_item_category sac ON (sa.CategoryId = sac.Id)";
+                       LEFT JOIN shopping_item_category sac ON (sa.category_id = sac.id)";
 
         var items = database.GetList<ShoppingItemEntity>(sql);
         return items;

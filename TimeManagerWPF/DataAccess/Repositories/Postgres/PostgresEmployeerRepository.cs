@@ -14,23 +14,23 @@ public class PostgresEmployeerRepository : IEmployeerRepository
 
     public int AddOrUpdateEmployeer(EmployeerEntity entity)
     {
-        string sql = @"INSERT INTO employeer (Id, Name) 
-                        VALUES(@Id, @Name) 
+        string sql = @"INSERT INTO employeer (id, name) 
+                        VALUES(@id, @name) 
                         ON DUPLICATE KEY UPDATE 
-                            Name = @Name";
+                            name = @name";
 
         database.Execute(sql, entity);
 
-        int id = entity.Id != 0 ?
-            entity.Id :
-            database.GetSingle<int>("SELECT MAX(Id) FROM employeer");
+        int id = entity.id != 0 ?
+            entity.id :
+            database.GetSingle<int>("SELECT MAX(id) FROM employeer");
 
         return id;
     }
 
     public void DeleteEmployeer(int id)
     {
-        database.Execute("DELETE FROM employeer WHERE Id = @id", new { id });
+        database.Execute("DELETE FROM employeer WHERE id = @id", new { id });
     }
 
     public IEnumerable<EmployeerEntity> GetAllEmployeer()
@@ -41,7 +41,7 @@ public class PostgresEmployeerRepository : IEmployeerRepository
 
     public EmployeerEntity GetEmployeer(int id)
     {
-        var employeer = database.GetSingle<EmployeerEntity>("SELECT * FROM employeer WHERE Id = @id", new { id });
+        var employeer = database.GetSingle<EmployeerEntity>("SELECT * FROM employeer WHERE id = @id", new { id });
         return employeer;
     }
 }

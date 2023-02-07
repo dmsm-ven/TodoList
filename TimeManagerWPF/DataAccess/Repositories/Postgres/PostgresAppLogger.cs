@@ -14,7 +14,7 @@ public class PostgresAppLogger : IAppLogger
 
     public List<LogEntryEntity> GetLastRows(int takeCount)
     {
-        var items = dapper.GetList<LogEntryEntity>("SELECT * FROM log_entry ORDER BY Id DESC LIMIT @takeCount"
+        var items = dapper.GetList<LogEntryEntity>("SELECT * FROM log_entry ORDER BY id DESC LIMIT @takeCount"
             , new { takeCount });
         return items;
     }
