@@ -24,8 +24,8 @@ public class PostgresShoppingItemsRepository : IShoppingItemsRepository
     {
         string sql = @"INSERT INTO shopping_item (id, name, is_purchased, date_purchased, category_id) 
                         VALUES(@id, @name, @is_purchased, @date_purchased, @category_id) 
-                        ON DUPLICATE KEY UPDATE 
-                            name = @name,
+                        ON CONFLICT(id) DO UPDATE
+                        SET name = @name,
                             is_purchased = @is_purchased,
                             date_purchased = @date_purchased,
                             category_id = @category_id";

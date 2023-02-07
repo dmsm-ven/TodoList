@@ -22,9 +22,9 @@ public class PostgresSettingsRepository : ISettingsRepository
 
     public void Set(string name, string value)
     {
-        string sql = @"INSERT INTO setting_item (name, value) 
-                        VALUES(@setting_name, @setting_value) 
-                        ON DUPLICATE KEY UPDATE value = @setting_value";
+        string sql = @"INSERT INTO setting_item (name, value) VALUES(@setting_name, @setting_value) 
+                        ON CONFLICT(name) DO UPDATE
+                        SET value = @setting_value";
 
         database.Execute(sql, new { setting_name = name, setting_value = value });
     }

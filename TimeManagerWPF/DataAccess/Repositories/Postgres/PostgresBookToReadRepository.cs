@@ -15,8 +15,8 @@ public class PostgresBookToReadRepository : IBookToReadRepository
     {
         string sql = @"INSERT INTO book_to_read (id, name, author, image, date_ended) 
                         VALUES(@id, @name, @author, @image, @date_ended) 
-                        ON DUPLICATE KEY UPDATE 
-                            name = @name,
+                        ON CONFLICT(id) DO UPDATE
+                        SET name = @name,
                             author = @author,
                             image = @image,
                             date_ended = @date_ended";

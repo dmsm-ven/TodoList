@@ -24,16 +24,16 @@ public class PostgresJobItemRepository : IJobItemRepository
     {
         string sql = @"INSERT INTO job_item (id, employeer_id, title, description, website, is_completed, is_payed, price, start_date, end_date) 
                         VALUES(@id, @employeer_id, @title, @description, @website, @is_completed, @is_payed, @price, @start_date,  @end_date) 
-                        ON DUPLICATE KEY UPDATE 
-                            title = @title,
-                            employeer_id = @employeer_id,
-                            description = @description,
-                            website = @website,
-                            is_completed = @is_completed,
-                            is_payed = @is_payed,
-                            price = @price,
-                            start_date = @start_date,
-                            end_date = @end_date";
+                        ON CONFLICT (id) DO UPDATE 
+                            SET title = @title,
+                                employeer_id = @employeer_id,
+                                description = @description,
+                                website = @website,
+                                is_completed = @is_completed,
+                                is_payed = @is_payed,
+                                price = @price,
+                                start_date = @start_date,
+                                end_date = @end_date";
 
         database.Execute(sql, entity);
 

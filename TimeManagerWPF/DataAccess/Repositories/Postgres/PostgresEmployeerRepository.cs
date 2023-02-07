@@ -14,10 +14,9 @@ public class PostgresEmployeerRepository : IEmployeerRepository
 
     public int AddOrUpdateEmployeer(EmployeerEntity entity)
     {
-        string sql = @"INSERT INTO employeer (id, name) 
-                        VALUES(@id, @name) 
-                        ON DUPLICATE KEY UPDATE 
-                            name = @name";
+        string sql = @"INSERT INTO employeer (id, name) VALUES(@id, @name) 
+                       ON CONFLICT(id) DO UPDATE 
+                       SET name = @name";
 
         database.Execute(sql, entity);
 
