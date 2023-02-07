@@ -13,11 +13,11 @@ public class MySqlSettingsRepository : ISettingsRepository
         this.database = database;
     }
 
-    public Dictionary<string, string> GetAll()
+    public IReadOnlyDictionary<string, string> GetAll()
     {
         var settings = database.GetList<SettingsEntity>("SELECT * FROM setting_item");
 
-        return settings.ToDictionary(i => i.Name, i => i.Value);
+        return settings.ToDictionary(i => i.name, i => i.value);
     }
 
     public void Set(string name, string value)

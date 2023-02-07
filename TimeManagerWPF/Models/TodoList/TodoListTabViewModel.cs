@@ -327,7 +327,7 @@ public class TodoListTabViewModel : ViewModelBase
 
             string? newValue = sender.GetType()?.GetProperty(e.PropertyName).GetValue(sender)?.ToString() ?? string.Empty;
 
-            jobItemRepository.AddHistoryChanges(item.Id, e.PropertyName, newValue);
+            jobItemRepository.AddHistoryChanges(item.id, e.PropertyName, newValue);
             if (e.PropertyName == nameof(JobItemViewModel.IsCompleted))
             {
                 RaisePropertyChanged(nameof(HasActiveTasks));

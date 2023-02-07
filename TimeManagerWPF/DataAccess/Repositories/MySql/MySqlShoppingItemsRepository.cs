@@ -33,8 +33,8 @@ public class MySqlShoppingItemsRepository : IShoppingItemsRepository
 
         database.Execute(sql, item);
 
-        int id = item.Id != 0 ?
-            item.Id :
+        int id = item.id != 0 ?
+            item.id :
             database.GetSingle<int>("SELECT MAX(Id) FROM shopping_item");
 
         return id;

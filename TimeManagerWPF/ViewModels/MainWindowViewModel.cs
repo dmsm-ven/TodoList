@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
+using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Repositories;
 
 namespace TodoList.WPF.ViewModels;
@@ -24,11 +25,11 @@ public class MainWindowViewModel : ViewModelBase
         LoadedCommand = new LambdaCommand(Loaded);
     }
 
-    public MainWindowViewModel(ToolPanelViewModel toolPanelViewModel, 
-        NavigationLocator navigationLocator, 
+    public MainWindowViewModel(ToolPanelViewModel toolPanelViewModel,
+        NavigationLocator navigationLocator,
         ISettingsRepository settings) : this()
     {
-        NavigationLocator = navigationLocator;       
+        NavigationLocator = navigationLocator;
         ToolPanelViewModel = toolPanelViewModel;
 
         this.settings = settings;
@@ -38,9 +39,9 @@ public class MainWindowViewModel : ViewModelBase
     {
         NavigationLocator.MoveTo(ViewModelType.TodoList);
 
-        Dictionary<string, string> settingsDictionary = settings.GetAll();
-        IsTopmost = settingsDictionary.ContainsKey(nameof(IsTopmost)) ? 
-            bool.Parse(settingsDictionary[nameof(IsTopmost)]) : 
+        var settingsDictionary = settings.GetAll();
+        IsTopmost = settingsDictionary.ContainsKey(nameof(IsTopmost)) ?
+            bool.Parse(settingsDictionary[nameof(IsTopmost)]) :
             false;
     }
 

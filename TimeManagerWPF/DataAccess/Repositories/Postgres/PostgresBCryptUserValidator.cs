@@ -14,7 +14,7 @@ public class PostgresBCryptUserValidator : IUserRepository
         this.logger = logger;
     }
 
-    public bool Login(string name, string password, bool savePassword)
+    public bool Login(string name, string password)
     {
         var findedUser = database.GetSingle<AppUserEntity>("SELECT * FROM app_user WHERE name = @name", new { name });
 

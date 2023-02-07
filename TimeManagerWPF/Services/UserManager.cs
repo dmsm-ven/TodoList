@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.DataAccess.Repositories;
 
@@ -19,13 +20,14 @@ public class UserManager
     }
 
     public IReadOnlyList<LogEntryEntity> LogEntries => logger.GetLastRows(100);
-    
+
     internal bool Login(string login, string password, bool isSavePassword)
     {
-        var loginResult = userRepository.Login(login, password, isSavePassword);
+        var loginResult = userRepository.Login(login, password);
+
         this.LoggedUser = loginResult ? login : String.Empty;
 
-        if(loginResult)
+        if (loginResult)
         {
             logger.WriteLog($"Пользователь '{login}' вошел");
         }
@@ -33,22 +35,14 @@ public class UserManager
         {
             logger.WriteLog($"Пользователь '{login}' ввел не верный логин/пароль");
         }
-        
+
         return loginResult;
 
     }
 
     internal bool TryLoginWithSavedPassword()
     {
-        var enteredUser = userRepository.TryLoginWithSavedPassword();
-        
-        if (!string.IsNullOrWhiteSpace(enteredUser))
-        {
-            LoggedUser = enteredUser;
-            logger.WriteLog($"Пользователь '{LoggedUser}' вошел (без ввода пароля)");
-        }
-
-        return !string.IsNullOrWhiteSpace(enteredUser);
+        return false;
     }
 
     internal void ApplicationClosed()

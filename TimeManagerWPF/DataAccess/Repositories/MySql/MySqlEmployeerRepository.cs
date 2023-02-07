@@ -21,8 +21,8 @@ public class MySqlEmployeerRepository : IEmployeerRepository
 
         database.Execute(sql, entity);
 
-        int id = entity.Id != 0 ?
-            entity.Id :
+        int id = entity.id != 0 ?
+            entity.id :
             database.GetSingle<int>("SELECT MAX(Id) FROM employeer");
 
         return id;

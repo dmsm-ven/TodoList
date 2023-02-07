@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Input;
+using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Entities;
-using TodoList.WPF.DataAccess.Repositories;
 using TodoList.WPF.Models;
 
 namespace TodoList.WPF.ViewModels;
@@ -23,7 +19,7 @@ public class SettingsViewModel : ViewModelBase
         get => isTopmost;
         set
         {
-            if(Set(ref isTopmost, value) && isLoaded)
+            if (Set(ref isTopmost, value) && isLoaded)
             {
                 seetingsRepository.Set(nameof(IsTopmost), value.ToString());
                 mainWindowViewModel.IsTopmost = value;

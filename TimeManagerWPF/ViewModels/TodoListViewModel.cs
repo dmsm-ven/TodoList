@@ -54,8 +54,8 @@ public class TodoListViewModel : ViewModelBase
     }
     public TodoListViewModel(NavigationLocator navigationLocator,
         IEmployeerRepository employeerRepository,
-        IEmployeerPaymentRepository employeerPaymentRepository, 
-        IJobItemRepository jobItemRepository, 
+        IEmployeerPaymentRepository employeerPaymentRepository,
+        IJobItemRepository jobItemRepository,
         IMapper mapper,
         IHost host) : this()
     {
@@ -75,7 +75,8 @@ public class TodoListViewModel : ViewModelBase
         if (window.ShowDialog() == true)
         {
             Loaded(null);
-;        }
+            ;
+        }
     }
     private async void Loaded(object obj)
     {
@@ -88,7 +89,7 @@ public class TodoListViewModel : ViewModelBase
         var employeers = await Task.Run(() => employeerRepository.GetAllEmployeer());
 
         employeers
-            .Select(emp => new EmployeerViewModel(emp.Id, emp.Name, mapper, jobItemRepository, employeerPaymentRepository))
+            .Select(emp => new EmployeerViewModel(emp.id, emp.name, mapper, jobItemRepository, employeerPaymentRepository))
             .Select(i => new TodoListTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
             .ToList()
             .ForEach(t => Tabs.Add(t));

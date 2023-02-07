@@ -24,8 +24,8 @@ public class MySqlBookToReadRepository : IBookToReadRepository
 
         database.Execute(sql, item);
 
-        int id = item.Id != 0 ?
-            item.Id :
+        int id = item.id != 0 ?
+            item.id :
             database.GetSingle<int>("SELECT MAX(Id) FROM book_to_read");
 
         return id;

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
+using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.DataAccess.Repositories;
 
@@ -30,7 +31,7 @@ public class ReadListViewModel : ViewModelBase
     }
     public IEnumerable<string> UniqueAuthors
     {
-        get => Books.Count() > 0 ? 
+        get => Books.Count() > 0 ?
             Books.GroupBy(b => b.Author).Select(g => g.Key).Where(author => author != null).OrderBy(author => author) :
             new string[] { "" };
     }
@@ -49,7 +50,7 @@ public class ReadListViewModel : ViewModelBase
         get => isAddNewBookPanelShow;
         set
         {
-            if(Set(ref isAddNewBookPanelShow, value))
+            if (Set(ref isAddNewBookPanelShow, value))
             {
                 if (IsAddNewBookPanelShow)
                 {
@@ -75,8 +76,8 @@ public class ReadListViewModel : ViewModelBase
         get => isShowHidden;
         set
         {
-            if(Set(ref isShowHidden, value))
-            {                
+            if (Set(ref isShowHidden, value))
+            {
                 RaisePropertyChanged(nameof(ShowHiddenIconState));
                 RaisePropertyChanged(nameof(ShowHiddenTitle));
                 RefreshSource();
@@ -89,7 +90,7 @@ public class ReadListViewModel : ViewModelBase
     {
         get => newBook;
         set => Set(ref newBook, value);
-    }  
+    }
     public PackIconFontAwesomeKind AddBookIconStateKind
     {
         get => IsAddNewBookPanelShow ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.PlusSolid;
@@ -106,7 +107,7 @@ public class ReadListViewModel : ViewModelBase
     {
         AddBookCommand = new LambdaCommand(AddBook, e => NewBook == null || NewBook?.Name != default_book_name);
         ShowHiddenToggleCommand = new LambdaCommand(e => IsShowHidden = !IsShowHidden);
-        CancelAddingBookCommand = new LambdaCommand(e => IsAddNewBookPanelShow = false) ;
+        CancelAddingBookCommand = new LambdaCommand(e => IsAddNewBookPanelShow = false);
         LoadedCommand = new LambdaCommand(Loaded);
         Books = new ObservableCollection<BookToReadViewModel>()
         {
