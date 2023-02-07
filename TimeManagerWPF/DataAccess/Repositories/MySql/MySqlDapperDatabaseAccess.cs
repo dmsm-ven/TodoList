@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TodoList.WPF.DataAccess;
 
@@ -44,5 +45,10 @@ public class MySqlDapperDatabaseAccess : IDapperDatabaseAccess
         var item = connection.QuerySingleOrDefault<T>(sql, parameters);
 
         return item;
+    }
+
+    public Task<T> GetSingleAsync<T>(string sql, object parameters = null)
+    {
+        throw new System.NotImplementedException();
     }
 }

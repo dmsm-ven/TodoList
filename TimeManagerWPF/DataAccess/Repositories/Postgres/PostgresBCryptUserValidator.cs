@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using TodoList.WPF.DataAccess.Entities;
 
 namespace TodoList.WPF.DataAccess.Repositories;
@@ -14,9 +15,9 @@ public class PostgresBCryptUserValidator : IUserRepository
         this.logger = logger;
     }
 
-    public bool Login(string name, string password)
+    public async Task<bool> Login(string name, string password)
     {
-        var findedUser = database.GetSingle<AppUserEntity>("SELECT * FROM app_user WHERE name = @name", new { name });
+        var findedUser = await database.GetSingleAsync<AppUserEntity>("SELECT * FROM app_user WHERE name = @name", new { name });
 
         return findedUser != null && BCrypt.Net.BCrypt.Verify(password, findedUser.password);
 

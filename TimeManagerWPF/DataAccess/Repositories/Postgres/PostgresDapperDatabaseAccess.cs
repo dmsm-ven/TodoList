@@ -4,6 +4,7 @@ using Npgsql;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TodoList.WPF.DataAccess;
 
@@ -43,6 +44,17 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         connection.Open();
 
         var item = connection.QuerySingleOrDefault<T>(sql, parameters);
+
+        return item;
+    }
+
+    public async Task<T> GetSingleAsync<T>(string sql, object parameters = null)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+
+        await connection.OpenAsync();
+
+        var item = await connection.QuerySingleOrDefaultAsync<T>(sql, parameters);
 
         return item;
     }

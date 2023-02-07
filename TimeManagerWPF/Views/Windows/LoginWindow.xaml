@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
     xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
     x:Name="loginWindow"
     Title="Войти"
@@ -74,12 +75,23 @@
                     </Style>
                 </Grid.Resources>
 
+                <ss:LoadingSpinner
+                    Grid.Row="0"
+                    Margin="0,14,0,0"
+                    Panel.ZIndex="999"
+                    IsLoading="True"
+                    Thickness="4"
+                    Visibility="{Binding IsConnecting, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=true}"
+                    Color="Yellow" />
                 <Image
                     Grid.Row="0"
                     Width="150"
                     Height="100"
                     Margin="20,40,20,20"
                     Source="../../Assets/Images/Login/login-logo.png" />
+
+
+
 
                 <DockPanel Grid.Row="1" Margin="10,0,10,10">
                     <icons:PackIconFontAwesome Kind="UserSolid" />

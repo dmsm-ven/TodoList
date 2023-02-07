@@ -28,10 +28,10 @@ public partial class App : Application
         Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location));
 
         host = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration(options =>
-            {
-                options.AddUserSecrets(assembly, optional: true);
-            })
+            //.ConfigureAppConfiguration(options =>
+            //{
+            //    options.AddUserSecrets(assembly, optional: true);
+            //})
             .ConfigureServices((context, services) =>
             {
                 string connectionString = context.Configuration.GetConnectionString("default");
@@ -54,16 +54,7 @@ public partial class App : Application
 
         try
         {
-            bool alreadyLoginToday = host.Services.GetRequiredService<UserManager>().TryLoginWithSavedPassword();
-
-            if (alreadyLoginToday)
-            {
-                ShowMainWindow();
-            }
-            else
-            {
-                ShowLoginWindow();
-            }
+            ShowLoginWindow();
         }
         catch (Exception ex)
         {

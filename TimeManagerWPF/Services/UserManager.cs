@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.DataAccess.Repositories;
@@ -21,9 +22,9 @@ public class UserManager
 
     public IReadOnlyList<LogEntryEntity> LogEntries => logger.GetLastRows(100);
 
-    internal bool Login(string login, string password, bool isSavePassword)
+    public async Task<bool> Login(string login, string password)
     {
-        var loginResult = userRepository.Login(login, password);
+        var loginResult = await userRepository.Login(login, password);
 
         this.LoggedUser = loginResult ? login : String.Empty;
 

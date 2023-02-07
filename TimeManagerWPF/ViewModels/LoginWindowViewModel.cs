@@ -13,17 +13,23 @@ namespace TodoList.WPF.ViewModels;
 internal class LoginWindowViewModel : ViewModelBase
 {
     private readonly UserManager userManager;
-
     public event Action OnUserEnter;
 
-    bool hasErrors;
+    private bool hasErrors = false;
     public bool HasErrors
     {
         get => hasErrors;
         private set => Set(ref hasErrors, value);
     }
 
-    string login;
+    private bool isConnecting = false;
+    public bool IsConnecting
+    {
+        get => isConnecting;
+        set => Set(ref isConnecting, value);
+    }
+
+    private string login;
     public string Login
     {
         get => login;
@@ -31,14 +37,13 @@ internal class LoginWindowViewModel : ViewModelBase
     }
 
     public bool isSavePassword = true;
-    
 
     public bool IsSavePassword
     {
         get => isSavePassword;
-        set 
+        set
         {
-            if(Set(ref isSavePassword, value))
+            if (Set(ref isSavePassword, value))
             {
                 RaisePropertyChanged(nameof(SavePasswordIconState));
             }
@@ -57,7 +62,7 @@ internal class LoginWindowViewModel : ViewModelBase
     public LoginWindowViewModel()
     {
         SavePasswordToggleCommand = new LambdaCommand(e => IsSavePassword = !IsSavePassword);
-        LoginCommand = new LambdaCommand(SignIn, e => !string.IsNullOrWhiteSpace(login));
+        LoginCommand = new LambdaCommand(async e => await SignIn(e), e => !string.IsNullOrWhiteSpace(login));
     }
 
     public LoginWindowViewModel(UserManager userManager) : this()
@@ -65,19 +70,35 @@ internal class LoginWindowViewModel : ViewModelBase
         this.userManager = userManager;
     }
 
-    private void SignIn(object o)
+    private async Task SignIn(object o)
     {
         HasErrors = false;
+        IsConnecting = true;
 
         var password = (o as PasswordBox).Password;
 
-        if(userManager.Login(Login, password, IsSavePassword))
+        try
         {
-            OnUserEnter?.Invoke();
+            await Task.Delay(TimeSpan.FromSeconds(1.25));
+            var connectResult = await userManager.Login(Login, password);
+
+            if (connectResult)
+            {
+                OnUserEnter?.Invoke();
+            }
+            else
+            {
+                HasErrors = true;
+            }
         }
-        else
+        catch (Exception ex)
         {
             HasErrors = true;
         }
+        finally
+        {
+            IsConnecting = false;
+        }
+
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace TodoList.WPF.DataAccess.Repositories;
 
 public interface IUserRepository
 {
-    bool Login(string name, string password);
+    Task<bool> Login(string name, string password);
 }
