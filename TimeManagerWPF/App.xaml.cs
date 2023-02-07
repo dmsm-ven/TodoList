@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -51,15 +52,34 @@ public partial class App : Application
         ApplicationAlreadyRunningCheck();
 
         await host.StartAsync();
-
+        
         try
         {
-            ShowLoginWindow();
+            Dictionary<string, string> eArgs = ParseEventArgs(e.Args);
+
+            ShowLoginWindow(eArgs);
         }
         catch (Exception ex)
         {
             ShowErrorWindow(ex.Message);
         }
+    }
+
+    private static Dictionary<string, string> ParseEventArgs(string[] args)
+    {
+        var dic = new Dictionary<string, string>();
+        foreach (var item in args)
+        {
+            if (item.StartsWith("--") && item.Contains("="))
+            {
+                string key = item.Substring(2, item.IndexOf('=') - 2);
+                string value = item.Substring(item.IndexOf("=") + 1);
+                dic[key] = value;
+                //MessageBox.Show($"key={key};value={value}");
+            }
+        }
+
+        return dic;
     }
 
     private void ConfigureDatabaseRepositories(IServiceCollection services)
@@ -111,9 +131,18 @@ public partial class App : Application
         errorWindow.Show();
     }
 
-    private void ShowLoginWindow()
+    private void ShowLoginWindow(IReadOnlyDictionary<string, string> e)
     {
         var loginWindowVm = host.Services.GetRequiredService<LoginWindowViewModel>();
+        if(e.TryGetValue("login", out var login))
+        {
+            loginWindowVm.Login = login;
+        }
+        if(e.TryGetValue("pass", out var pass))
+        {
+            loginWindowVm.DefaultPassword = pass;
+        }
+        
         var loginWindow = host.Services.GetRequiredService<LoginWindow>();
         loginWindow.DataContext = loginWindowVm;
         loginWindowVm.OnUserEnter += () =>
@@ -127,6 +156,13 @@ public partial class App : Application
     private void ShowMainWindow()
     {
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
+
+        // 3/4 ширины-высоты
+        mainWindow.Left = SystemParameters.PrimaryScreenWidth / 4;
+        mainWindow.Top = SystemParameters.PrimaryScreenHeight / 4;
+        mainWindow.Width = SystemParameters.PrimaryScreenWidth * 0.75d;
+        mainWindow.Height = SystemParameters.PrimaryScreenHeight * 0.75d;
+
         mainWindow.DataContext = host.Services.GetRequiredService<MainWindowViewModel>();
         mainWindow.Show();
     }

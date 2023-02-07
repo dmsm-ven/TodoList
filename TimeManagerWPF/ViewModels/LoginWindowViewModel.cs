@@ -36,6 +36,8 @@ internal class LoginWindowViewModel : ViewModelBase
         set => Set(ref login, value);
     }
 
+    public string DefaultPassword { get; set; } = string.Empty;
+
     public bool isSavePassword = true;
 
     public bool IsSavePassword
@@ -75,7 +77,8 @@ internal class LoginWindowViewModel : ViewModelBase
         HasErrors = false;
         IsConnecting = true;
 
-        var password = (o as PasswordBox).Password;
+        string enteredPassword = (o as PasswordBox).Password;
+        var password = !string.IsNullOrWhiteSpace(enteredPassword) ? enteredPassword : DefaultPassword;
 
         try
         {

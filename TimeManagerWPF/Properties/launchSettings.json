@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "TodoList.WPF": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "--login": "painven",
+        "--pass": "2103"
+      }
+    }
+  }
+}
