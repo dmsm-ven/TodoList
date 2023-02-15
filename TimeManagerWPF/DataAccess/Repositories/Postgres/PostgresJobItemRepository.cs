@@ -22,6 +22,14 @@ public class PostgresJobItemRepository : IJobItemRepository
 
     public int AddOrUpdateJobItem(JobItemEntity entity)
     {
+        int max_id = entity.id != 0 ?
+            entity.id :
+            database.GetSingle<int>("SELECT MAX(id) FROM job_item") + 1;
+        if (entity.id == 0)
+        {
+            entity.id = max_id;
+        }
+
         string sql = @"INSERT INTO job_item (id, employeer_id, title, description, website, is_completed, is_payed, price, start_date, end_date) 
                         VALUES(@id, @employeer_id, @title, @description, @website, @is_completed, @is_payed, @price, @start_date,  @end_date) 
                         ON CONFLICT (id) DO UPDATE 
@@ -37,11 +45,7 @@ public class PostgresJobItemRepository : IJobItemRepository
 
         database.Execute(sql, entity);
 
-        int id = entity.id != 0 ?
-            entity.id :
-            database.GetSingle<int>("SELECT MAX(id) FROM job_item");
-
-        return id;
+        return max_id;
     }
 
     public void DeleteJobItem(int id)
