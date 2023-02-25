@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Budget\budget-background-texture.jpg" />
     <None Remove="Assets\Images\Login\login-background.jpeg" />
     <None Remove="Assets\Images\Login\login-logo.png" />
     <None Remove="Assets\Images\ReadList\book-placeholder.png" />
@@ -34,6 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Images\Budget\budget-background-texture.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\Images\Login\login-background.jpeg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

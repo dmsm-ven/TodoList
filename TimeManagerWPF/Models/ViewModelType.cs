@@ -7,5 +7,6 @@ public enum ViewModelType
     ShoppingList,
     ReadList,
     ErrorView,
-    SettingsView
+    SettingsView,
+    BudgetView
 }

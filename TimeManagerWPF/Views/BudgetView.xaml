@@ -1,0 +1,137 @@
+﻿<UserControl
+    x:Class="TodoList.WPF.Views.BudgetView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    d:Background="Transparent"
+    d:DataContext="{d:DesignInstance Type=vm:BudgetViewModel,
+                                     IsDesignTimeCreatable=True}"
+    d:Height="300"
+    d:Width="600"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <con:BudgetTypeToIconConverter x:Key="BudgetTypeToIconConverter" />
+        <con:BudgetTypeToBrushConverter x:Key="BudgetTypeToBrushConverter" />
+    </UserControl.Resources>
+
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush
+                ImageSource="../Assets/Images/Budget/budget-background-texture.jpg"
+                TileMode="Tile"
+                Viewport="0,0,200,200"
+                ViewportUnits="Absolute" />
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            Grid.Row="0"
+            MinHeight="40"
+            Margin="0,0,0,6"
+            Background="#E4FFFF00" />
+
+        <Grid
+            Grid.Row="2"
+            MinHeight="250"
+            Margin="0,6,0,0"
+            Background="#BB0000FF" />
+
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Hidden"
+            VerticalScrollBarVisibility="Visible">
+            <ItemsControl Background="Transparent" ItemsSource="{Binding BudgetLines}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Margin="2,2,2,6"
+                            Padding="2"
+                            Background="#E4333333"
+                            BorderBrush="RoyalBlue"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="Margin" Value="2,2,6,2" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                    </Style>
+                                </Grid.Resources>
+
+                                <icons:PackIconFontAwesome
+                                    Grid.Column="0"
+                                    Margin="2,2,6,2"
+                                    Foreground="{Binding BudgetType, Converter={StaticResource BudgetTypeToBrushConverter}}"
+                                    Kind="{Binding BudgetType, Converter={StaticResource BudgetTypeToIconConverter}}"
+                                    Style="{StaticResource MediumIconSize}" />
+
+                                <icons:PackIconFontAwesome
+                                    Grid.Column="1"
+                                    Margin="2,2,6,2"
+                                    Foreground="{Binding BudgetType, Converter={StaticResource BudgetTypeToBrushConverter}}"
+                                    Kind="{Binding Category.Icon}"
+                                    Style="{StaticResource MediumIconSize}" />
+
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Center"
+                                    Text="{Binding Amount}" />
+                                <TextBlock
+                                    Grid.Column="3"
+                                    FontSize="13"
+                                    Text="{Binding Created.LocalDateTime, StringFormat={}{0:dd.MM.yyyy (ddd)}, ConverterCulture=ru-RU}" />
+
+                                <TextBlock
+                                    Grid.Column="4"
+                                    Margin="12,2,2,2"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Text="{Binding Title}" />
+
+                                <icons:PackIconFontAwesome
+                                    Grid.Column="5"
+                                    Margin="2,2,6,2"
+                                    Foreground="DarkGray"
+                                    Kind="InfoSolid"
+                                    Style="{StaticResource MediumIconSize}"
+                                    ToolTip="{Binding Description}" />
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+
+
+</UserControl>

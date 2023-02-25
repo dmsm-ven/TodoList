@@ -52,7 +52,7 @@ public partial class App : Application
         ApplicationAlreadyRunningCheck();
 
         await host.StartAsync();
-        
+
         try
         {
             Dictionary<string, string> eArgs = ParseEventArgs(e.Args);
@@ -104,6 +104,8 @@ public partial class App : Application
 
         services.AddSingleton<NavigationLocator>();
 
+        services.AddSingleton<BudgetViewModel>();
+        services.AddSingleton<BudgetView>();
         services.AddSingleton<SettingsViewModel>();
         services.AddTransient<ConnectionErrorWindowViewModel>();
         services.AddTransient<AddEmployeerWindowViewModel>();
@@ -134,15 +136,15 @@ public partial class App : Application
     private void ShowLoginWindow(IReadOnlyDictionary<string, string> e)
     {
         var loginWindowVm = host.Services.GetRequiredService<LoginWindowViewModel>();
-        if(e.TryGetValue("login", out var login))
+        if (e.TryGetValue("login", out var login))
         {
             loginWindowVm.Login = login;
         }
-        if(e.TryGetValue("pass", out var pass))
+        if (e.TryGetValue("pass", out var pass))
         {
             loginWindowVm.DefaultPassword = pass;
         }
-        
+
         var loginWindow = host.Services.GetRequiredService<LoginWindow>();
         loginWindow.DataContext = loginWindowVm;
         loginWindowVm.OnUserEnter += () =>

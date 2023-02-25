@@ -12,6 +12,7 @@ public class ToolPanelViewModel : ViewModelBase
     public ICommand MoveToShoppingListCommand { get; }
     public ICommand MoveToReadListCommand { get; }
     public ICommand MoveToSettingsViewCommand { get; }
+    public ICommand MoveToBudgetViewCommand { get; }
 
     public ToolPanelViewModel()
     {
@@ -19,7 +20,8 @@ public class ToolPanelViewModel : ViewModelBase
         MoveToShoppingListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ShoppingList));
         AddEmployeerCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.AddEmployeer));
         MoveToReadListCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.ReadList));
-        MoveToSettingsViewCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.SettingsView));      
+        MoveToSettingsViewCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.SettingsView));
+        MoveToBudgetViewCommand = new LambdaCommand(e => navigationLocator?.MoveTo(ViewModelType.BudgetView));
     }
 
     public ToolPanelViewModel(NavigationLocator navigationLocator) : this()

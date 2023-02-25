@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.IconPacks;
+using System;
 
 namespace TodoList.WPF.Infrastructure.Extensions;
 
@@ -6,7 +7,7 @@ public static class StringExtensions
 {
     public static string GetMD5(this string input)
     {
-        if(input == null)
+        if (input == null)
         {
             return string.Empty;
         }
@@ -23,5 +24,14 @@ public static class StringExtensions
 
             return Convert.ToHexString(hashBytes); // .NET 5 +
         }
+    }
+
+    public static PackIconFontAwesomeKind ToFontAwesomeIcon(this string s)
+    {
+        if (Enum.TryParse<PackIconFontAwesomeKind>(s, out var icon))
+        {
+            return icon;
+        }
+        return PackIconFontAwesomeKind.QuestionSolid;
     }
 }
