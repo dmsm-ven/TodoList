@@ -1,13 +1,17 @@
-﻿using LiveCharts;
+﻿using AutoMapper;
+using LiveCharts;
 using LiveCharts.Wpf;
 using MahApps.Metro.IconPacks;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using TodoList.WPF.DataAccess.Repositories.Interfaces;
 using TodoList.WPF.Infrastructure.Extensions;
 using TodoList.WPF.Models.Budget;
 
@@ -15,6 +19,9 @@ namespace TodoList.WPF.ViewModels;
 
 public class BudgetViewModel : ViewModelBase
 {
+    private readonly IBudgetRepository repository;
+    private readonly IMapper mapper;
+
     public ICommand ClearFilterCommand { get; }
     public ICommand LoadedCommand { get; }
 
@@ -78,7 +85,7 @@ public class BudgetViewModel : ViewModelBase
 
     public BudgetViewModel()
     {
-        LoadedCommand = new LambdaCommand(Loaded);
+        LoadedCommand = new LambdaCommand(async (e) => await Loaded());
         ClearFilterCommand = new LambdaCommand(ClearFilter, CanClearFilter);
         BudgetLines = new ObservableCollection<BudgetItemModel>();
         ColorsCollection = new ColorsCollection()
@@ -110,6 +117,12 @@ public class BudgetViewModel : ViewModelBase
 
             return true;
         };
+    }
+
+    public BudgetViewModel(IBudgetRepository repository, IMapper mapper) : this()
+    {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
     private void InsertTestData()
@@ -170,9 +183,18 @@ public class BudgetViewModel : ViewModelBase
         RaisePropertyChanged(nameof(SeriesCollection));
     }
 
-    private void Loaded(object obj)
+    private async Task Loaded()
     {
+        BudgetLines.Clear();
+        FilteredSource.Refresh();
 
+        var items = await repository.GetBudgetItems();
+        var itemsModel = mapper.Map<List<BudgetItemModel>>(items);
+
+        foreach (var item in itemsModel)
+        {
+            BudgetLines.Add(item);
+        }
     }
 }
 

@@ -26,6 +26,15 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         connection.Execute(sql, parameters);
     }
 
+    public async Task ExecuteAsync(string sql, object parameters = null)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+
+        await connection.OpenAsync();
+
+        await connection.ExecuteAsync(sql, parameters);
+    }
+
     public List<T> GetList<T>(string sql, object parameters = null)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
@@ -33,6 +42,17 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         connection.Open();
 
         var list = connection.Query<T>(sql, parameters).ToList();
+
+        return list;
+    }
+
+    public async Task<List<T>> GetListAsync<T>(string sql, object parameters = null)
+    {
+        using var connection = new NpgsqlConnection(connectionString);
+
+        await connection.OpenAsync();
+
+        var list = (await connection.QueryAsync<T>(sql, parameters)).ToList();
 
         return list;
     }

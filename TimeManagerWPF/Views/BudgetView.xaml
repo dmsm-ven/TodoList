@@ -59,24 +59,45 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="0,0,0,6"
-            Background="#E4333333"
-            Orientation="Horizontal">
+            Background="#E4333333">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Margin="2,2,12,2"
+                    FontWeight="Bold"
+                    Text="Фильтр" />
 
-            <TextBlock
-                Margin="2,2,12,2"
-                FontWeight="Bold"
-                Text="Фильтр" />
+                <TextBlock Text="С" />
+                <DatePicker Margin="3,6" SelectedDate="{Binding FilterStartDate}" />
+                <TextBlock Text="По" />
+                <DatePicker Margin="3,6" SelectedDate="{Binding FilterEndDate}" />
 
-            <TextBlock Text="С" />
-            <DatePicker Margin="3,6" SelectedDate="{Binding FilterStartDate}" />
-            <TextBlock Text="По" />
-            <DatePicker Margin="3,6" SelectedDate="{Binding FilterEndDate}" />
+                <Button Command="{Binding ClearFilterCommand}" Style="{StaticResource ToolButtonStyle}">
+                    <icons:PackIconFontAwesome Foreground="#FA472D" Kind="TimesSolid" />
+                </Button>
 
-            <Button Command="{Binding ClearFilterCommand}" Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome Foreground="#FA472D" Kind="TimesSolid" />
-            </Button>
+            </StackPanel>
+            <StackPanel Margin="0,4,0,6" Orientation="Horizontal">
+                <icons:PackIconFontAwesome
+                    Foreground="Yellow"
+                    Kind="AdjustSolid"
+                    Style="{StaticResource LargeIconSize}" />
+                <TextBlock>Сумма</TextBlock>
+                <TextBox Width="75" />
 
+                <TextBlock>Заголовок</TextBlock>
+                <TextBox Width="75" />
+
+                <TextBlock>Тип</TextBlock>
+                <TextBox Width="75" />
+
+                <TextBlock>Категория</TextBlock>
+                <TextBox Width="75" />
+
+                <TextBlock>Описание</TextBlock>
+                <TextBox Width="75" />
+            </StackPanel>
         </StackPanel>
+
 
         <Grid
             Grid.Row="1"
