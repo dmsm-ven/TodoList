@@ -57,118 +57,158 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel
+        <DockPanel
             Grid.Row="0"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="0,0,0,6"
             Background="#E4333333">
-            <StackPanel.Resources>
-                <Style x:Key="TextBlockFilterCaption" TargetType="TextBlock">
-                    <Setter Property="Foreground" Value="#40D650" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Margin" Value="6,2,6,2" />
-                </Style>
-            </StackPanel.Resources>
-
-            <StackPanel Orientation="Horizontal">
-                <TextBlock
-                    Margin="2,2,12,2"
-                    FontWeight="Bold"
-                    Text="Фильтр" />
-
-                <TextBlock Text="С" />
-                <DatePicker Margin="3,6" SelectedDate="{Binding FilterStartDate}" />
-                <TextBlock Text="По" />
-                <DatePicker Margin="3,6" SelectedDate="{Binding FilterEndDate}" />
-
-                <Button Command="{Binding ClearFilterCommand}" Style="{StaticResource ToolButtonStyle}">
-                    <icons:PackIconFontAwesome Foreground="#FA472D" Kind="TimesSolid" />
-                </Button>
-
-            </StackPanel>
-
-            <DockPanel
-                Margin="0,4,0,6"
-                HorizontalAlignment="Stretch"
-                LastChildFill="True">
-                <Button Command="{Binding AddNewItemCommand}" Style="{StaticResource ToolButtonStyle}">
-                    <icons:PackIconFontAwesome
-                        DockPanel.Dock="Left"
-                        Kind="AdjustSolid"
-                        Style="{StaticResource MediumIconSize}" />
-                </Button>
-
-                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Тип</TextBlock>
-                <StackPanel DockPanel.Dock="Left">
-                    <StackPanel.Resources>
-                        <Style TargetType="RadioButton">
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Margin" Value="4,0,12,2" />
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button
-                        Command="{Binding SetNewItemTypeCommand}"
-                        CommandParameter="Income"
-                        Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Income'}"
-                        Style="{StaticResource ToolButtonStyle}">
-                        <icons:PackIconFontAwesome Kind="PlusSolid" Style="{StaticResource MediumIconSize}" />
-                    </Button>
-
-                    <Button
-                        Command="{Binding SetNewItemTypeCommand}"
-                        CommandParameter="Outcome"
-                        Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Outcome'}"
-                        Style="{StaticResource ToolButtonStyle}">
-                        <icons:PackIconFontAwesome Kind="MinusSolid" Style="{StaticResource MediumIconSize}" />
-                    </Button>
-                </StackPanel>
-
-                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Сумма</TextBlock>
-                <TextBox
-                    Width="40"
-                    Height="24"
+            <Button
+                Command="{Binding ShowNewItemPanelCommand}"
+                DockPanel.Dock="Right"
+                Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome
                     DockPanel.Dock="Left"
-                    Text="{Binding NewBudgetItem.Amount, UpdateSourceTrigger=PropertyChanged}" />
+                    Kind="CashRegisterSolid"
+                    Style="{StaticResource MediumIconSize}" />
+            </Button>
+            <TextBlock
+                Margin="2,2,12,2"
+                DockPanel.Dock="Right"
+                FontWeight="Bold"
+                Text="Внести" />
 
-                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Заголовок</TextBlock>
-                <TextBox
-                    Width="150"
-                    Height="24"
-                    DockPanel.Dock="Left"
-                    Text="{Binding NewBudgetItem.Title, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock DockPanel.Dock="Left" Foreground="#40D650">Категория</TextBlock>
-                <ComboBox
-                    Width="100"
-                    Height="24"
-                    DisplayMemberPath="Name"
-                    DockPanel.Dock="Left"
-                    IsTextSearchCaseSensitive="False"
-                    IsTextSearchEnabled="True"
-                    IsEditable="True"
-                    Foreground="Black"
-                    ItemsSource="{Binding AvailableCategories}"
-                    Text="{Binding NewCategoryName}"
-                    SelectedValue="{Binding NewBudgetItem.Category, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Описание</TextBlock>
-                <TextBox Margin="4,2,6,2" Text="{Binding NewBudgetItem.Description}" />
-            </DockPanel>
-        </StackPanel>
+            <TextBlock FontWeight="Bold" Text="Фильтр" />
 
+            <TextBlock Text="С" />
+            <DatePicker Margin="3,6" SelectedDate="{Binding FilterStartDate}" />
+            <TextBlock Text="По" />
+            <DatePicker Margin="3,6" SelectedDate="{Binding FilterEndDate}" />
+
+            <Button
+                HorizontalAlignment="Left"
+                Command="{Binding ClearFilterCommand}"
+                Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome Foreground="#FA472D" Kind="TimesSolid" />
+            </Button>
+
+        </DockPanel>
 
         <Grid
             Grid.Row="1"
             Grid.Column="1"
-            MinHeight="250"
             Margin="0,3,0,0"
             Background="#D61B1818">
+            <DockPanel Margin="6,2" Visibility="{Binding NewBudgetItem, Converter={StaticResource NullToVisibilityConverter}}">
+
+                <Button
+                    Command="{Binding AddNewItemCommand}"
+                    DockPanel.Dock="Bottom"
+                    Style="{StaticResource AddEmployeerButton}">
+                    Сохранить
+                </Button>
+
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style x:Key="TextBlockFilterCaption" TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#40D650" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="2,2,6,2" />
+                        </Style>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Margin" Value="4,0,12,2" />
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Background" Value="#A6E9E9E9" />
+                            <Setter Property="BorderBrush" Value="Yellow" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="18" />
+                            <Setter Property="Height" Value="28" />
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <TextBlock HorizontalAlignment="Center" Style="{StaticResource TextBlockFilterCaption}">Тип</TextBlock>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button
+                            Command="{Binding SetNewItemTypeCommand}"
+                            CommandParameter="Income"
+                            Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Income'}"
+                            Style="{StaticResource ToolButtonStyle}">
+                            <icons:PackIconFontAwesome Kind="PlusSolid" Style="{StaticResource MediumIconSize}" />
+                        </Button>
+
+                        <Button
+                            Command="{Binding SetNewItemTypeCommand}"
+                            CommandParameter="Outcome"
+                            Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Outcome'}"
+                            Style="{StaticResource ToolButtonStyle}">
+                            <icons:PackIconFontAwesome Kind="MinusSolid" Style="{StaticResource MediumIconSize}" />
+                        </Button>
+                    </StackPanel>
+
+                    <TextBlock Style="{StaticResource TextBlockFilterCaption}">Сумма</TextBlock>
+                    <TextBox Text="{Binding NewBudgetItem.Amount, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Style="{StaticResource TextBlockFilterCaption}">Заголовок</TextBlock>
+                    <TextBox Text="{Binding NewBudgetItem.Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Style="{StaticResource TextBlockFilterCaption}">Категория</TextBlock>
+                    <ItemsControl ItemsSource="{Binding AvailableCategories}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <RadioButton
+                                        VerticalAlignment="Center"
+                                        GroupName="selectedCategory"
+                                        IsChecked="{Binding IsChecked}" />
+
+                                    <icons:PackIconFontAwesome
+                                        Grid.Column="1"
+                                        Margin="2,2,6,2"
+                                        Foreground="#16FFFF"
+                                        Kind="{Binding Icon}"
+                                        Style="{StaticResource MediumIconSize}" />
+
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        FontSize="15"
+                                        FontWeight="Bold"
+                                        Foreground="Yellow"
+                                        Text="{Binding Name}" />
+
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Style="{StaticResource TextBlockFilterCaption}">Описание</TextBlock>
+                    <TextBox
+                        Height="60"
+                        VerticalContentAlignment="Top"
+                        AcceptsReturn="True"
+                        AcceptsTab="True"
+                        FontSize="13"
+                        Text="{Binding NewBudgetItem.Description}"
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto" />
+                </StackPanel>
+            </DockPanel>
+
             <lc:CartesianChart
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Series="{Binding SeriesCollection}"
-                SeriesColors="{Binding SeriesColors}">
+                SeriesColors="{Binding SeriesColors}"
+                Visibility="{Binding NewBudgetItem, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter='inverse'}">
                 <lc:CartesianChart.AxisX>
                     <lc:Axis Title="Дата" />
                 </lc:CartesianChart.AxisX>
@@ -197,7 +237,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -223,12 +263,13 @@
                                     Grid.Column="2"
                                     HorizontalAlignment="Center"
                                     Foreground="White"
-                                    Text="{Binding Amount}" />
+                                    Text="{Binding Amount, StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
                                 <TextBlock
                                     Grid.Column="3"
                                     FontSize="13"
-                                    Foreground="White"
-                                    Text="{Binding Created.LocalDateTime, StringFormat={}{0:dd.MM.yyyy (ddd)}, ConverterCulture=ru-RU}" />
+                                    Foreground="#4EE7EC"
+                                    Margin="15 2 2 2"
+                                    Text="{Binding Created, StringFormat={}{0:dd.MM.yyyy (ddd)}, ConverterCulture=ru-RU}" />
 
                                 <TextBlock
                                     Grid.Column="4"

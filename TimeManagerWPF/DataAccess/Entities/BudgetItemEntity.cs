@@ -5,7 +5,7 @@ namespace TodoList.WPF.DataAccess.Entities;
 public class BudgetItemEntity
 {
     public int id { get; set; }
-    public DateTimeOffset created { get; set; } = DateTimeOffset.Now;
+    public DateTime created { get; set; } = DateTime.UtcNow;
     public int budget_type { get; set; }
     public string currency { get; set; }
     public decimal amount { get; set; }

@@ -24,6 +24,7 @@ public class BudgetViewModel : ViewModelBase
     private readonly IBudgetRepository repository;
     private readonly IMapper mapper;
 
+    public ICommand ShowNewItemPanelCommand { get; }
     public ICommand AddNewItemCommand { get; }
     public ICommand ClearFilterCommand { get; }
     public ICommand LoadedCommand { get; }
@@ -59,18 +60,11 @@ public class BudgetViewModel : ViewModelBase
 
     public BudgetItemType[] AvailableTypes { get; } = Enum.GetValues<BudgetItemType>();
 
-    BudgetItemModel newBudgetItem = new();
+    BudgetItemModel newBudgetItem;
     public BudgetItemModel NewBudgetItem
     {
         get => newBudgetItem;
         set => Set(ref newBudgetItem, value);
-    }
-
-    string newCategoryName;
-    public string NewCategoryName
-    {
-        get => newCategoryName;
-        set => Set(ref newCategoryName, value);
     }
 
     public ObservableCollection<BudgetCategoryModel> AvailableCategories { get; }
@@ -108,6 +102,7 @@ public class BudgetViewModel : ViewModelBase
     public BudgetViewModel()
     {
         LoadedCommand = new LambdaCommand(async (e) => await Loaded());
+        ShowNewItemPanelCommand = new LambdaCommand(e => NewBudgetItem = new BudgetItemModel(), e => NewBudgetItem == null);
         AddNewItemCommand = new LambdaCommand(async (e) => await AddNewItem(), CanAddNewBudgetItem);
         ClearFilterCommand = new LambdaCommand(ClearFilter, CanClearFilter);
         SetNewItemTypeCommand = new LambdaCommand(SetNewItemType);
@@ -120,9 +115,9 @@ public class BudgetViewModel : ViewModelBase
         System.Windows.Media.Color.FromRgb(124, 252, 0),
     };
 
-        InsertTestData();
 
         FilteredSource = CollectionViewSource.GetDefaultView(BudgetLines);
+        FilteredSource.SortDescriptions.Add(new SortDescription(nameof(BudgetItemModel.Created), ListSortDirection.Descending));
         FilteredSource.Filter = (o) =>
         {
             if (FilterStartDate == null && FilterEndDate == null)
@@ -163,8 +158,9 @@ public class BudgetViewModel : ViewModelBase
 
     private bool CanAddNewBudgetItem(object arg)
     {
-        bool isInvalid = string.IsNullOrWhiteSpace(NewBudgetItem.Title) ||
-            string.IsNullOrWhiteSpace(NewCategoryName) ||
+        bool isInvalid = NewBudgetItem == null ||
+            NewBudgetItem.Category == null ||
+            string.IsNullOrWhiteSpace(NewBudgetItem.Title) ||
             NewBudgetItem.BudgetType == BudgetItemType.None ||
             NewBudgetItem.Amount == 0;
 
@@ -184,12 +180,12 @@ public class BudgetViewModel : ViewModelBase
         await repository.AddBudgetItem(entity);
 
         FilteredSource.Refresh();
-        NewBudgetItem = new BudgetItemModel();
+        NewBudgetItem = null;
     }
 
     private async Task<bool> AddCategoryOrCancel()
     {
-        if (AvailableCategories.FirstOrDefault(i => i.Name.Trim().Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)) == null)
+        /*if (AvailableCategories.FirstOrDefault(i => i.Name.Trim().Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)) == null)
         {
             var dialog = MessageBox.Show($"Категории [{NewCategoryName}] не существует. Создать ее ?", "Подтверждение", MessageBoxButton.YesNoCancel, MessageBoxImage.Question); ;
             if (dialog == MessageBoxResult.Yes)
@@ -209,53 +205,8 @@ public class BudgetViewModel : ViewModelBase
                 return false;
             }
         }
-
+        */
         return true;
-    }
-
-    private void InsertTestData()
-    {
-        int i = 0;
-        foreach (var number in Enumerable.Range(0, 15))
-        {
-            var income = new BudgetItemModel()
-            {
-                Amount = i * 250 + 3000,
-                AmountRUBEquivalent = null,
-                BudgetType = BudgetItemType.Income,
-                Category = new BudgetCategoryModel()
-                {
-                    Id = 1,
-                    Name = "Работа",
-                    Icon = PackIconFontAwesomeKind.SuitcaseSolid
-                },
-                Created = DateTimeOffset.Now.AddDays(-i),
-                Currency = BudgetItemTransactionCurrency.RUB,
-                Id = ++i,
-                Title = "Аванс етк",
-                Description = "Аванс от етк за период с х по х"
-            };
-            BudgetLines.Add(income);
-
-            var outcome = new BudgetItemModel()
-            {
-                Amount = i * 100 + 1500,
-                AmountRUBEquivalent = null,
-                BudgetType = BudgetItemType.Outcome,
-                Category = new BudgetCategoryModel()
-                {
-                    Id = 2,
-                    Name = "Продукты",
-                    Icon = PackIconFontAwesomeKind.ShoppingBasketSolid
-                },
-                Created = DateTimeOffset.Now.AddDays(-i),
-                Currency = BudgetItemTransactionCurrency.RUB,
-                Id = ++i,
-                Title = "Аванс етк",
-                Description = "Аванс от етк за период с х по х"
-            };
-            BudgetLines.Add(outcome);
-        }
     }
 
     private bool CanClearFilter(object arg)
@@ -289,6 +240,13 @@ public class BudgetViewModel : ViewModelBase
         foreach (var category in budgetCategoryModels)
         {
             AvailableCategories.Add(category);
+            category.IsCheckedChanged += () =>
+            {
+                if (NewBudgetItem != null)
+                {
+                    NewBudgetItem.Category = category.IsChecked ? category : null;
+                }
+            };
         }
     }
 }

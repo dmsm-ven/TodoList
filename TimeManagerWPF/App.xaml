@@ -13,6 +13,7 @@
             <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter" />
             <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter" />
             <con:EqualsStringToBoolConverter x:Key="EqualsStringToBoolConverter" />
+            <con:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
             <com:CloseWindowCommand x:Key="CloseWindowCommand" />
             <com:MinimizeWindowCommand x:Key="MinimizeWindowCommand" />

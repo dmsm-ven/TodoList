@@ -6,7 +6,7 @@ namespace TodoList.WPF.Models.Budget;
 public class BudgetItemModel : ViewModelBase
 {
     public int Id { get; init; }
-    public DateTimeOffset Created { get; init; } = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Local);
+    public DateTime Created { get; init; } = DateTime.UtcNow;
 
     BudgetItemType budgetType;
     public BudgetItemType BudgetType

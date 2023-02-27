@@ -17,6 +17,7 @@ public class BudgetItemProfile : Profile
 
         CreateMap<BudgetItemEntity, BudgetItemModel>()
             .ForMember(x => x.Id, x => x.MapFrom(o => o.id))
+            .ForMember(x => x.Created, x => x.MapFrom(o => o.created))
             .ForMember(x => x.Amount, x => x.MapFrom(o => o.amount))
             .ForMember(x => x.AmountRUBEquivalent, x => x.MapFrom(o => o.amount_rub_equivalent))
             .ForMember(x => x.BudgetType, x => x.MapFrom(o => (BudgetItemType)o.budget_type))
@@ -33,6 +34,7 @@ public class BudgetItemProfile : Profile
         CreateMap<BudgetItemModel, BudgetItemEntity>()
             .ForMember(x => x.id, x => x.MapFrom(o => o.Id))
             .ForMember(x => x.amount, x => x.MapFrom(o => o.Amount))
+            .ForMember(x => x.created, x => x.MapFrom(o => o.Created))
             .ForMember(x => x.amount_rub_equivalent, x => x.MapFrom(o => o.Amount))
             .ForMember(x => x.budget_type, x => x.MapFrom(o => (int)o.BudgetType))
             .ForMember(x => x.title, x => x.MapFrom(o => o.Title))
