@@ -28,7 +28,7 @@ public class PostgresBudgetRepository : IBudgetRepository
     {
 
         var sql = @"INSERT INTO budget_item (created, budget_type, amount, currency, amount_rub_equivalent, title, description, category_id) VALUES
-                            (@created, @budget_type, @amount, @currency, @amount_rub_equivalent, @title, @description, category_id)";
+                            (@created, @budget_type, @amount, @currency, @amount_rub_equivalent, @title, @description, @category_id)";
 
         await database.ExecuteAsync(sql, item);
     }

@@ -9,8 +9,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.DataAccess.Repositories.Interfaces;
 using TodoList.WPF.Infrastructure.Extensions;
 using TodoList.WPF.Models.Budget;
@@ -22,8 +24,10 @@ public class BudgetViewModel : ViewModelBase
     private readonly IBudgetRepository repository;
     private readonly IMapper mapper;
 
+    public ICommand AddNewItemCommand { get; }
     public ICommand ClearFilterCommand { get; }
     public ICommand LoadedCommand { get; }
+    public ICommand SetNewItemTypeCommand { get; }
 
     DateTime? filterStartDate;
     public DateTime? FilterStartDate
@@ -52,6 +56,24 @@ public class BudgetViewModel : ViewModelBase
             }
         }
     }
+
+    public BudgetItemType[] AvailableTypes { get; } = Enum.GetValues<BudgetItemType>();
+
+    BudgetItemModel newBudgetItem = new();
+    public BudgetItemModel NewBudgetItem
+    {
+        get => newBudgetItem;
+        set => Set(ref newBudgetItem, value);
+    }
+
+    string newCategoryName;
+    public string NewCategoryName
+    {
+        get => newCategoryName;
+        set => Set(ref newCategoryName, value);
+    }
+
+    public ObservableCollection<BudgetCategoryModel> AvailableCategories { get; }
 
     public ObservableCollection<BudgetItemModel> BudgetLines { get; }
 
@@ -86,7 +108,11 @@ public class BudgetViewModel : ViewModelBase
     public BudgetViewModel()
     {
         LoadedCommand = new LambdaCommand(async (e) => await Loaded());
+        AddNewItemCommand = new LambdaCommand(async (e) => await AddNewItem(), CanAddNewBudgetItem);
         ClearFilterCommand = new LambdaCommand(ClearFilter, CanClearFilter);
+        SetNewItemTypeCommand = new LambdaCommand(SetNewItemType);
+
+        AvailableCategories = new ObservableCollection<BudgetCategoryModel>();
         BudgetLines = new ObservableCollection<BudgetItemModel>();
         ColorsCollection = new ColorsCollection()
     {
@@ -117,12 +143,74 @@ public class BudgetViewModel : ViewModelBase
 
             return true;
         };
+
+
+    }
+
+    private void SetNewItemType(object obj)
+    {
+        if (Enum.TryParse<BudgetItemType>(obj.ToString(), out var t))
+        {
+            NewBudgetItem.BudgetType = t;
+        }
     }
 
     public BudgetViewModel(IBudgetRepository repository, IMapper mapper) : this()
     {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    private bool CanAddNewBudgetItem(object arg)
+    {
+        bool isInvalid = string.IsNullOrWhiteSpace(NewBudgetItem.Title) ||
+            string.IsNullOrWhiteSpace(NewCategoryName) ||
+            NewBudgetItem.BudgetType == BudgetItemType.None ||
+            NewBudgetItem.Amount == 0;
+
+        return !isInvalid;
+    }
+
+    private async Task AddNewItem()
+    {
+        if (!(await AddCategoryOrCancel()))
+        {
+            MessageBox.Show("Действие отменено", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        BudgetLines.Add(NewBudgetItem);
+        var entity = mapper.Map<BudgetItemEntity>(NewBudgetItem);
+        await repository.AddBudgetItem(entity);
+
+        FilteredSource.Refresh();
+        NewBudgetItem = new BudgetItemModel();
+    }
+
+    private async Task<bool> AddCategoryOrCancel()
+    {
+        if (AvailableCategories.FirstOrDefault(i => i.Name.Trim().Equals(NewCategoryName.Trim(), StringComparison.OrdinalIgnoreCase)) == null)
+        {
+            var dialog = MessageBox.Show($"Категории [{NewCategoryName}] не существует. Создать ее ?", "Подтверждение", MessageBoxButton.YesNoCancel, MessageBoxImage.Question); ;
+            if (dialog == MessageBoxResult.Yes)
+            {
+                var cat = new BudgetCategoryEntity() { name = NewCategoryName, icon = "QuestionSolid" };
+                await repository.AddCategory(cat);
+
+                cat.id = (AvailableCategories.OrderByDescending(c => c.Id)?.FirstOrDefault()?.Id + 1) ?? 1;
+                var model = mapper.Map<BudgetCategoryModel>(cat);
+                AvailableCategories.Add(model);
+                newBudgetItem.Category = model;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void InsertTestData()
@@ -186,14 +274,21 @@ public class BudgetViewModel : ViewModelBase
     private async Task Loaded()
     {
         BudgetLines.Clear();
+        AvailableCategories.Clear();
         FilteredSource.Refresh();
 
-        var items = await repository.GetBudgetItems();
-        var itemsModel = mapper.Map<List<BudgetItemModel>>(items);
-
-        foreach (var item in itemsModel)
+        var budgetItems = await repository.GetBudgetItems();
+        var budgetItemModels = mapper.Map<IEnumerable<BudgetItemModel>>(budgetItems);
+        foreach (var budgetItem in budgetItemModels)
         {
-            BudgetLines.Add(item);
+            BudgetLines.Add(budgetItem);
+        }
+
+        var budgetCategories = await repository.GetBudgeCategories();
+        var budgetCategoryModels = mapper.Map<IEnumerable<BudgetCategoryModel>>(budgetCategories);
+        foreach (var category in budgetCategoryModels)
+        {
+            AvailableCategories.Add(category);
         }
     }
 }

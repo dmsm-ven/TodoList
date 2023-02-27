@@ -8,6 +8,25 @@ using TodoList.WPF.ViewModels;
 
 namespace TodoList.WPF.Infrastructure.Converters;
 
+public class ActiveBudgetTypeToBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is BudgetItemType i && Enum.TryParse<BudgetItemType>(parameter.ToString(), out var parVal))
+        {
+            if (i != BudgetItemType.None && parVal == i)
+            {
+                return Brushes.Yellow;
+            }
+        }
+        return Brushes.White;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
 public class BudgetTypeToIconConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

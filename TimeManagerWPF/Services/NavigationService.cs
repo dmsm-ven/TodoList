@@ -30,19 +30,19 @@ public class NavigationLocator : ViewModelBase
         private set => Set(ref activeViewModelType, value);
     }
 
-    private readonly Lazy<Dictionary<ViewModelType, ViewModelBase>> availableViewModels;
+    IReadOnlyDictionary<ViewModelType, Lazy<ViewModelBase>> AvailableViewModels { get; }
 
     public void MoveTo(ViewModelType type)
     {
         try
         {
             ActiveViewModelType = type;
-            ActiveViewModel = availableViewModels.Value[type];
+            ActiveViewModel = AvailableViewModels[type].Value;
         }
         catch (Exception ex)
         {
             ActiveViewModelType = ViewModelType.ErrorView;
-            ActiveViewModel = availableViewModels.Value[ActiveViewModelType];
+            ActiveViewModel = AvailableViewModels[ActiveViewModelType].Value;
             (ActiveViewModel as ConnectionErrorWindowViewModel).ErrorMessage = ex.Message;
         }
 
@@ -50,15 +50,14 @@ public class NavigationLocator : ViewModelBase
 
     public NavigationLocator(IHost host)
     {
-        availableViewModels = new Lazy<Dictionary<ViewModelType, ViewModelBase>>(() =>
-            new Dictionary<ViewModelType, ViewModelBase>()
-            {
-                [ViewModelType.TodoList] = host.Services.GetService<TodoListViewModel>(),
-                [ViewModelType.ShoppingList] = host.Services.GetService<ShoppingListViewModel>(),
-                [ViewModelType.ReadList] = host.Services.GetService<ReadListViewModel>(),
-                [ViewModelType.ErrorView] = host.Services.GetService<ConnectionErrorWindowViewModel>(),
-                [ViewModelType.SettingsView] = host.Services.GetService<SettingsViewModel>(),
-                [ViewModelType.BudgetView] = host.Services.GetService<BudgetViewModel>(),
-            });
+        AvailableViewModels = new Dictionary<ViewModelType, Lazy<ViewModelBase>>()
+        {
+            [ViewModelType.TodoList] = new Lazy<ViewModelBase>(() => host.Services.GetService<TodoListViewModel>()),
+            [ViewModelType.ShoppingList] = new Lazy<ViewModelBase>(() => host.Services.GetService<ShoppingListViewModel>()),
+            [ViewModelType.ReadList] = new Lazy<ViewModelBase>(() => host.Services.GetService<ReadListViewModel>()),
+            [ViewModelType.ErrorView] = new Lazy<ViewModelBase>(() => host.Services.GetService<ConnectionErrorWindowViewModel>()),
+            [ViewModelType.SettingsView] = new Lazy<ViewModelBase>(() => host.Services.GetService<SettingsViewModel>()),
+            [ViewModelType.BudgetView] = new Lazy<ViewModelBase>(() => host.Services.GetService<BudgetViewModel>())
+        };
     }
 }

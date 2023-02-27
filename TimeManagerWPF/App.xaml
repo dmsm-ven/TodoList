@@ -1,29 +1,31 @@
-﻿<Application x:Class="TodoList.WPF.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters"
-             xmlns:com="clr-namespace:TodoList.WPF.Infrastructure.Commands">
+﻿<Application
+    x:Class="TodoList.WPF.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:com="clr-namespace:TodoList.WPF.Infrastructure.Commands"
+    xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters">
     <Application.Resources>
-        
-        <ResourceDictionary>
-            <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter"/>
-            <con:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
-            <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter"/>
-            <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter"/>
 
-            <com:CloseWindowCommand x:Key="CloseWindowCommand"/>
-            <com:MinimizeWindowCommand x:Key="MinimizeWindowCommand"/>
-            <com:RestoreWindowCommand x:Key="RestoreWindowCommand"/>
-            <com:DragMoveCommand x:Key="DragMoveCommand"/>
-            
+        <ResourceDictionary>
+            <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter" />
+            <con:BoolToBrushConverter x:Key="BoolToBrushConverter" />
+            <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter" />
+            <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter" />
+            <con:EqualsStringToBoolConverter x:Key="EqualsStringToBoolConverter" />
+
+            <com:CloseWindowCommand x:Key="CloseWindowCommand" />
+            <com:MinimizeWindowCommand x:Key="MinimizeWindowCommand" />
+            <com:RestoreWindowCommand x:Key="RestoreWindowCommand" />
+            <com:DragMoveCommand x:Key="DragMoveCommand" />
+
             <ResourceDictionary.MergedDictionaries>
-                
-                <ResourceDictionary Source="/Resources/Brushes.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="/Resources/Buttons.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="/Resources/Icons.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="/Resources/Borders.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="/Resources/TextBlocks.xaml"></ResourceDictionary>
+
+                <ResourceDictionary Source="/Resources/Brushes.xaml" />
+                <ResourceDictionary Source="/Resources/Buttons.xaml" />
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+                <ResourceDictionary Source="/Resources/Borders.xaml" />
+                <ResourceDictionary Source="/Resources/TextBlocks.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

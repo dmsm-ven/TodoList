@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:bt="TodoList.WPF.Models."
     xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -18,25 +19,27 @@
     d:Height="400"
     d:Width="800"
     mc:Ignorable="d">
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
     <UserControl.Resources>
         <con:BudgetTypeToIconConverter x:Key="BudgetTypeToIconConverter" />
         <con:BudgetTypeToBrushConverter x:Key="BudgetTypeToBrushConverter" />
+        <con:ActiveBudgetTypeToBrushConverter x:Key="ActiveBudgetTypeToBrushConverter" />
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Margin" Value="2,2,6,2" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
     </UserControl.Resources>
 
-    <beh:Interaction.Triggers>
-        <beh:EventTrigger EventName="Loaded">
-            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
-        </beh:EventTrigger>
-    </beh:Interaction.Triggers>
-
     <Grid>
-
         <Grid.Background>
             <ImageBrush
                 ImageSource="../Assets/Images/Budget/budget-background-texture.jpg"
@@ -51,7 +54,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <StackPanel
@@ -60,6 +63,14 @@
             Grid.ColumnSpan="2"
             Margin="0,0,0,6"
             Background="#E4333333">
+            <StackPanel.Resources>
+                <Style x:Key="TextBlockFilterCaption" TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="#40D650" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="6,2,6,2" />
+                </Style>
+            </StackPanel.Resources>
+
             <StackPanel Orientation="Horizontal">
                 <TextBlock
                     Margin="2,2,12,2"
@@ -76,26 +87,74 @@
                 </Button>
 
             </StackPanel>
-            <StackPanel Margin="0,4,0,6" Orientation="Horizontal">
-                <icons:PackIconFontAwesome
-                    Foreground="Yellow"
-                    Kind="AdjustSolid"
-                    Style="{StaticResource LargeIconSize}" />
-                <TextBlock>Сумма</TextBlock>
-                <TextBox Width="75" />
 
-                <TextBlock>Заголовок</TextBlock>
-                <TextBox Width="75" />
+            <DockPanel
+                Margin="0,4,0,6"
+                HorizontalAlignment="Stretch"
+                LastChildFill="True">
+                <Button Command="{Binding AddNewItemCommand}" Style="{StaticResource ToolButtonStyle}">
+                    <icons:PackIconFontAwesome
+                        DockPanel.Dock="Left"
+                        Kind="AdjustSolid"
+                        Style="{StaticResource MediumIconSize}" />
+                </Button>
 
-                <TextBlock>Тип</TextBlock>
-                <TextBox Width="75" />
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Тип</TextBlock>
+                <StackPanel DockPanel.Dock="Left">
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Margin" Value="4,0,12,2" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button
+                        Command="{Binding SetNewItemTypeCommand}"
+                        CommandParameter="Income"
+                        Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Income'}"
+                        Style="{StaticResource ToolButtonStyle}">
+                        <icons:PackIconFontAwesome Kind="PlusSolid" Style="{StaticResource MediumIconSize}" />
+                    </Button>
 
-                <TextBlock>Категория</TextBlock>
-                <TextBox Width="75" />
+                    <Button
+                        Command="{Binding SetNewItemTypeCommand}"
+                        CommandParameter="Outcome"
+                        Foreground="{Binding NewBudgetItem.BudgetType, Converter={StaticResource ActiveBudgetTypeToBrushConverter}, ConverterParameter='Outcome'}"
+                        Style="{StaticResource ToolButtonStyle}">
+                        <icons:PackIconFontAwesome Kind="MinusSolid" Style="{StaticResource MediumIconSize}" />
+                    </Button>
+                </StackPanel>
 
-                <TextBlock>Описание</TextBlock>
-                <TextBox Width="75" />
-            </StackPanel>
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Сумма</TextBlock>
+                <TextBox
+                    Width="40"
+                    Height="24"
+                    DockPanel.Dock="Left"
+                    Text="{Binding NewBudgetItem.Amount, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Заголовок</TextBlock>
+                <TextBox
+                    Width="150"
+                    Height="24"
+                    DockPanel.Dock="Left"
+                    Text="{Binding NewBudgetItem.Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock DockPanel.Dock="Left" Foreground="#40D650">Категория</TextBlock>
+                <ComboBox
+                    Width="100"
+                    Height="24"
+                    DisplayMemberPath="Name"
+                    DockPanel.Dock="Left"
+                    IsTextSearchCaseSensitive="False"
+                    IsTextSearchEnabled="True"
+                    IsEditable="True"
+                    Foreground="Black"
+                    ItemsSource="{Binding AvailableCategories}"
+                    Text="{Binding NewCategoryName}"
+                    SelectedValue="{Binding NewBudgetItem.Category, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource TextBlockFilterCaption}">Описание</TextBlock>
+                <TextBox Margin="4,2,6,2" Text="{Binding NewBudgetItem.Description}" />
+            </DockPanel>
         </StackPanel>
 
 

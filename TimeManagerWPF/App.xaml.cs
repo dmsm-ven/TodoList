@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Windows;
 using TodoList.WPF.DataAccess;
 using TodoList.WPF.DataAccess.Repositories;
+using TodoList.WPF.DataAccess.Repositories.Interfaces;
+using TodoList.WPF.DataAccess.Repositories.Postgres;
 using TodoList.WPF.Models;
 using TodoList.WPF.ViewModels;
 using TodoList.WPF.Views;
@@ -38,10 +40,12 @@ public partial class App : Application
                 string connectionString = context.Configuration.GetConnectionString("default");
                 services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
 
+                services.AddAutoMapper(assembly);
+
                 ConfigureDatabaseRepositories(services);
                 ConfigureServices(services);
                 ConfigureViewModels(services);
-                services.AddAutoMapper(assembly);
+
             })
             .Build();
     }
@@ -92,6 +96,7 @@ public partial class App : Application
         services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
         services.AddTransient<IShoppingItemsRepository, PostgresShoppingItemsRepository>();
         services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
+        services.AddTransient<IBudgetRepository, PostgresBudgetRepository>();
     }
 
     private void ConfigureViewModels(IServiceCollection services)
@@ -102,7 +107,7 @@ public partial class App : Application
         services.AddSingleton<LoginWindow>();
         services.AddSingleton<LoginWindowViewModel>();
 
-        services.AddSingleton<NavigationLocator>();
+
 
         services.AddSingleton<BudgetViewModel>();
         services.AddSingleton<BudgetView>();
@@ -117,6 +122,8 @@ public partial class App : Application
         services.AddSingleton<TodoListViewModel>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainWindow>();
+
+        services.AddSingleton<NavigationLocator>();
     }
 
     private void ConfigureServices(IServiceCollection services)

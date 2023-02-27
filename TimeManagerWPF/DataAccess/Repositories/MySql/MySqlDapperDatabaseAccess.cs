@@ -25,6 +25,11 @@ public class MySqlDapperDatabaseAccess : IDapperDatabaseAccess
         connection.Execute(sql, parameters);
     }
 
+    public Task ExecuteAsync(string sql, object parameters = null)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public List<T> GetList<T>(string sql, object parameters = null)
     {
         using IDbConnection connection = new MySqlConnection(connectionString);
@@ -34,6 +39,11 @@ public class MySqlDapperDatabaseAccess : IDapperDatabaseAccess
         var list = connection.Query<T>(sql, parameters).ToList();
 
         return list;
+    }
+
+    public Task<List<T>> GetListAsync<T>(string sql, object parameters = null)
+    {
+        throw new System.NotImplementedException();
     }
 
     public T GetSingle<T>(string sql, object parameters = null)

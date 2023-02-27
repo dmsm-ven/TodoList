@@ -1,17 +1,59 @@
 ﻿using System;
+using TodoList.WPF.ViewModels;
 
 namespace TodoList.WPF.Models.Budget;
 
-public class BudgetItemModel
+public class BudgetItemModel : ViewModelBase
 {
     public int Id { get; init; }
-    public DateTimeOffset Created { get; init; }
-    public BudgetItemType BudgetType { get; init; }
-    public BudgetItemTransactionCurrency Currency { get; init; }
-    public decimal Amount { get; init; }
-    public decimal? AmountRUBEquivalent { get; init; }
-    public string Title { get; init; } = String.Empty;
-    public string Description { get; init; } = String.Empty;
+    public DateTimeOffset Created { get; init; } = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Local);
 
-    public BudgetCategoryModel Category { get; init; }
+    BudgetItemType budgetType;
+    public BudgetItemType BudgetType
+    {
+        get => budgetType;
+        set => Set(ref budgetType, value);
+    }
+
+    BudgetItemTransactionCurrency currency;
+    public BudgetItemTransactionCurrency Currency
+    {
+        get => currency;
+        set => Set(ref currency, value);
+    }
+
+    decimal amount;
+    public decimal Amount
+    {
+        get => amount;
+        set => Set(ref amount, value);
+    }
+
+    decimal? amountRUBEquivalent;
+    public decimal? AmountRUBEquivalent
+    {
+        get => amountRUBEquivalent;
+        set => Set(ref amountRUBEquivalent, value);
+    }
+
+    string title;
+    public string Title
+    {
+        get => title;
+        set => Set(ref title, value);
+    }
+
+    string description;
+    public string Description
+    {
+        get => description;
+        set => Set(ref description, value);
+    }
+
+    BudgetCategoryModel category;
+    public BudgetCategoryModel Category
+    {
+        get => category;
+        set => Set(ref category, value);
+    }
 }
