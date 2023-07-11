@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Threading;
+using DynamicData;
+using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,8 +24,6 @@ public class MainViewModel : ViewModelBase
         this.employeerRepository = employeerRepository;
         this.employeerPaymentRepository = employeerPaymentRepository;
         this.jobItemRepository = jobItemRepository;
-
-        Task.Run(LoadedCommand);
     }
 
     public ObservableCollection<EmployeerEntity> Employeers { get; }
@@ -44,6 +44,21 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<EmployeerEntity, Unit> ChangeSelectedEmployeerCommand { get; }
 
     private readonly Dictionary<int, List<JobItemEntity>> jobItemsCache;
+
+    public string CurrentEmployeerUnpaidCompletedTotalSum
+    {
+        get
+        {
+            decimal total = 0;
+            if (selectedEmployeer != null)
+            {
+                total = jobItemsCache[selectedEmployeer.id]
+                    .Where(j => j.is_completed && !j
+                    .is_payed).Sum(j => j.price);
+            }
+            return $"{total:F0} руб.";
+        }
+    }
 
     public MainViewModel()
     {
@@ -69,18 +84,19 @@ public class MainViewModel : ViewModelBase
     {
         if (!jobItemsCache.TryGetValue(selectedEmployeer.id, out var jobItems))
         {
-            var jobItemsRemote = await Task.Run(() => jobItemRepository.GetAllJobItems(selectedEmployeer.id).Take(100));
-            jobItemsCache[selectedEmployeer.id] = jobItemsRemote.ToList();
+            var jobItemsRemote = await Task.Run(() => jobItemRepository.GetAllJobItems(selectedEmployeer.id));
+            jobItemsCache[selectedEmployeer.id] = jobItemsRemote.OrderByDescending(i => i.start_date).ToList();
         }
 
-        if (JobItems.Any())
+        Dispatcher.UIThread.Invoke(() =>
         {
-            JobItems.Clear();
-        }
+            if (JobItems.Count > 0)
+            {
+                JobItems.Clear();
+            }
+            JobItems.AddRange(jobItemsCache[selectedEmployeer.id]);
 
-        foreach (var j in jobItemsCache[selectedEmployeer.id].OrderByDescending(i => i.start_date))
-        {
-            JobItems.Add(j);
-        }
+            this.RaisePropertyChanged(nameof(CurrentEmployeerUnpaidCompletedTotalSum));
+        });
     }
 }

@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 using TodoList.Avalonia.ViewModels;
 using TodoList.Avalonia.Views;
 using TodoListApp.Core;
@@ -55,20 +56,24 @@ public partial class App : Application
         services.AddTransient<IBudgetRepository, PostgresBudgetRepository>();
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
+        var viewModel = host.Services.GetRequiredService<MainViewModel>();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = host.Services.GetRequiredService<MainViewModel>()
+                DataContext = viewModel
             };
+
+            await Task.Run(viewModel.LoadedCommand);
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = host.Services.GetRequiredService<MainViewModel>()
+                DataContext = viewModel
             };
         }
 
