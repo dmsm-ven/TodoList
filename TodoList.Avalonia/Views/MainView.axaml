@@ -1,0 +1,83 @@
+<UserControl
+    x:Class="TodoList.Avalonia.Views.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:TodoList.Avalonia.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:CompileBindings="False"
+    x:DataType="vm:MainViewModel"
+    mc:Ignorable="d">
+    <Design.DataContext>
+        <!--
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+        -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <ItemsControl
+            MinHeight="40"
+            Background="#333"
+            ItemsSource="{Binding Employeers}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button
+                        Margin="6,2"
+                        Padding="3"
+                        BorderBrush="LightBlue"
+                        BorderThickness="1"
+                        Command="{Binding $parent[ItemsControl].DataContext.ChangeSelectedEmployeerCommand}"
+						CommandParameter="{Binding}"
+                        Content="{Binding name}"
+                        CornerRadius="4"
+                        FontSize="16"
+                        Foreground="White" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <ItemsControl
+            Grid.Row="1"
+            Background="DarkGray"
+            Foreground="White"
+            ItemsSource="{Binding JobItems}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+                        <Grid.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="6,2" />
+                            </Style>
+                            <Style Selector="CheckBox">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="6,2" />
+                            </Style>
+                        </Grid.Styles>
+
+                        <TextBlock Grid.Column="0" Text="{Binding start_date}" />
+                        <TextBlock Grid.Column="1" Text="{Binding end_date}" />
+                        <TextBlock Grid.Column="2" Text="{Binding title}" />
+                        <TextBlock Grid.Column="3" Text="{Binding price}" />
+                        <TextBlock Grid.Column="4" Text="{Binding website}" />
+                        <CheckBox Grid.Column="5" IsChecked="{Binding is_completed}" />
+                        <CheckBox Grid.Column="6" IsChecked="{Binding is_payed}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+
+</UserControl>

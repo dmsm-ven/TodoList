@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using TodoListApp.Core;
 using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
@@ -9,18 +8,20 @@ public class PostgresBCryptUserValidator : IUserRepository
 {
     private readonly IDapperDatabaseAccess database;
     private readonly IAppLogger logger;
+    private readonly IUserDataEncryptValidator encryptValidator;
 
-    public PostgresBCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger)
+    public PostgresBCryptUserValidator(IDapperDatabaseAccess database, IAppLogger logger, IUserDataEncryptValidator encryptValidator)
     {
         this.database = database;
         this.logger = logger;
+        this.encryptValidator = encryptValidator;
     }
 
     public async Task<bool> Login(string name, string password)
     {
         var findedUser = await database.GetSingleAsync<AppUserEntity>("SELECT * FROM app_user WHERE name = @name", new { name });
 
-        return findedUser != null && BCrypt.Net.BCrypt.Verify(password, findedUser.password);
+        return findedUser != null && encryptValidator.Verify(password, findedUser.password);
 
     }
 }
