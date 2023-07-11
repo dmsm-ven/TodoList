@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Entities;
-using TodoList.WPF.DataAccess.Repositories;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
-namespace TodoList.WPF.Models;
+namespace TodoList.WPF.Services;
 
 public class UserManager
 {
     private readonly IUserRepository userRepository;
     private readonly IAppLogger logger;
-    public string LoggedUser { get; private set; } = String.Empty;
+    public string LoggedUser { get; private set; } = string.Empty;
 
     public UserManager(IAppLogger logger, IUserRepository userRepository)
     {
@@ -26,7 +23,7 @@ public class UserManager
     {
         var loginResult = await userRepository.Login(login, password);
 
-        this.LoggedUser = loginResult ? login : String.Empty;
+        LoggedUser = loginResult ? login : string.Empty;
 
         if (loginResult)
         {

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using TodoList.DataAccess;
-using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.Models;
 using TodoList.WPF.ViewModels;
+using TodoListApp.DataAccess.Entities;
 
-namespace TodoList.WPF.Automapper.Profiles;
+namespace TodoList.WPF.Infrastructure.Automapper.Profiles;
 
 internal class JobItemProfile : Profile
 {

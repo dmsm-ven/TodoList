@@ -8,13 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Repositories;
-using TodoList.WPF.DataAccess.Repositories.Interfaces;
-using TodoList.WPF.DataAccess.Repositories.Postgres;
-using TodoList.WPF.Models;
+using TodoList.WPF.Services;
 using TodoList.WPF.ViewModels;
 using TodoList.WPF.Views;
+using TodoListApp.Core;
+using TodoListApp.DataAccess.Repositories.Interfaces;
+using TodoListApp.DataAccess.Repositories.Postgres.Base;
+using TodoListApp.DataAccess.Repositories.Postgres.Repositories;
 
 namespace TodoList.WPF;
 /// <summary>
@@ -22,7 +22,7 @@ namespace TodoList.WPF;
 /// </summary>
 public partial class App : Application
 {
-    readonly IHost host;
+    private readonly IHost host;
 
     public App()
     {
@@ -42,6 +42,7 @@ public partial class App : Application
 
                 services.AddAutoMapper(assembly);
 
+                services.AddSingleton<IUserDataEncryptValidator, BCryptUserDataValidator>();
                 ConfigureDatabaseRepositories(services);
                 ConfigureServices(services);
                 ConfigureViewModels(services);

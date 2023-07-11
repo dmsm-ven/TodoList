@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.ViewModels;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Data;
+using System.Collections.ObjectModel;
+using System.Linq;
+using TodoList.WPF.ViewModels;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
-namespace TodoList.WPF.Models;
+namespace TodoList.WPF.Models.TodoList;
 
 public class EmployeerViewModel : ViewModelBase
 {
     public int ActiveTasksCount => TodoItems?.Count(t => !t.IsCompleted) ?? 0;
     public int Id { get; init; }
 
-    string name;
-    private IJobItemRepository jobItemRepository;
-    private IMapper mapper;
-    private IEmployeerPaymentRepository employeerPaymentRepository;
+    private string name;
+    private readonly IJobItemRepository jobItemRepository;
+    private readonly IMapper mapper;
+    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
 
     public string Name
     {
@@ -40,20 +38,20 @@ public class EmployeerViewModel : ViewModelBase
         Name = name;
     }
 
-    public EmployeerViewModel(int id, string name, 
-        IMapper mapper, 
-        IJobItemRepository jobItemRepository, 
+    public EmployeerViewModel(int id, string name,
+        IMapper mapper,
+        IJobItemRepository jobItemRepository,
         IEmployeerPaymentRepository employeerPaymentRepository) : this(id, name)
     {
         this.jobItemRepository = jobItemRepository;
         this.employeerPaymentRepository = employeerPaymentRepository;
         this.mapper = mapper;
 
-        foreach(var item in mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(Id)))
+        foreach (var item in mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(Id)))
         {
             TodoItems.Add(item);
         }
-        foreach(var item in mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(Id)))
+        foreach (var item in mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(Id)))
         {
             Payments.Add(item);
         }

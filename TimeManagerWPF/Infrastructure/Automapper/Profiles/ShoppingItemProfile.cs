@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models.ShoppingItem;
 using TodoList.WPF.ViewModels;
+using TodoListApp.DataAccess.Entities;
 
-namespace TodoList.WPF.Automapper.Profiles;
+namespace TodoList.WPF.Infrastructure.Automapper.Profiles;
 
 public class ShoppingItemProfile : Profile
 {

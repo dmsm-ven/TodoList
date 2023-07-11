@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 

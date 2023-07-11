@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using TodoList.DataAccess;
 using TodoList.WPF.Models;
+using TodoList.WPF.Models.TodoList;
+using TodoListApp.DataAccess.Entities;
 
-namespace TodoList.WPF.Automapper.Profiles;
+namespace TodoList.WPF.Infrastructure.Automapper.Profiles;
 
 public class EmployeerProfile : Profile
 {

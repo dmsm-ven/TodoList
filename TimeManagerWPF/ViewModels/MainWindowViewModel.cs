@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Repositories;
+﻿using System.Windows.Input;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 public class MainWindowViewModel : ViewModelBase
@@ -11,7 +9,7 @@ public class MainWindowViewModel : ViewModelBase
     public NavigationLocator NavigationLocator { get; }
     public ToolPanelViewModel ToolPanelViewModel { get; }
 
-    bool isTopmost;
+    private bool isTopmost;
     public bool IsTopmost
     {
         get => isTopmost;

@@ -2,14 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.Models;
+using TodoList.WPF.Models.TodoList;
 using TodoList.WPF.Views;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -21,15 +20,14 @@ public class TodoListViewModel : ViewModelBase
     private readonly IJobItemRepository jobItemRepository;
     private readonly IMapper mapper;
     private readonly IHost host;
-
-    bool isLoading;
+    private bool isLoading;
     public bool IsLoading { get { return isLoading; } set => Set(ref isLoading, value); }
 
     public ICommand AddNewEmployeerTabCommand { get; }
     public ICommand LoadedCommand { get; }
     public ObservableCollection<TodoListTabViewModel> Tabs { get; set; } = new ObservableCollection<TodoListTabViewModel>();
 
-    TodoListTabViewModel selectedTab;
+    private TodoListTabViewModel selectedTab;
     public TodoListTabViewModel SelectedTab
     {
         get => selectedTab;
@@ -45,12 +43,7 @@ public class TodoListViewModel : ViewModelBase
     {
         AddNewEmployeerTabCommand = new LambdaCommand(AddNewEmployeerTab);
         LoadedCommand = new LambdaCommand(Loaded);
-        Tabs = new ObservableCollection<TodoListTabViewModel>()
-        {
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 1") },
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 2") },
-            new TodoListTabViewModel() { Employeer = new EmployeerViewModel(0, "Tab 3") }
-        };
+        Tabs = new ObservableCollection<TodoListTabViewModel>();
     }
     public TodoListViewModel(NavigationLocator navigationLocator,
         IEmployeerRepository employeerRepository,

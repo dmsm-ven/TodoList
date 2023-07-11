@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.Models.ShoppingItem;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -40,20 +40,20 @@ internal class ShoppingListViewModel : ViewModelBase
             .ToList();
     }
 
-    ShoppingItemCategory selectedNewItemCategory;
+    private ShoppingItemCategory selectedNewItemCategory;
     public ShoppingItemCategory SelectedNewItemCategory
     {
         get => selectedNewItemCategory;
         set => Set(ref selectedNewItemCategory, value);
     }
 
-    bool showHidden;
+    private bool showHidden;
     public bool ShowHidden
     {
         get => showHidden;
         set
         {
-            if(Set(ref showHidden, value))
+            if (Set(ref showHidden, value))
             {
                 RaisePropertyChanged(nameof(ShowHiddenIcon));
                 RaisePropertyChanged(nameof(ShowHiddenTitle));
@@ -61,8 +61,8 @@ internal class ShoppingListViewModel : ViewModelBase
             }
         }
     }
-    
-    string newItemText;
+
+    private string newItemText;
     public string NewItemText
     {
         get => newItemText;
@@ -100,9 +100,9 @@ internal class ShoppingListViewModel : ViewModelBase
     private void AddDesignTimeItems()
     {
         var categories = new[] { "Дом", "Одежда", "Другое" };
-        foreach(var cat in categories)
+        foreach (var cat in categories)
         {
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Items.Add(new ShoppingItemViewModel()
                 {
@@ -141,7 +141,7 @@ internal class ShoppingListViewModel : ViewModelBase
             RaisePropertyChanged(nameof(UniqueCategories));
 
             var item = mapper.Map<ShoppingItemEntity>(sender as ShoppingItemViewModel);
-            
+
             repository.AddOrUpdate(item);
         }
     }
@@ -155,7 +155,7 @@ internal class ShoppingListViewModel : ViewModelBase
             CategoryId = SelectedNewItemCategory?.Id
         };
 
-        if((selectedNewItemCategory?.Id ?? 0) == 0)
+        if ((selectedNewItemCategory?.Id ?? 0) == 0)
         {
             item.CategoryId = repository.AddCategory(SelectedNewItemCategory?.Name);
             UniqueCategories.Insert(0, new ShoppingItemCategory() { Id = item.CategoryId, Name = item.CategoryName });
@@ -170,6 +170,6 @@ internal class ShoppingListViewModel : ViewModelBase
 
         NewItemText = string.Empty;
         SelectedNewItemCategory = null;
-        
+
     }
 }

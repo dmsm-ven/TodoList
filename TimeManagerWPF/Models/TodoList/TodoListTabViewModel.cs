@@ -10,10 +10,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using TodoList.DataAccess;
-using TodoList.WPF.DataAccess;
 using TodoList.WPF.Models;
+using TodoList.WPF.Models.TodoList;
 using TodoList.WPF.Views;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 

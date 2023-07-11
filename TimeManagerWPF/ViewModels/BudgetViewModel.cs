@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using LiveCharts;
 using LiveCharts.Wpf;
-using MahApps.Metro.IconPacks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,10 +10,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess.Entities;
-using TodoList.WPF.DataAccess.Repositories.Interfaces;
-using TodoList.WPF.Infrastructure.Extensions;
 using TodoList.WPF.Models.Budget;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -30,7 +27,7 @@ public class BudgetViewModel : ViewModelBase
     public ICommand LoadedCommand { get; }
     public ICommand SetNewItemTypeCommand { get; }
 
-    DateTime? filterStartDate;
+    private DateTime? filterStartDate;
     public DateTime? FilterStartDate
     {
         get => filterStartDate;
@@ -44,7 +41,7 @@ public class BudgetViewModel : ViewModelBase
         }
     }
 
-    DateTime? filterEndDate;
+    private DateTime? filterEndDate;
     public DateTime? FilterEndDate
     {
         get => filterEndDate;
@@ -60,7 +57,7 @@ public class BudgetViewModel : ViewModelBase
 
     public BudgetItemType[] AvailableTypes { get; } = Enum.GetValues<BudgetItemType>();
 
-    BudgetItemModel newBudgetItem;
+    private BudgetItemModel newBudgetItem;
     public BudgetItemModel NewBudgetItem
     {
         get => newBudgetItem;

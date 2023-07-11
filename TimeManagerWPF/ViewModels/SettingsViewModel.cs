@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Entities;
-using TodoList.WPF.Models;
+using TodoList.WPF.Services;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
 public class SettingsViewModel : ViewModelBase
 {
-    bool isLoaded = false;
+    private bool isLoaded = false;
     private readonly ISettingsRepository seetingsRepository;
     private readonly MainWindowViewModel mainWindowViewModel;
     private readonly UserManager userManager;
-
-    bool isTopmost = false;
+    private bool isTopmost = false;
     public bool IsTopmost
     {
         get => isTopmost;
@@ -27,7 +26,7 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
-    IEnumerable<LogEntryEntity> logEnties;
+    private IEnumerable<LogEntryEntity> logEnties;
     public IEnumerable<LogEntryEntity> LogEntries
     {
         get => logEnties;

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using System;
-using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.Infrastructure.Extensions;
 using TodoList.WPF.Models.Budget;
+using TodoListApp.DataAccess.Entities;
 
 namespace TodoList.WPF.Infrastructure.Automapper.Profiles;
 

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using System.Windows;
 using System.Windows.Input;
-using TodoList.DataAccess;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.Models;
+using TodoList.WPF.Models.TodoList;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -12,9 +12,8 @@ public class AddEmployeerWindowViewModel : ViewModelBase
     private readonly IEmployeerRepository repository;
     private readonly IMapper mapper;
     private readonly string default_name = "Новый работодатель";
+    private EmployeerViewModel newEmployeer;
 
-    EmployeerViewModel newEmployeer;
-    
     public EmployeerViewModel NewEmployeer
     {
         get => newEmployeer;
@@ -30,7 +29,7 @@ public class AddEmployeerWindowViewModel : ViewModelBase
     }
 
     public AddEmployeerWindowViewModel(IEmployeerRepository repository, IMapper mapper) : this()
-    {      
+    {
         this.repository = repository;
         this.mapper = mapper;
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using TodoList.WPF.ViewModels;
 
-namespace TodoList.WPF.Models;
+namespace TodoList.WPF.Models.TodoList;
 
 public class EmployeerPaymentsStatisticViewModel : ViewModelBase
 {
@@ -25,16 +25,16 @@ public class EmployeerPaymentsStatisticViewModel : ViewModelBase
     public EmployeerPaymentsStatisticViewModel(EmployeerViewModel employeer)
     {
         Employeer = employeer;
-        pi = this.GetType().GetProperties().ToList();
+        pi = GetType().GetProperties().ToList();
         Employeer.Payments.CollectionChanged += (o, e) =>
         {
             pi.ForEach(prop => RaisePropertyChanged(prop.Name));
         };
     }
-    
+
     private decimal? GetStatisticForPeriod(int months)
     {
-        if(Employeer.Payments.Count(p => p.TransferArrivalDate <= DateTime.Now.AddMonths(-months + 1)) == 0)
+        if (Employeer.Payments.Count(p => p.TransferArrivalDate <= DateTime.Now.AddMonths(-months + 1)) == 0)
         {
             return null;
         }

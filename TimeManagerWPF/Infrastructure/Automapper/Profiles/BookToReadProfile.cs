@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using TodoList.WPF.DataAccess.Entities;
 using TodoList.WPF.ViewModels;
+using TodoListApp.DataAccess.Entities;
 
 namespace TodoList.WPF.Infrastructure.Automapper.Profiles;
 

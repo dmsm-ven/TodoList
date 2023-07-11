@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Data;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess;
-using TodoList.WPF.DataAccess.Entities;
-using TodoList.WPF.DataAccess.Repositories;
+using TodoListApp.DataAccess.Entities;
+using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
@@ -44,7 +42,7 @@ public class ReadListViewModel : ViewModelBase
         get => IsShowHidden ? "Скрыть прочитанные" : "Отобразить прочитаные";
     }
 
-    bool isAddNewBookPanelShow;
+    private bool isAddNewBookPanelShow;
     public bool IsAddNewBookPanelShow
     {
         get => isAddNewBookPanelShow;
@@ -70,7 +68,8 @@ public class ReadListViewModel : ViewModelBase
             }
         }
     }
-    bool isShowHidden;
+
+    private bool isShowHidden;
     public bool IsShowHidden
     {
         get => isShowHidden;
@@ -85,7 +84,7 @@ public class ReadListViewModel : ViewModelBase
         }
     }
 
-    BookToReadViewModel newBook;
+    private BookToReadViewModel newBook;
     public BookToReadViewModel NewBook
     {
         get => newBook;

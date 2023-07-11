@@ -1,11 +1,9 @@
 ﻿using MahApps.Metro.IconPacks;
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TodoList.WPF.DataAccess.Repositories;
-using TodoList.WPF.Models;
+using TodoList.WPF.Services;
 
 namespace TodoList.WPF.ViewModels;
 
