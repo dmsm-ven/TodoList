@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoList.Avalonia", "TodoLi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoList.Avalonia.Desktop", "TodoList.Avalonia.Desktop\TodoList.Avalonia.Desktop.csproj", "{D9ED030D-9B5D-4F93-9321-7A14E5A3996B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoListWebApp", "TodoListWebApp\TodoListWebApp.csproj", "{C0F41763-A7B6-49E1-8152-52A6387C855B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D9ED030D-9B5D-4F93-9321-7A14E5A3996B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9ED030D-9B5D-4F93-9321-7A14E5A3996B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9ED030D-9B5D-4F93-9321-7A14E5A3996B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0F41763-A7B6-49E1-8152-52A6387C855B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0F41763-A7B6-49E1-8152-52A6387C855B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0F41763-A7B6-49E1-8152-52A6387C855B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0F41763-A7B6-49E1-8152-52A6387C855B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
