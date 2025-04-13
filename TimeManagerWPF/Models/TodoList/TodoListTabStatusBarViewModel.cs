@@ -11,10 +11,10 @@ public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
     IRecipient<MonthPillSelectionChangedMessage>
 {
-    private IEnumerable<JobItemViewModel> sourceItems;
+    private IEnumerable<JobItemViewModel> sourceItems = new List<JobItemViewModel>();
 
     public int ActiveTasks => sourceItems?.Count(t => !t.IsCompleted) ?? 0;
-    public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {sourceItems.Count()}";
+    public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {sourceItems?.Count() ?? 0}";
 
     public decimal TotalWorkCash => sourceItems?.Where(t => t.IsCompleted).Sum(t => t.Price) ?? 0;
     public string TotalWorkCashMessage => $"Итого: {TotalWorkCash:C0}";

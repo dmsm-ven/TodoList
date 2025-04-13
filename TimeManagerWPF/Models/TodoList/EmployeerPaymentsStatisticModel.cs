@@ -19,13 +19,13 @@ public class EmployeerPaymentsStatisticModel
 
     private decimal? GetStatisticForPeriod(int months)
     {
-        if (Employeer.Payments.Count(p => p.TransferArrivalDate <= DateTime.Now.AddMonths(-months + 1)) == 0)
+        if (Employeer.Payments.Count(p => p.TransferArrivalDate <= DateTimeOffset.UtcNow.AddMonths(-months + 1)) == 0)
         {
             return null;
         }
 
         return Employeer?.Payments
-            ?.Where(p => p.TransferArrivalDate >= DateTime.Now.AddMonths(-months))
+            ?.Where(p => p.TransferArrivalDate >= DateTimeOffset.UtcNow.AddMonths(-months))
             ?.Sum(t => t.Amount) ?? null;
     }
 }

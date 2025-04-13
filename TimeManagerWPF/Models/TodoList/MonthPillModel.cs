@@ -2,13 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System;
+using TodoList.WPF.Models.Messages;
 
 namespace TodoList.WPF.Models.TodoList;
 
-public record MonthPillSelectionChangedMessage(MonthPillViewModel Value);
-
 public partial class MonthPillViewModel : ObservableObject
 {
+    private readonly EmployeerTabViewModel parent;
+
     public required int MonthNumber { get; init; }
     public required int Year { get; init; }
 
@@ -18,7 +19,7 @@ public partial class MonthPillViewModel : ObservableObject
     {
         get
         {
-            if (Year == DateTimeOffset.Now.Year)
+            if (Year == DateTimeOffset.UtcNow.Year)
             {
                 return MonthName;
             }
@@ -29,10 +30,15 @@ public partial class MonthPillViewModel : ObservableObject
     [ObservableProperty]
     private bool isActive;
 
+    public MonthPillViewModel(EmployeerTabViewModel parent)
+    {
+        this.parent = parent;
+    }
+
     [RelayCommand]
     private void MonthPillClick()
     {
         IsActive = true;
-        WeakReferenceMessenger.Default.Send(new MonthPillSelectionChangedMessage(this));
+        WeakReferenceMessenger.Default.Send(new MonthPillSelectionChangedMessage(parent));
     }
 }

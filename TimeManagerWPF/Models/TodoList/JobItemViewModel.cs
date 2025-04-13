@@ -12,6 +12,8 @@ public partial class JobItemViewModel : ObservableObject
     public int Id { get; set; }
     public int EmployeerId { get; set; }
 
+    public bool IsLoaded { get; set; }
+
     [ObservableProperty] private string title = string.Empty;
 
     [ObservableProperty] private string description = string.Empty;
@@ -32,7 +34,7 @@ public partial class JobItemViewModel : ObservableObject
     {
         if (newValue)
         {
-            EndDate = DateTimeOffset.Now;
+            EndDate = DateTimeOffset.UtcNow;
         }
         else
         {
@@ -40,7 +42,18 @@ public partial class JobItemViewModel : ObservableObject
         }
     }
 
-    public int DaysAgo => (int)Math.Floor((DateTimeOffset.Now - StartDate).TotalDays);
+    public int DaysAgo => (int)Math.Floor((DateTimeOffset.UtcNow - StartDate).TotalDays);
+
+    public JobItemViewModel()
+    {
+        PropertyChanged += (s, e) =>
+        {
+            if (IsLoaded)
+            {
+                WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, e.PropertyName, string.Empty));
+            }
+        };
+    }
 
     [RelayCommand]
     private void ShowChangeHistory()
@@ -51,7 +64,7 @@ public partial class JobItemViewModel : ObservableObject
     [RelayCommand]
     private void OpenScreenshotsFolder()
     {
-        WeakReferenceMessenger.Default.Send(new JobItemScreenshotShowMessage(this));
+        throw new NotImplementedException();
     }
 
     [RelayCommand]

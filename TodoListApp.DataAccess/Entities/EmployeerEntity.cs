@@ -7,5 +7,5 @@ public class EmployeerEntity
     public string icon { get; set; } = string.Empty;
     public string email { get; set; } = string.Empty;
     public string phone_number { get; set; } = string.Empty;
-    public DateTimeOffset created { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset created { get; set; } = DateTimeOffset.UtcNow;
 }

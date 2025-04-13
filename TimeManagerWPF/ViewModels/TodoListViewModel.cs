@@ -1,9 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using TodoList.WPF.Infrastructure.MapperHelper;
+using TodoList.WPF.Models.Messages;
 using TodoList.WPF.Models.TodoList;
 using TodoList.WPF.Views;
 using TodoListApp.DataAccess.Entities;
@@ -11,11 +14,18 @@ using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
-public partial class TodoListViewModel(IEmployeerRepository employeerRepository,
-        IEmployeerPaymentRepository employeerPaymentRepository,
-        IJobItemRepository jobItemRepository,
-        Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory) : ObservableObject
+public partial class TodoListViewModel : ObservableRecipient
+    ,
+    IRecipient<JobItemFieldUpdatedMessage>,
+    IRecipient<JobItemHistoryDisplayMessage>,
+    IRecipient<MonthPillSelectionChangedMessage>
 {
+
+    private readonly IEmployeerRepository employeerRepository;
+    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
+    private readonly IJobItemRepository jobItemRepository;
+    private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
+
     [ObservableProperty]
     private bool isLoading = true;
 
@@ -23,14 +33,17 @@ public partial class TodoListViewModel(IEmployeerRepository employeerRepository,
     private ObservableCollection<EmployeerTabViewModel> tabs = new();
 
     [ObservableProperty]
-    private EmployeerTabViewModel selectedTab;
+    private EmployeerTabViewModel? selectedTab;
 
-    [ObservableProperty]
-    private TodoListTabStatusBarViewModel statusBarViewModel = new();
-
-    partial void OnSelectedTabChanged(EmployeerTabViewModel value)
+    public TodoListViewModel(IEmployeerRepository employeerRepository,
+        IEmployeerPaymentRepository employeerPaymentRepository,
+        IJobItemRepository jobItemRepository,
+        Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
-        StatusBarViewModel.SetSourceItems(value.FilteredTodoItems);
+        this.employeerRepository = employeerRepository;
+        this.employeerPaymentRepository = employeerPaymentRepository;
+        this.jobItemRepository = jobItemRepository;
+        this.todoListTabFactory = todoListTabFactory;
     }
 
     [RelayCommand]
@@ -57,6 +70,31 @@ public partial class TodoListViewModel(IEmployeerRepository employeerRepository,
             SelectedTab = Tabs.FirstOrDefault();
         }
 
+        WeakReferenceMessenger.Default.RegisterAll(this);
+
         IsLoading = false;
+    }
+
+    public void Receive(JobItemFieldUpdatedMessage message)
+    {
+        jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
+        jobItemRepository.AddHistoryChanges(message.Value.Id, message.FieldName, message.FieldValue);
+    }
+
+    public void Receive(JobItemHistoryDisplayMessage message)
+    {
+        int id = message.Value.Id;
+        var window = new JobItemChangesHistoryWindow();
+        throw new NotImplementedException();
+        //window.DataContext = new JobItemChangesHistoryWindowViewModel(id, jobItemRepository);
+        window.ShowDialog();
+    }
+
+    public void Receive(MonthPillSelectionChangedMessage message)
+    {
+        foreach (var pill in message.Value.MonthPills.Where(p => p != message.Value.SelectedMonthPill))
+        {
+            pill.IsActive = false;
+        }
     }
 }

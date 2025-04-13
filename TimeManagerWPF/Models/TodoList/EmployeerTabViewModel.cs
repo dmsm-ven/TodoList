@@ -5,24 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TodoList.WPF.Infrastructure.MapperHelper;
 using TodoList.WPF.Models.Messages;
 using TodoList.WPF.ViewModels;
-using TodoList.WPF.Views;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.Models.TodoList;
 
 public partial class EmployeerTabViewModel : ObservableRecipient,
-    IRecipient<JobItemFieldUpdatedMessage>,
-    IRecipient<JobItemHistoryDisplayMessage>,
-    IRecipient<JobItemScreenshotShowMessage>,
-    IRecipient<MonthPillSelectionChangedMessage>
+    IRecipient<JobItemFieldUpdatedMessage>
 {
     public const int MAX_PILLS_COUNT = 12;
 
@@ -53,11 +47,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     private EmployeerPaymentViewModel newPayment;
 
     [ObservableProperty]
-    private List<JobItemViewModel> filteredTodoItems;
+    private IEnumerable<JobItemViewModel> filteredTodoItems;
 
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
     private string searchText;
+
+    [ObservableProperty]
+    private TodoListTabStatusBarViewModel statusBarData = new();
 
     public bool HasActiveTasks
     {
@@ -106,17 +103,22 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         if (Employeer == null) { return; }
 
         IsLoading = true;
-        await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());
 
         jobItemRepository.GetAllJobItems(Employeer.Id)
             .Select(i => i.ToViewModel())
             .ToList()
-            .ForEach(i => Employeer.TodoItems.Add(i));
+            .ForEach(i =>
+            {
+                Employeer.TodoItems.Add(i);
+                i.IsLoaded = true;
+            });
 
         paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id)
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i => Employeer.Payments.Add(i));
+
+        await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());
 
         await RefreshSource();
 
@@ -144,7 +146,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         foreach (var kvp in pillsData)
         {
-            var pill = new MonthPillViewModel() { MonthNumber = kvp.Month, Year = kvp.Year };
+            var pill = new MonthPillViewModel(this) { MonthNumber = kvp.Month, Year = kvp.Year };
             MonthPills.Add(pill);
         }
 
@@ -160,7 +162,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         var item = new JobItemViewModel()
         {
-            StartDate = DateTime.Now,
+            StartDate = DateTimeOffset.UtcNow,
             Title = "Новая задача",
             EmployeerId = Employeer.Id
         };
@@ -206,6 +208,9 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         }
 
         FilteredTodoItems = source;
+        StatusBarData.SetSourceItems(source);
+
+        WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
     }
 
     private void TodoItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -226,55 +231,17 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         //Добавляем вкладку с месяцем если это первое задание в этом месяце
         if (!hasPill)
         {
-            MonthPills.Insert(0, new MonthPillViewModel() { MonthNumber = newItem.StartDate.Month, Year = newItem.StartDate.Year });
+            MonthPills.Insert(0, new MonthPillViewModel(this) { MonthNumber = newItem.StartDate.Month, Year = newItem.StartDate.Year });
             SelectedMonthPill = MonthPills.First();
         }
 
     }
 
-    public void Receive(JobItemScreenshotShowMessage message)
-    {
-        string folder = Path.Combine(Directory.GetCurrentDirectory(),
-            "screenshots",
-            Employeer.Name,
-            $"{SelectedMonthPill.Year}-{SelectedMonthPill.MonthName}",
-            message.Value.Id.ToString());
-
-        if (!Directory.Exists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
-        Process.Start("explorer.exe", folder);
-    }
-
     public void Receive(JobItemFieldUpdatedMessage message)
     {
-        IsLoading = true;
-        jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
-        jobItemRepository.AddHistoryChanges(message.Value.Id, message.FieldName, message.FieldValue);
-
-        if (message.FieldName == nameof(JobItemViewModel.IsCompleted))
+        if (message.FieldName == nameof(message.Value.IsCompleted))
         {
             OnPropertyChanged(nameof(HasActiveTasks));
-        }
-
-        IsLoading = false;
-    }
-
-    public void Receive(JobItemHistoryDisplayMessage message)
-    {
-        int id = message.Value.Id;
-        var window = new JobItemChangesHistoryWindow();
-        throw new NotImplementedException();
-        //window.DataContext = new JobItemChangesHistoryWindowViewModel(id, jobItemRepository);
-        window.ShowDialog();
-    }
-
-    public void Receive(MonthPillSelectionChangedMessage message)
-    {
-        foreach (var pill in MonthPills.Where(p => p != message.Value))
-        {
-            pill.IsActive = false;
         }
     }
 }

@@ -10,6 +10,6 @@ public class JobItemEntity
     public bool is_completed { get; set; }
     public bool is_payed { get; set; }
     public decimal price { get; set; }
-    public DateTimeOffset start_date { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset start_date { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? end_date { get; set; }
 }

@@ -12,7 +12,9 @@ public static class JobItemMapperHelper
         {
             Id = jobItem.id,
             Title = jobItem.title,
-            Description = jobItem.description,
+            Price = jobItem.price,
+            Website = jobItem.website ?? string.Empty,
+            Description = jobItem.description ?? string.Empty,
             IsCompleted = jobItem.is_completed,
             IsPayed = jobItem.is_payed,
             StartDate = jobItem.start_date,

@@ -12,7 +12,7 @@ namespace TodoList.WPF.Models.TodoList;
 public partial class EmployeerViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>
 {
-    public DateTimeOffset Created { get; init; } = DateTimeOffset.Now;
+    public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
     public int Id { get; init; }
 
     [ObservableProperty]

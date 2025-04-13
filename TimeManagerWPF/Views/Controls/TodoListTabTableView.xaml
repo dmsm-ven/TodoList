@@ -77,11 +77,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn
+                <DataGridTextColumn Header="дн."
                     Width="30"
                     Binding="{Binding DaysAgo, Mode=OneWay}"
-                    Foreground="Gray"
-                    Header="дн."
+                    Foreground="Gray"     
                     IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
@@ -89,10 +88,10 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn
+                <DataGridTextColumn Header="Задача"
                     Width="2*"
                     Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                    Header="Задача" />
+                     />
                 <DataGridTemplateColumn Width="300" Header="Сайт">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -127,10 +126,10 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn
+                <DataGridTextColumn Header="Цена"
                     Width="150"
                     Binding="{Binding Price, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                    Header="Цена" />
+                     />
                 <DataGridTemplateColumn Header="Оплачено">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
