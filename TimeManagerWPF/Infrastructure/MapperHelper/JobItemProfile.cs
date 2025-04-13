@@ -1,0 +1,43 @@
+﻿using TodoList.WPF.ViewModels;
+using TodoListApp.Core.Models;
+using TodoListApp.DataAccess.Entities;
+
+namespace TodoList.WPF.Infrastructure.MapperHelper;
+
+public static class JobItemMapperHelper
+{
+    public static JobItemViewModel ToViewModel(this JobItemEntity jobItem)
+    {
+        return new JobItemViewModel
+        {
+            Id = jobItem.id,
+            Title = jobItem.title,
+            Description = jobItem.description,
+            IsCompleted = jobItem.is_completed,
+            IsPayed = jobItem.is_payed,
+            StartDate = jobItem.start_date,
+            EndDate = jobItem.end_date,
+            EmployeerId = jobItem.employeer_id
+        };
+    }
+
+    public static JobItemEntity ToEntity(this JobItemViewModel jobItem)
+    {
+        return new JobItemEntity
+        {
+            id = jobItem.Id,
+            title = jobItem.Title,
+            description = jobItem.Description,
+            is_completed = jobItem.IsCompleted,
+            is_payed = jobItem.IsPayed,
+            start_date = jobItem.StartDate,
+            end_date = jobItem.EndDate,
+            employeer_id = jobItem.EmployeerId
+        };
+    }
+
+    public static JobItemHistoryLineModel ToModel(this JobItemHistoryEntity jobItemHistory)
+    {
+        return new JobItemHistoryLineModel(jobItemHistory.date_time, jobItemHistory.property_name, jobItemHistory.new_value);
+    }
+}

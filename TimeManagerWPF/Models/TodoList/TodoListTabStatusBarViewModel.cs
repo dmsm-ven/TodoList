@@ -1,19 +1,25 @@
-﻿using System.Collections;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.Generic;
 using System.Linq;
+using TodoList.WPF.Models.Messages;
+using TodoList.WPF.ViewModels;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoList.WPF.Models.TodoList;
 
-public class TodoListTabStatusBarViewModel : ViewModelBase
+public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
+    IRecipient<JobItemFieldUpdatedMessage>,
+    IRecipient<MonthPillSelectionChangedMessage>
 {
-    private readonly IEnumerable<JobItemViewModel> jobItems;  
-    public int ActiveTasks => jobItems?.Count(t => !t.IsCompleted) ?? 0;
-    public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {jobItems.Count()}";
+    private IEnumerable<JobItemViewModel> sourceItems;
 
-    public decimal TotalWorkCash => jobItems?.Where(t => t.IsCompleted).Sum(t => t.Price) ?? 0;
+    public int ActiveTasks => sourceItems?.Count(t => !t.IsCompleted) ?? 0;
+    public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {sourceItems.Count()}";
+
+    public decimal TotalWorkCash => sourceItems?.Where(t => t.IsCompleted).Sum(t => t.Price) ?? 0;
     public string TotalWorkCashMessage => $"Итого: {TotalWorkCash:C0}";
 
-    public decimal AlreadyPayedTasksCash => jobItems?.Where(t => t.IsPayed && t.IsCompleted).Sum(t => t.Price) ?? 0;
+    public decimal AlreadyPayedTasksCash => sourceItems?.Where(t => t.IsPayed && t.IsCompleted).Sum(t => t.Price) ?? 0;
     public string AlreadyPayedTasksCashMessage => $"Оплачено: {AlreadyPayedTasksCash:C0}";
 
     public decimal NotPayedTasksCash => TotalWorkCash - AlreadyPayedTasksCash;
@@ -21,17 +27,33 @@ public class TodoListTabStatusBarViewModel : ViewModelBase
 
     public TodoListTabStatusBarViewModel()
     {
-
+        WeakReferenceMessenger.Default.RegisterAll(this);
     }
-    public TodoListTabStatusBarViewModel(IEnumerable<JobItemViewModel> jobItems) : this()
+
+    public void SetSourceItems(IEnumerable<JobItemViewModel> newItemsSource)
     {
-        this.jobItems = jobItems;
-        jobItems.ToList().ForEach(i => i.PropertyChanged += (o, e) =>
-        {
-            foreach (var pi in this.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
-            {
-                RaisePropertyChanged(pi.Name);
-            }
-        });
+        sourceItems = newItemsSource;
+    }
+
+    public void Receive(JobItemFieldUpdatedMessage message)
+    {
+        RefreshProperties();
+    }
+
+    public void Receive(MonthPillSelectionChangedMessage message)
+    {
+        RefreshProperties();
+    }
+
+    private void RefreshProperties()
+    {
+        OnPropertyChanged(nameof(ActiveTasks));
+        OnPropertyChanged(nameof(ActiveTasksMessage));
+        OnPropertyChanged(nameof(TotalWorkCash));
+        OnPropertyChanged(nameof(TotalWorkCashMessage));
+        OnPropertyChanged(nameof(AlreadyPayedTasksCash));
+        OnPropertyChanged(nameof(AlreadyPayedTasksCashMessage));
+        OnPropertyChanged(nameof(NotPayedTasksCash));
+        OnPropertyChanged(nameof(NotPayedTasksCashMessage));
     }
 }

@@ -1,20 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using TodoList.WPF.Services;
-using TodoList.WPF.ViewModels;
+using TodoList.WPF.ViewModels.Windows;
 using TodoList.WPF.Views;
-using TodoListApp.Core;
-using TodoListApp.DataAccess.Repositories.Interfaces;
-using TodoListApp.DataAccess.Repositories.Postgres.Base;
-using TodoListApp.DataAccess.Repositories.Postgres.Repositories;
 
 namespace TodoList.WPF;
 /// <summary>
@@ -22,7 +13,7 @@ namespace TodoList.WPF;
 /// </summary>
 public partial class App : Application
 {
-    private readonly IHost host;
+    public static IHost AppHost { get; private set; }
 
     public App()
     {
@@ -30,142 +21,40 @@ public partial class App : Application
 
         Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location));
 
-        host = Host.CreateDefaultBuilder()
-            //.ConfigureAppConfiguration(options =>
-            //{
-            //    options.AddUserSecrets(assembly, optional: true);
-            //})
+        AppHost = Host.CreateDefaultBuilder()
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            })
             .ConfigureServices((context, services) =>
             {
-                string connectionString = context.Configuration.GetConnectionString("default");
-                services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
-
-                services.AddAutoMapper(assembly);
-
-                services.AddSingleton<IUserDataEncryptValidator, BCryptUserDataValidator>();
-                ConfigureDatabaseRepositories(services);
-                ConfigureServices(services);
-                ConfigureViewModels(services);
+                services.ConfigureMyOptions();
+                services.ConfigureMyDatabaseRepositories(context.Configuration);
+                services.ConfigureMyServices();
+                services.ConfigureFactoryInitializators();
+                services.ConfigureMyViewModels();
 
             })
             .Build();
     }
 
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
-        // Проверяем, запущена ли уже копия приложения, если да - закрываем эту копию
-        ApplicationAlreadyRunningCheck();
-
-        await host.StartAsync();
-
-        try
-        {
-            Dictionary<string, string> eArgs = ParseEventArgs(e.Args);
-
-            ShowLoginWindow(eArgs);
-        }
-        catch (Exception ex)
-        {
-            ShowErrorWindow(ex.Message);
-        }
+        ShowMainWindow();
     }
 
-    private static Dictionary<string, string> ParseEventArgs(string[] args)
+    private void ShowLoginWindow()
     {
-        var dic = new Dictionary<string, string>();
-        foreach (var item in args)
-        {
-            if (item.StartsWith("--") && item.Contains("="))
-            {
-                string key = item.Substring(2, item.IndexOf('=') - 2);
-                string value = item.Substring(item.IndexOf("=") + 1);
-                dic[key] = value;
-                //MessageBox.Show($"key={key};value={value}");
-            }
-        }
-
-        return dic;
-    }
-
-    private void ConfigureDatabaseRepositories(IServiceCollection services)
-    {
-        services.AddTransient<IAppLogger, PostgresAppLogger>();
-        services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IBookToReadRepository, PostgresBookToReadRepository>();
-        services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
-        services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
-        services.AddTransient<IShoppingItemsRepository, PostgresShoppingItemsRepository>();
-        services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
-        services.AddTransient<IBudgetRepository, PostgresBudgetRepository>();
-    }
-
-    private void ConfigureViewModels(IServiceCollection services)
-    {
-        services.AddSingleton<ConnectionErrorWindow>();
-        services.AddSingleton<ConnectionErrorWindowViewModel>();
-
-        services.AddSingleton<LoginWindow>();
-        services.AddSingleton<LoginWindowViewModel>();
-
-
-
-        services.AddSingleton<BudgetViewModel>();
-        services.AddSingleton<BudgetView>();
-        services.AddSingleton<SettingsViewModel>();
-        services.AddTransient<ConnectionErrorWindowViewModel>();
-        services.AddTransient<AddEmployeerWindowViewModel>();
-        services.AddTransient<AddEmployeerWindow>();
-        services.AddSingleton<ReadListViewModel>();
-        services.AddSingleton<ToolPanelViewModel>();
-        services.AddSingleton<AddEmployeerWindowViewModel>();
-        services.AddSingleton<ShoppingListViewModel>();
-        services.AddSingleton<TodoListViewModel>();
-        services.AddSingleton<MainWindowViewModel>();
-        services.AddSingleton<MainWindow>();
-
-        services.AddSingleton<NavigationLocator>();
-    }
-
-    private void ConfigureServices(IServiceCollection services)
-    {
-        services.AddSingleton<UserManager>();
-    }
-
-    private void ShowErrorWindow(string errorMessage)
-    {
-        var errorWindow = host.Services.GetRequiredService<ConnectionErrorWindow>();
-        var vm = host.Services.GetRequiredService<ConnectionErrorWindowViewModel>();
-        vm.ErrorMessage = errorMessage;
-        errorWindow.DataContext = vm;
-        errorWindow.Show();
-    }
-
-    private void ShowLoginWindow(IReadOnlyDictionary<string, string> e)
-    {
-        var loginWindowVm = host.Services.GetRequiredService<LoginWindowViewModel>();
-        if (e.TryGetValue("login", out var login))
-        {
-            loginWindowVm.Login = login;
-        }
-        if (e.TryGetValue("pass", out var pass))
-        {
-            loginWindowVm.DefaultPassword = pass;
-        }
-
-        var loginWindow = host.Services.GetRequiredService<LoginWindow>();
-        loginWindow.DataContext = loginWindowVm;
-        loginWindowVm.OnUserEnter += () =>
-        {
-            ShowMainWindow();
-            loginWindow.Close();
-        };
+        var loginWindowViewModel = AppHost.Services.GetRequiredService<LoginWindow>();
+        LoginWindow loginWindow = new();
+        loginWindow.DataContext = loginWindowViewModel;
         loginWindow.Show();
     }
 
     private void ShowMainWindow()
     {
-        var mainWindow = host.Services.GetRequiredService<MainWindow>();
+        var mainWindow = new MainWindow();
 
         // 3/4 ширины-высоты
         mainWindow.Left = SystemParameters.PrimaryScreenWidth / 4;
@@ -173,34 +62,12 @@ public partial class App : Application
         mainWindow.Width = SystemParameters.PrimaryScreenWidth * 0.75d;
         mainWindow.Height = SystemParameters.PrimaryScreenHeight * 0.75d;
 
-        mainWindow.DataContext = host.Services.GetRequiredService<MainWindowViewModel>();
-        mainWindow.Show();
+        mainWindow.DataContext = AppHost.Services.GetRequiredService<MainWindowViewModel>();
+        mainWindow.ShowDialog();
     }
 
-    private void ApplicationAlreadyRunningCheck()
+    protected override void OnExit(ExitEventArgs e)
     {
-        Process proc = Process.GetCurrentProcess();
-        int count = Process.GetProcesses().Where(p => p.ProcessName == proc.ProcessName).Count();
-
-        if (count > 1)
-        {
-            App.Current.Shutdown();
-        }
-    }
-
-    protected override async void OnExit(ExitEventArgs e)
-    {
-        try
-        {
-            if (Application.Current.MainWindow != null)
-            {
-                host.Services.GetRequiredService<UserManager>().ApplicationClosed();
-            }
-            await host.StopAsync();
-        }
-        catch
-        {
-
-        }
+        AppHost.Services.GetRequiredService<UserManager>()?.ApplicationClosed();
     }
 }

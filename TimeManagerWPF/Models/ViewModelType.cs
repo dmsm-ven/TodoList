@@ -1,12 +1,9 @@
-﻿namespace TodoList.WPF;
+﻿namespace TodoList.WPF.Models;
 
 public enum ViewModelType
 {
     TodoList,
     AddEmployeer,
-    ShoppingList,
-    ReadList,
     ErrorView,
     SettingsView,
-    BudgetView
 }

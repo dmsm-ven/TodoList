@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:con="clr-namespace:TodoList.WPF.Infrastructure.Converters">
+    <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter" />
+    <con:BoolToBrushConverter x:Key="BoolToBrushConverter" />
+    <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter" />
+    <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter" />
+    <con:EqualsStringToBoolConverter x:Key="EqualsStringToBoolConverter" />
+    <con:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+</ResourceDictionary>

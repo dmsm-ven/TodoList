@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using TodoList.WPF.Models;
 
 namespace TodoList.WPF.Infrastructure.Converters;
 

@@ -1,43 +1,38 @@
-﻿using System;
-using System.Windows.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using System;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoList.WPF.Models.TodoList;
 
-public class MonthPillModel : ViewModelBase
+public record MonthPillSelectionChangedMessage(MonthPillViewModel Value);
+
+public partial class MonthPillViewModel : ObservableObject
 {
-    public event Action OnClicked;
-    public int MonthNumber { get;  }
-    public int Year { get; }
+    public required int MonthNumber { get; init; }
+    public required int Year { get; init; }
+
     public string MonthName => new DateTime(Year, MonthNumber, 1).ToString("MMMM");
+
     public string DisplayName
     {
         get
         {
-            if(Year == DateTime.Now.Year)
+            if (Year == DateTimeOffset.Now.Year)
             {
                 return MonthName;
             }
             return $"{MonthName} | {Year}";
         }
     }
-    
-    private bool isActive;
-    public bool IsActive
-    {
-        get => isActive;
-        set => Set(ref isActive, value);
-    }
-    public ICommand MonthPillClickCommand { get; }
-    public MonthPillModel(int year, int month)
-    {
-        Year = year;
-        MonthNumber = month;
-        MonthPillClickCommand = new LambdaCommand(e =>
-        {
-            OnClicked?.Invoke();
-            IsActive = true;
-        }, e => true);
-    }
 
-    public MonthPillModel(DateTime date) : this(date.Year, date.Month) { }
+    [ObservableProperty]
+    private bool isActive;
+
+    [RelayCommand]
+    private void MonthPillClick()
+    {
+        IsActive = true;
+        WeakReferenceMessenger.Default.Send(new MonthPillSelectionChangedMessage(this));
+    }
 }

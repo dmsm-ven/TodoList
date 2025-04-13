@@ -2,11 +2,11 @@
 
 namespace TodoList.WPF.Views.Controls;
 /// <summary>
-/// Interaction logic for MainToolPanel.xaml
+/// Interaction logic for MainStatusBar.xaml
 /// </summary>
-public partial class MainToolPanel : UserControl
+public partial class TodoListTabStatusBar : UserControl
 {
-    public MainToolPanel()
+    public TodoListTabStatusBar()
     {
         InitializeComponent();
     }

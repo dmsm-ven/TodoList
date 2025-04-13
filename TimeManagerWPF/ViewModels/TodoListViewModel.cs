@@ -1,97 +1,62 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using TodoList.WPF.Models.TodoList;
 using TodoList.WPF.Views;
+using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
-public class TodoListViewModel : ViewModelBase
-{
-    private readonly NavigationLocator navigationLocator;
-    private readonly IEmployeerRepository employeerRepository;
-    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
-    private readonly IJobItemRepository jobItemRepository;
-    private readonly IMapper mapper;
-    private readonly IHost host;
-    private bool isLoading;
-    public bool IsLoading { get { return isLoading; } set => Set(ref isLoading, value); }
-
-    public ICommand AddNewEmployeerTabCommand { get; }
-    public ICommand LoadedCommand { get; }
-    public ObservableCollection<TodoListTabViewModel> Tabs { get; set; } = new ObservableCollection<TodoListTabViewModel>();
-
-    private TodoListTabViewModel selectedTab;
-    public TodoListTabViewModel SelectedTab
-    {
-        get => selectedTab;
-        set
-        {
-            if (Set(ref selectedTab, value))
-            {
-                selectedTab?.LoadedCommand.Execute(null);
-            }
-        }
-    }
-    public TodoListViewModel()
-    {
-        AddNewEmployeerTabCommand = new LambdaCommand(AddNewEmployeerTab);
-        LoadedCommand = new LambdaCommand(Loaded);
-        Tabs = new ObservableCollection<TodoListTabViewModel>();
-    }
-    public TodoListViewModel(NavigationLocator navigationLocator,
-        IEmployeerRepository employeerRepository,
+public partial class TodoListViewModel(IEmployeerRepository employeerRepository,
         IEmployeerPaymentRepository employeerPaymentRepository,
         IJobItemRepository jobItemRepository,
-        IMapper mapper,
-        IHost host) : this()
+        Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory) : ObservableObject
+{
+    [ObservableProperty]
+    private bool isLoading = true;
+
+    [ObservableProperty]
+    private ObservableCollection<EmployeerTabViewModel> tabs = new();
+
+    [ObservableProperty]
+    private EmployeerTabViewModel selectedTab;
+
+    [ObservableProperty]
+    private TodoListTabStatusBarViewModel statusBarViewModel = new();
+
+    partial void OnSelectedTabChanged(EmployeerTabViewModel value)
     {
-        this.navigationLocator = navigationLocator;
-        this.employeerRepository = employeerRepository;
-        this.employeerPaymentRepository = employeerPaymentRepository;
-        this.jobItemRepository = jobItemRepository;
-        this.mapper = mapper;
-        this.host = host;
+        StatusBarViewModel.SetSourceItems(value.FilteredTodoItems);
     }
 
-
-    private void AddNewEmployeerTab(object obj)
+    [RelayCommand]
+    private void AddNewEmployeerTab()
     {
-        var window = host.Services.GetRequiredService<AddEmployeerWindow>();
-        window.DataContext = host.Services.GetRequiredService(typeof(AddEmployeerWindowViewModel));
-        if (window.ShowDialog() == true)
-        {
-            Loaded(null);
-            ;
-        }
+        var window = new AddEmployeerWindow();
+        window.DataContext = new AddEmployeerWindowViewModel();
+        window.ShowDialog();
     }
-    private async void Loaded(object obj)
+
+    [RelayCommand]
+    private async Task Loaded()
     {
-        Tabs.Clear();
-
-        IsLoading = true;
-
-        await Task.Delay(TimeSpan.FromSeconds(0.25));
-
         var employeers = await Task.Run(() => employeerRepository.GetAllEmployeer());
 
-        employeers
-            .Select(emp => new EmployeerViewModel(emp.id, emp.name, mapper, jobItemRepository, employeerPaymentRepository))
-            .Select(i => new TodoListTabViewModel(i, jobItemRepository, employeerPaymentRepository, mapper))
-            .ToList()
-            .ForEach(t => Tabs.Add(t));
+        foreach (var emp in employeers)
+        {
+            var newTab = todoListTabFactory(emp);
+            Tabs.Add(newTab);
+        }
 
-        IsLoading = false;
-
-        if (SelectedTab == null)
+        if (Tabs.Any())
         {
             SelectedTab = Tabs.FirstOrDefault();
         }
+
+        IsLoading = false;
     }
 }

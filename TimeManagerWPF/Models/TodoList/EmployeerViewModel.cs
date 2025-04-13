@@ -1,59 +1,41 @@
-﻿using AutoMapper;
+﻿
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using TodoList.WPF.Models.Messages;
 using TodoList.WPF.ViewModels;
-using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.Models.TodoList;
 
-public class EmployeerViewModel : ViewModelBase
+public partial class EmployeerViewModel : ObservableRecipient,
+    IRecipient<JobItemFieldUpdatedMessage>
 {
-    public int ActiveTasksCount => TodoItems?.Count(t => !t.IsCompleted) ?? 0;
+    public DateTimeOffset Created { get; init; } = DateTimeOffset.Now;
     public int Id { get; init; }
 
+    [ObservableProperty]
     private string name;
-    private readonly IJobItemRepository jobItemRepository;
-    private readonly IMapper mapper;
-    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
 
-    public string Name
+    public int ActiveTasksCount => TodoItems.Count(t => !t.IsCompleted);
+
+    [ObservableProperty]
+    private ObservableCollection<EmployeerPaymentViewModel> payments = new();
+
+    [ObservableProperty]
+    private ObservableCollection<JobItemViewModel> todoItems = new();
+
+    public EmployeerViewModel()
     {
-        get => name;
-        set => Set(ref name, value);
-    }
-    public DateTime Created { get; set; } = DateTime.Now;
-
-    public ObservableCollection<EmployeerPaymentViewModel> Payments { get; init; }
-
-    public ObservableCollection<JobItemViewModel> TodoItems { get; init; }
-
-    public EmployeerViewModel(int id, string name)
-    {
-        TodoItems = new ObservableCollection<JobItemViewModel>();
-        Payments = new ObservableCollection<EmployeerPaymentViewModel>();
-        TodoItems.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(ActiveTasksCount));
-        Id = id;
-        Name = name;
+        WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
-    public EmployeerViewModel(int id, string name,
-        IMapper mapper,
-        IJobItemRepository jobItemRepository,
-        IEmployeerPaymentRepository employeerPaymentRepository) : this(id, name)
+    public void Receive(JobItemFieldUpdatedMessage message)
     {
-        this.jobItemRepository = jobItemRepository;
-        this.employeerPaymentRepository = employeerPaymentRepository;
-        this.mapper = mapper;
-
-        foreach (var item in mapper.Map<IEnumerable<JobItemViewModel>>(jobItemRepository.GetAllJobItems(Id)))
+        if (message.FieldName == nameof(message.Value.IsCompleted))
         {
-            TodoItems.Add(item);
-        }
-        foreach (var item in mapper.Map<IEnumerable<EmployeerPaymentViewModel>>(employeerPaymentRepository.GetAllPaymentsForEmployeer(Id)))
-        {
-            Payments.Add(item);
+            OnPropertyChanged(nameof(ActiveTasksCount));
         }
     }
 }

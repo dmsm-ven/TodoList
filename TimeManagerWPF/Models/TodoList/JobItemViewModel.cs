@@ -1,104 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Windows.Input;
+using TodoList.WPF.Models.Messages;
 
 namespace TodoList.WPF.ViewModels;
 
-public class JobItemViewModel : ViewModelBase
+public partial class JobItemViewModel : ObservableObject
 {
-    public event EventHandler OnScreenshotsClicked;
-    public event EventHandler OnShowHistoryClicked;
-
-
     public int Id { get; set; }
-
     public int EmployeerId { get; set; }
 
-    string title;
-    public string Title
-    {
-        get => title;
-        set => Set(ref title, value);
-    }
-    
-    string description;
-    public string Description
-    {
-        get => description;
-        set => Set(ref description, value);
-    }
-    
-    string website;
-    public string Website
-    {
-        get => website;
-        set => Set(ref website, value);
-    }
+    [ObservableProperty] private string title = string.Empty;
 
-    bool isCompleted;
-    public bool IsCompleted
+    [ObservableProperty] private string description = string.Empty;
+
+    [ObservableProperty] private string website = string.Empty;
+
+    [ObservableProperty] private decimal price;
+
+    [ObservableProperty] private DateTimeOffset startDate;
+
+    [ObservableProperty] private DateTimeOffset? endDate;
+
+    [ObservableProperty] private bool isPayed;
+
+    [ObservableProperty] private bool isCompleted;
+
+    partial void OnIsCompletedChanged(bool newValue)
     {
-        get => isCompleted;
-        set
+        if (newValue)
         {
-            if(Set(ref isCompleted, value) && value)
-            {
-                EndDate = DateTime.Now;
-            }
-            else
-            {
-                EndDate = null;
-            }
+            EndDate = DateTimeOffset.Now;
+        }
+        else
+        {
+            EndDate = null;
         }
     }
 
-    bool isPayed;
-    public bool IsPayed
+    public int DaysAgo => (int)Math.Floor((DateTimeOffset.Now - StartDate).TotalDays);
+
+    [RelayCommand]
+    private void ShowChangeHistory()
     {
-        get => isPayed;
-        set => Set(ref isPayed, value);
+        WeakReferenceMessenger.Default.Send(new JobItemHistoryDisplayMessage(this));
     }
 
-    decimal price;
-    public decimal Price
+    [RelayCommand]
+    private void OpenScreenshotsFolder()
     {
-        get => price;
-        set => Set(ref price, value);
+        WeakReferenceMessenger.Default.Send(new JobItemScreenshotShowMessage(this));
     }
 
-    DateTime startDate;
-    public DateTime StartDate
-    {
-        get => startDate;
-        set => Set(ref startDate, value);
-    }
-
-    DateTime? endDate;
-    public DateTime? EndDate
-    {
-        get => endDate;
-        set => Set(ref endDate, value);
-    }
-
-    public int DaysAgo => (int)Math.Floor((DateTime.Now - StartDate).TotalDays);
-
-    public ICommand OpenScreenshotsFolderCommand { get; }
-    public ICommand OpenWebsiteInBrowserCommand { get; }
-    public ICommand ShowChangeHistoryCommand { get; }
-
-    public JobItemViewModel()
-    {
-        ShowChangeHistoryCommand = new LambdaCommand(e => OnShowHistoryClicked?.Invoke(this, null));
-        OpenScreenshotsFolderCommand = new LambdaCommand(e => OnScreenshotsClicked?.Invoke(this, null));
-
-        OpenWebsiteInBrowserCommand = new LambdaCommand(OpenWebsiteInBrowser, 
-            e => Uri.IsWellFormedUriString(Website, UriKind.Absolute));
-        
-    }
-
-    private void OpenWebsiteInBrowser(object obj)
+    [RelayCommand]
+    private void OpenWebsiteInBrowser()
     {
         var myProcess = new ProcessStartInfo()
         {
@@ -106,21 +63,5 @@ public class JobItemViewModel : ViewModelBase
             FileName = Website,
         };
         Process.Start(myProcess);
-    }
-
-    internal bool HasText(string searchText)
-    {
-        if (string.IsNullOrWhiteSpace(searchText)) { return false; }
-
-        if(Title?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
-        if(Website?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
-        if(Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) { return true; }
-        if(int.TryParse(searchText, out var price) && price == Price) { return true; }
-        if(DateTime.TryParse(searchText, out var date)) 
-        {
-            return date.Date == StartDate.Date || (EndDate.HasValue && EndDate.Value == date.Date);
-        }
-
-        return false;
     }
 }

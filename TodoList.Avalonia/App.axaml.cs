@@ -47,13 +47,10 @@ public partial class App : Application
     {
         services.AddTransient<IAppLogger, PostgresAppLogger>();
         services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IBookToReadRepository, PostgresBookToReadRepository>();
         services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
         services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
         services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
-        services.AddTransient<IShoppingItemsRepository, PostgresShoppingItemsRepository>();
         services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
-        services.AddTransient<IBudgetRepository, PostgresBudgetRepository>();
     }
 
     public override async void OnFrameworkInitializationCompleted()

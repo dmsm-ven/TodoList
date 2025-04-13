@@ -9,7 +9,7 @@ public class BoolToIconKindConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return (bool)value ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.TimesSolid;
+        return (bool)value ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.StopSolid;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

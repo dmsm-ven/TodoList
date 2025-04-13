@@ -1,0 +1,252 @@
+﻿<UserControl
+    x:Class="TodoList.WPF.Views.Controls.TodoListTabContent"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:con="clr-namespace:TodoList.WPF.Views.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:vm="clr-namespace:TodoList.WPF.Models.TodoList"
+    d:Background="White"
+    d:DataContext="{d:DesignInstance Type=vm:EmployeerTabViewModel,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="400"
+    d:DesignWidth="800"
+    Background="Transparent"
+    mc:Ignorable="d">
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="Loaded">
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" MinWidth="200" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.Resources />
+
+        <!--  Панель поиска, заголовка и добавления задачи  -->
+        <DockPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            LastChildFill="True">
+            <Button
+                Command="{Binding AddJobCommand}"
+                DockPanel.Dock="Left"
+                Style="{StaticResource ToolButtonStyle}">
+                <icons:PackIconFontAwesome
+                    Width="24"
+                    Height="24"
+                    Foreground="{StaticResource ToolPanelBackground}"
+                    Kind="PlusSolid" />
+            </Button>
+
+            <TextBlock
+                DockPanel.Dock="Left"
+                Style="{StaticResource ColumnTitleTextBlock}"
+                Text="Добавить задачу" />
+
+            <Grid
+                Width="200"
+                Height="26"
+                MinWidth="200"
+                HorizontalAlignment="Right">
+                <TextBox
+                    Padding="2"
+                    HorizontalContentAlignment="Right"
+                    VerticalContentAlignment="Center"
+                    d:Text="Поисковый запрос"
+                    FontFamily="Consolas"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Foreground="#E71421"
+                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <TextBlock
+                    Margin="2,2,8,2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Panel.ZIndex="99"
+                    FontSize="13"
+                    Foreground="LightGray"
+                    Text="Поиск ..."
+                    Visibility="{Binding SearchText, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='inverse'}" />
+            </Grid>
+
+        </DockPanel>
+
+        <!--  Список оплат от работодателя  -->
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <icons:PackIconFontAwesome
+                    Foreground="{StaticResource MoneyGreenBrush}"
+                    Kind="MoneyCheckSolid"
+                    Style="{StaticResource TitleIconStyle}" />
+                <TextBlock Style="{StaticResource ColumnTitleTextBlock}" Text="Оплаты" />
+                <Button Command="{Binding ShowPaymentFieldCommand}" Style="{StaticResource ToolButtonStyle}">
+                    <icons:PackIconFontAwesome
+                        Width="24"
+                        Height="24"
+                        Foreground="{StaticResource MoneyGreenBrush}"
+                        Kind="PlusSolid" />
+                </Button>
+            </StackPanel>
+            <StackPanel
+                Grid.Row="1"
+                Orientation="Horizontal"
+                Visibility="{Binding IsShowPaymentField, Converter={StaticResource BoolToVisibilityConverter}}">
+                <DatePicker Margin="2,2,6,2" SelectedDate="{Binding NewPayment.TransferArrivalDate}" />
+                <TextBox
+                    MinWidth="60"
+                    Margin="5,2"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    BorderThickness="0,0,0,2"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="Red"
+                    Text="{Binding NewPayment.Amount, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Command="{Binding AddEmployeerPaymentCommand}" Style="{StaticResource ToolButtonStyle}">
+                    <icons:PackIconFontAwesome
+                        Width="24"
+                        Height="24"
+                        Foreground="{StaticResource MoneyGreenBrush}"
+                        Kind="DownloadSolid" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!--  ГЛАВНАЯ панель с задачами  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Style="{StaticResource ColumnBorderStyle}">
+
+            <con:TodoListTabTableView DataContext="{Binding}" />
+
+        </Border>
+
+        <!--  Статистика по оплатам  -->
+        <DockPanel
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="1">
+            <Border DockPanel.Dock="Bottom" Style="{StaticResource ColumnBorderStyle}">
+                <con:TodoListTabEmployeerPaymentStatistics DataContext="{Binding PaymentsStatistic}" />
+            </Border>
+            <Border Style="{StaticResource ColumnBorderStyle}">
+                <ItemsControl ItemsSource="{Binding SortedEmployeerPayments}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Margin="6,6,20,6"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    Foreground="Blue"
+                                    Text="{Binding TransferArrivalDate, StringFormat='dd.MM.yyyy'}" />
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="6"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="{StaticResource MoneyGreenBrush}"
+                                    Text="{Binding Amount, StringFormat={}{0:F0}}" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </DockPanel>
+
+        <!--  Кнопки навигации по месяцам  -->
+        <Border
+            Grid.Row="2"
+            Grid.Column="0"
+            Style="{StaticResource ColumnBorderStyle}">
+            <ScrollViewer
+                Grid.Row="2"
+                MinHeight="30"
+                BorderThickness="0"
+                HorizontalScrollBarVisibility="Hidden"
+                VerticalScrollBarVisibility="Hidden">
+                <ItemsControl ItemsSource="{Binding MonthPills}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button
+                                MinWidth="80"
+                                Margin="2,2,8,2"
+                                Padding="8,2,8,4"
+                                HorizontalContentAlignment="Center"
+                                Background="RoyalBlue"
+                                Command="{Binding MonthPillClickCommand}"
+                                Content="{Binding DisplayName}"
+                                FontSize="22"
+                                Foreground="{Binding IsActive, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#B1CE09;#ffffff'}">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="4" />
+                                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!--  Статус бар  -->
+        <con:TodoListTabStatusBar
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            MinHeight="20"
+            DataContext="{Binding StatusBarData}" />
+
+        <!--  индикатор загрузки вкладки  -->
+        <ss:LoadingSpinner
+            Grid.Row="1"
+            Grid.Column="0"
+            Width="200"
+            Height="200"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Panel.ZIndex="10"
+            IsLoading="True"
+            Opacity="0.75"
+            Thickness="6"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+            Color="RoyalBlue" />
+    </Grid>
+</UserControl>

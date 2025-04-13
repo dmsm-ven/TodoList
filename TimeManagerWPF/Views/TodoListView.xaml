@@ -1,72 +1,93 @@
-﻿<UserControl x:Class="TodoList.WPF.Views.TodoListView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
-             xmlns:converters="clr-namespace:TodoList.WPF.Infrastructure.Converters"
-             xmlns:con="clr-namespace:TodoList.WPF.Controls"
-             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"             
-             xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"             
-             xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"             
-             mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel, IsDesignTimeCreatable=True}"      
-             d:DesignHeight="400" d:DesignWidth="900">
+﻿<UserControl
+    x:Class="TodoList.WPF.Views.TodoListView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:con="clr-namespace:TodoList.WPF.Views.Controls"
+    xmlns:converters="clr-namespace:TodoList.WPF.Infrastructure.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:vm="clr-namespace:TodoList.WPF.ViewModels"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False,
+                                     Type=vm:TodoListViewModel}"
+    d:DesignHeight="400"
+    d:DesignWidth="900"
+    mc:Ignorable="d">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
-            <beh:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
-                    VerticalAlignment="Top" 
-                    Panel.ZIndex="10">
-            <Button Style="{StaticResource ToolButtonStyle}" Command="{Binding AddNewEmployeerTabCommand}" 
-                    ToolTip="Создать новую вкладку с работами">
-                <icons:PackIconFontAwesome Kind="UserPlusSolid" Foreground="LightGray" Width="22" Height="22" />
+        <StackPanel
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10"
+            Orientation="Horizontal">
+            <Button
+                Command="{Binding AddNewEmployeerTabCommand}"
+                Style="{StaticResource ToolButtonStyle}"
+                ToolTip="Создать новую вкладку с работами">
+                <icons:PackIconFontAwesome
+                    Width="22"
+                    Height="22"
+                    Foreground="LightGray"
+                    Kind="UserPlusSolid" />
             </Button>
         </StackPanel>
-
         
-        <TabControl ItemsSource="{Binding Tabs}"
-                    SelectedValue="{Binding SelectedTab}"
-                    BorderThickness="0" >
+        <TabControl
+            BorderThickness="0"
+            ItemsSource="{Binding Tabs}"
+            SelectedValue="{Binding SelectedTab}">
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <con:TodoListTabContent DataContext="{Binding}"></con:TodoListTabContent>
+                    <con:TodoListTabContent DataContext="{Binding}" />
                 </DataTemplate>
             </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Grid Margin="8 2 2 2">
-                            <Ellipse Width="28" Height="28" Stroke="Transparent"                                 
-                                 Fill="{Binding HasActiveTasks, Converter={StaticResource HasActiveTaskBrushConverter}}"/>
-                            <TextBlock d:Text="99" Foreground="White" 
-                                       Text="{Binding StatusBarData.ActiveTasks}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       FontSize="13"/>
+                        <Grid Margin="8,2,2,2">
+                            <Ellipse
+                                Width="28"
+                                Height="28"
+                                Fill="{Binding HasActiveTasks, Converter={StaticResource HasActiveTaskBrushConverter}}"
+                                Stroke="Transparent" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                d:Text="99"
+                                FontSize="13"
+                                Foreground="White"
+                                Text="{Binding StatusBarData.ActiveTasks}" />
                         </Grid>
 
-                        <TextBlock Text="{Binding Employeer.Name, TargetNullValue='Имя'}" 
-                                   Background="Transparent"
-                                   Foreground="Black"
-                                   Margin="8 4 2 2"
-                                   FontWeight="Bold" FontSize="20"/>
+                        <TextBlock
+                            Margin="8,4,2,2"
+                            Background="Transparent"
+                            FontSize="20"
+                            FontWeight="Bold"
+                            Foreground="Black"
+                            Text="{Binding Employeer.Name, TargetNullValue='Имя'}" />
 
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
 
-        <ss:LoadingSpinner IsLoading="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
-                           Width="64" Height="64" 
-                           HorizontalAlignment="Left" 
-                           VerticalAlignment="Top"
-                           Color="RoyalBlue" 
-                           Panel.ZIndex="10"
-                           Opacity="0.75"
-                           Thickness="6" />
+        <ss:LoadingSpinner
+            Width="64"
+            Height="64"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Panel.ZIndex="10"
+            IsLoading="True"
+            Opacity="0.75"
+            Thickness="6"
+            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"
+            Color="RoyalBlue" />
     </Grid>
 </UserControl>

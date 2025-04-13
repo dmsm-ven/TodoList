@@ -1,63 +1,31 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
+using TodoList.WPF.Models;
 using TodoList.WPF.ViewModels;
 
-namespace TodoList.WPF;
+namespace TodoList.WPF.Services;
 
-public class NavigationLocator : ViewModelBase
+public partial class NavigationLocator : ObservableObject
 {
-    public event Action ActiveViewModelChanged;
+    private readonly TodoListViewModel todoListViewModel;
+    private readonly SettingsViewModel settingsViewModel;
 
-    ViewModelBase activeViewModel;
-    public ViewModelBase ActiveViewModel
+    [ObservableProperty] private ObservableObject activeViewModel;
+
+    public NavigationLocator(TodoListViewModel todoListViewModel,
+    SettingsViewModel settingsViewModel)
     {
-        get => activeViewModel;
-        private set
-        {
-            if (Set(ref activeViewModel, value))
-            {
-                ActiveViewModelChanged?.Invoke();
-            }
-        }
+        this.todoListViewModel = todoListViewModel;
+        this.settingsViewModel = settingsViewModel;
     }
 
-    ViewModelType activeViewModelType;
-    public ViewModelType ActiveViewModelType
+    public void Navigate(ViewModelType type)
     {
-        get => activeViewModelType;
-        private set => Set(ref activeViewModelType, value);
-    }
-
-    IReadOnlyDictionary<ViewModelType, Lazy<ViewModelBase>> AvailableViewModels { get; }
-
-    public void MoveTo(ViewModelType type)
-    {
-        try
+        ActiveViewModel = type switch
         {
-            ActiveViewModelType = type;
-            ActiveViewModel = AvailableViewModels[type].Value;
-        }
-        catch (Exception ex)
-        {
-            ActiveViewModelType = ViewModelType.ErrorView;
-            ActiveViewModel = AvailableViewModels[ActiveViewModelType].Value;
-            (ActiveViewModel as ConnectionErrorWindowViewModel).ErrorMessage = ex.Message;
-        }
-
-    }
-
-    public NavigationLocator(IHost host)
-    {
-        AvailableViewModels = new Dictionary<ViewModelType, Lazy<ViewModelBase>>()
-        {
-            [ViewModelType.TodoList] = new Lazy<ViewModelBase>(() => host.Services.GetService<TodoListViewModel>()),
-            [ViewModelType.ShoppingList] = new Lazy<ViewModelBase>(() => host.Services.GetService<ShoppingListViewModel>()),
-            [ViewModelType.ReadList] = new Lazy<ViewModelBase>(() => host.Services.GetService<ReadListViewModel>()),
-            [ViewModelType.ErrorView] = new Lazy<ViewModelBase>(() => host.Services.GetService<ConnectionErrorWindowViewModel>()),
-            [ViewModelType.SettingsView] = new Lazy<ViewModelBase>(() => host.Services.GetService<SettingsViewModel>()),
-            [ViewModelType.BudgetView] = new Lazy<ViewModelBase>(() => host.Services.GetService<BudgetViewModel>())
+            ViewModelType.TodoList => todoListViewModel,
+            ViewModelType.SettingsView => settingsViewModel,
+            _ => throw new NotImplementedException()
         };
     }
 }
