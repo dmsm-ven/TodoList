@@ -5,7 +5,7 @@
     <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <con:HasActiveTaskBrushConverter x:Key="HasActiveTaskBrushConverter" />
     <con:BoolToBrushConverter x:Key="BoolToBrushConverter" />
-    <con:ActiveMenuToForegroundConverter x:Key="ActiveMenuToForegroundConverter" />
+    <con:ReferenceEqualsToBoolConverter x:Key="ReferenceEqualsToBoolConverter" />
     <con:BoolToIconKindConverter x:Key="BoolToIconKindConverter" />
     <con:EqualsStringToBoolConverter x:Key="EqualsStringToBoolConverter" />
     <con:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />

@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,9 +33,6 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [ObservableProperty]
     private bool isLoading;
 
-    [ObservableProperty]
-    private EmployeerPaymentsStatisticModel paymentsStatistic;
-
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
     private MonthPillViewModel selectedMonthPill;
@@ -44,6 +40,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     async partial void OnSelectedMonthPillChanged(MonthPillViewModel value)
     {
         if (value == null) { return; }
+        foreach (var item in MonthPills)
+        {
+            item.IsSelected = false;
+        }
+        value.IsSelected = true;
         await RefreshSource();
     }
 
@@ -107,11 +108,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [RelayCommand]
     private async Task Loaded()
     {
-        if (Employeer == null) { return; }
+        if (Employeer == null)
+        {
+            throw new InvalidOperationException("Employeer is not set");
+        }
 
         IsLoading = true;
 
-        jobItemRepository.GetAllJobItems(Employeer.Id)
+        (await jobItemRepository.GetAllJobItems(Employeer.Id))
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i =>
@@ -120,10 +124,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
                 i.Initialize();
             });
 
-        paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id)
+        (await paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id))
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i => Employeer.Payments.Add(i));
+        Employeer.Initialize();
 
         await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());
 
@@ -217,30 +222,6 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         FilteredTodoItems = source;
     }
 
-    private void TodoItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        OnPropertyChanged(nameof(FilteredTodoItems));
-
-        if (e.Action != NotifyCollectionChangedAction.Add)
-        {
-            return;
-        }
-
-        var newItem = FilteredTodoItems.Last();
-
-        bool hasPill = Employeer.TodoItems
-            .Any(i => i != newItem &&
-                        i.StartDate.Year == newItem.StartDate.Year &&
-                        i.StartDate.Month == newItem.StartDate.Month);
-        //Добавляем вкладку с месяцем если это первое задание в этом месяце
-        if (!hasPill)
-        {
-            MonthPills.Insert(0, new MonthPillViewModel(this) { MonthNumber = newItem.StartDate.Month, Year = newItem.StartDate.Year });
-            SelectedMonthPill = MonthPills.First();
-        }
-
-    }
-
     public void Receive(JobItemFieldUpdatedMessage message)
     {
         if (message.FieldName == nameof(message.Value.IsCompleted))
@@ -253,13 +234,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         if (message.Value.ParentEmployee == this)
         {
-            foreach (var item in MonthPills)
-            {
-                item.IsSelected = false;
-            }
-
             SelectedMonthPill = message.Value;
-            SelectedMonthPill.IsSelected = true;
         }
     }
 }

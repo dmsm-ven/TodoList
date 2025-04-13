@@ -52,19 +52,20 @@ public class PostgresJobItemRepository : IJobItemRepository
         database.Execute("DELETE FROM job_item WHERE id = @id", new { id });
     }
 
-    public IEnumerable<JobItemEntity> GetAllJobItems(int employeer_id)
+    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
     {
-        var items = database.GetList<JobItemEntity>("SELECT * FROM job_item WHERE employeer_id = @employeer_id", new { employeer_id });
+        string sql = "SELECT * FROM job_item WHERE employeer_id = @employeer_id";
+        var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id });
         return items;
     }
 
-    public IEnumerable<JobItemHistoryEntity> GetHistoryChangesForJobItem(int job_item_id)
+    public async Task<List<JobItemHistoryEntity>> GetHistoryChangesForJobItem(int job_item_id)
     {
         string sql = @"SELECT * 
                         FROM job_item_history 
                         WHERE job_item_id = @job_item_id
                         ORDER BY date_time DESC";
-        var items = database.GetList<JobItemHistoryEntity>(sql, new { job_item_id });
+        var items = await database.GetListAsync<JobItemHistoryEntity>(sql, new { job_item_id });
         return items;
     }
 

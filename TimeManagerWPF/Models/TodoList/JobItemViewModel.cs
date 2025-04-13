@@ -59,12 +59,15 @@ public partial class JobItemViewModel : ObservableObject
 
     public void Initialize()
     {
+        if (isInitialized)
+        {
+            throw new InvalidOperationException("already initialized");
+        }
+
         isInitialized = true;
 
         PropertyChanged += (s, e) =>
         {
-            if (!isInitialized) { return; }
-
             var pi = this.GetType().GetProperty(e.PropertyName);
 
             string title = PropertyNameToTitle[e.PropertyName];
@@ -76,7 +79,7 @@ public partial class JobItemViewModel : ObservableObject
             }
             else
             {
-                value = pi.GetValue(this).ToString();
+                value = pi.GetValue(this)?.ToString() ?? "null";
             }
 
             WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, title, value));

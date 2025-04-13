@@ -1,30 +1,37 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TodoList.WPF.Models.TodoList;
 
-public class EmployeerPaymentsStatisticModel
+public class EmployeerPaymentsStatisticModel : ObservableObject
 {
-    public EmployeerViewModel Employeer { get; }
+    private IEnumerable<EmployeerPaymentViewModel>? data = null;
 
     public decimal? Month1Sum => GetStatisticForPeriod(1);
     public decimal? Month3Sum => GetStatisticForPeriod(3);
     public decimal? Month6Sum => GetStatisticForPeriod(6);
     public decimal? Month12Sum => GetStatisticForPeriod(12);
 
-    public EmployeerPaymentsStatisticModel(EmployeerViewModel employeer)
+    public void SetSource(IEnumerable<EmployeerPaymentViewModel> data)
     {
-        Employeer = employeer;
+        this.data = data;
+
+        OnPropertyChanged(nameof(Month1Sum));
+        OnPropertyChanged(nameof(Month3Sum));
+        OnPropertyChanged(nameof(Month6Sum));
+        OnPropertyChanged(nameof(Month12Sum));
     }
 
     private decimal? GetStatisticForPeriod(int months)
     {
-        if (Employeer.Payments.Count(p => p.TransferArrivalDate <= DateTimeOffset.UtcNow.AddMonths(-months + 1)) == 0)
+        if ((data?.Count(p => p.TransferArrivalDate <= DateTimeOffset.UtcNow.AddMonths(-months + 1)) ?? 0) == 0)
         {
             return null;
         }
 
-        return Employeer?.Payments
+        return data
             ?.Where(p => p.TransferArrivalDate >= DateTimeOffset.UtcNow.AddMonths(-months))
             ?.Sum(t => t.Amount) ?? null;
     }

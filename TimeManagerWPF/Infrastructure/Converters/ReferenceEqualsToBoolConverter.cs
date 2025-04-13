@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
-using TodoList.WPF.Models;
 
 namespace TodoList.WPF.Infrastructure.Converters;
 
-public class ActiveMenuToForegroundConverter : IValueConverter
+public class ReferenceEqualsToBoolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        ViewModelType input  = (ViewModelType)value;
-        ViewModelType activeNow = (ViewModelType)parameter;
-        if(input == activeNow)
+        if (value != null && parameter != null)
         {
-            return Brushes.Yellow;
+            return ReferenceEquals(value, parameter);
         }
-        return Brushes.White;
+        return false;
 
     }
 

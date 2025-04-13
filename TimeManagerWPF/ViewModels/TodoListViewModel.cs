@@ -86,7 +86,7 @@ public partial class TodoListViewModel : ObservableRecipient,
         var window = new JobItemChangesHistoryWindow();
         var windowViewModel = new JobItemChangesHistoryWindowViewModel();
 
-        var historyItems = jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
+        var historyItems = await jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
         foreach (var item in historyItems.Select(i => i.ToModel()))
         {
             windowViewModel.HistoryItems.Add(item);

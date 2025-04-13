@@ -12,103 +12,105 @@
     d:DesignHeight="200"
     d:DesignWidth="300"
     mc:Ignorable="d">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Border Style="{StaticResource ColumnBorderStyle}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <StackPanel
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            HorizontalAlignment="Center"
-            Orientation="Horizontal">
-            <icons:PackIconFontAwesome
-                Foreground="{StaticResource ToolPanelBackground}"
-                Kind="ChartBarRegular"
-                Style="{StaticResource TitleIconStyle}" />
-            <TextBlock Style="{StaticResource ColumnTitleTextBlock}" Text="Статистика" />
-        </StackPanel>
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <icons:PackIconFontAwesome
+                    Foreground="{StaticResource ToolPanelBackground}"
+                    Kind="ChartBarRegular"
+                    Style="{StaticResource TitleIconStyle}" />
+                <TextBlock Style="{StaticResource ColumnTitleTextBlock}" Text="Статистика" />
+            </StackPanel>
 
-        <Label
-            Grid.Row="1"
-            Grid.Column="0"
-            Content="За 1  мес." />
-        <TextBlock
-            Grid.Row="1"
-            Grid.Column="1"
-            d:Text="1 000 руб."
-            Style="{StaticResource EmployeerPaymentStatisticsSum}"
-            Text="{Binding Month1Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-        <TextBlock
-            Grid.Row="1"
-            Grid.Column="2"
-            d:Text="+25%"
-            Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
-            Text="{Binding Month1Change, TargetNullValue='', StringFormat={}{0:P0}}"
-            Visibility="Collapsed" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="За 1  мес." />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                d:Text="1 000 руб."
+                Style="{StaticResource EmployeerPaymentStatisticsSum}"
+                Text="{Binding Month1Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="2"
+                d:Text="+25%"
+                Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
+                Text="{Binding Month1Change, TargetNullValue='', StringFormat={}{0:P0}}"
+                Visibility="Collapsed" />
 
-        <Label
-            Grid.Row="2"
-            Grid.Column="0"
-            Content="За 3  мес." />
-        <TextBlock
-            Grid.Row="2"
-            Grid.Column="1"
-            d:Text="5 000 руб."
-            Style="{StaticResource EmployeerPaymentStatisticsSum}"
-            Text="{Binding Month3Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-        <TextBlock
-            Grid.Row="2"
-            Grid.Column="2"
-            d:Text="+25%"
-            Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
-            Text="{Binding Month3Change, TargetNullValue='', StringFormat={}{0:P0}}"
-            Visibility="Collapsed" />
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Content="За 3  мес." />
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                d:Text="5 000 руб."
+                Style="{StaticResource EmployeerPaymentStatisticsSum}"
+                Text="{Binding Month3Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="2"
+                d:Text="+25%"
+                Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
+                Text="{Binding Month3Change, TargetNullValue='', StringFormat={}{0:P0}}"
+                Visibility="Collapsed" />
 
-        <Label
-            Grid.Row="3"
-            Grid.Column="0"
-            Content="За 6  мес." />
-        <TextBlock
-            Grid.Row="3"
-            Grid.Column="1"
-            d:Text="25 000 руб."
-            Style="{StaticResource EmployeerPaymentStatisticsSum}"
-            Text="{Binding Month6Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-        <TextBlock
-            Grid.Row="3"
-            Grid.Column="2"
-            d:Text="+25%"
-            Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
-            Text="{Binding Month6Change, TargetNullValue='', StringFormat={}{0:P0}}"
-            Visibility="Collapsed" />
+            <Label
+                Grid.Row="3"
+                Grid.Column="0"
+                Content="За 6  мес." />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="1"
+                d:Text="25 000 руб."
+                Style="{StaticResource EmployeerPaymentStatisticsSum}"
+                Text="{Binding Month6Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="2"
+                d:Text="+25%"
+                Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
+                Text="{Binding Month6Change, TargetNullValue='', StringFormat={}{0:P0}}"
+                Visibility="Collapsed" />
 
-        <Label
-            Grid.Row="4"
-            Grid.Column="0"
-            Content="За 12  мес." />
-        <TextBlock
-            Grid.Row="4"
-            Grid.Column="1"
-            d:Text="50 000 руб."
-            Style="{StaticResource EmployeerPaymentStatisticsSum}"
-            Text="{Binding Month12Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-        <TextBlock
-            Grid.Row="4"
-            Grid.Column="2"
-            d:Text="+25%"
-            Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
-            Text="{Binding Month12Change, TargetNullValue='', StringFormat={}{0:P0}}"
-            Visibility="Collapsed" />
-    </Grid>
+            <Label
+                Grid.Row="4"
+                Grid.Column="0"
+                Content="За 12  мес." />
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="1"
+                d:Text="50 000 руб."
+                Style="{StaticResource EmployeerPaymentStatisticsSum}"
+                Text="{Binding Month12Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="2"
+                d:Text="+25%"
+                Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
+                Text="{Binding Month12Change, TargetNullValue='', StringFormat={}{0:P0}}"
+                Visibility="Collapsed" />
+        </Grid>
+    </Border>
 </UserControl>

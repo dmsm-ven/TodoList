@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TodoListApp.DataAccess.Entities;
+﻿using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoListApp.DataAccess.Repositories.Postgres.Repositories;
@@ -13,10 +12,10 @@ public class PostgresEmployeerPaymentRepository : IEmployeerPaymentRepository
         this.database = database;
     }
 
-    public IEnumerable<EmployeerPaymentEntity> GetAllPaymentsForEmployeer(int employeer_id)
+    public async Task<List<EmployeerPaymentEntity>> GetAllPaymentsForEmployeer(int employeer_id)
     {
         var sql = "SELECT * FROM employeer_payment WHERE employeer_id = @employeer_id";
-        var items = database.GetList<EmployeerPaymentEntity>(sql, new { employeer_id });
+        var items = await database.GetListAsync<EmployeerPaymentEntity>(sql, new { employeer_id });
         return items;
     }
 
