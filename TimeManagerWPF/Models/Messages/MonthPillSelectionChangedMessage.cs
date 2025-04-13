@@ -3,9 +3,9 @@ using TodoList.WPF.Models.TodoList;
 
 namespace TodoList.WPF.Models.Messages;
 
-public class MonthPillSelectionChangedMessage : ValueChangedMessage<EmployeerTabViewModel>
+public class MonthPillSelectionChangedMessage : ValueChangedMessage<MonthPillViewModel>
 {
-    public MonthPillSelectionChangedMessage(EmployeerTabViewModel value) : base(value)
+    public MonthPillSelectionChangedMessage(MonthPillViewModel value) : base(value)
     {
     }
 }

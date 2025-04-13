@@ -1,0 +1,59 @@
+﻿<UserControl
+    x:Class="TodoList.WPF.Views.Controls.TodoListMonthPillItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TodoList.WPF.Views.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mod="clr-namespace:TodoList.WPF.Models.TodoList"
+    MinWidth="80"
+    Padding="8,2,8,4"
+    d:DataContext="{d:DesignInstance Type={x:Type mod:MonthPillViewModel},
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="100"
+    d:DesignWidth="200"
+    Background="RoyalBlue"
+    mc:Ignorable="d">
+
+    <beh:Interaction.Triggers>
+        <beh:EventTrigger EventName="MouseDown">
+            <beh:InvokeCommandAction Command="{Binding MonthPillClickCommand}" />
+        </beh:EventTrigger>
+    </beh:Interaction.Triggers>
+
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Border
+                x:Name="border"
+                Padding="6"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="4">
+
+                <TextBlock
+                    x:Name="txtTitle"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    d:Text="Январь"
+                    FontSize="16"
+                    Foreground="White"
+                    Text="{Binding DisplayName}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="border" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                    <Setter TargetName="txtTitle" Property="Foreground" Value="Yellow" />
+                </Trigger>
+                <Trigger Property="local:TodoListMonthPillItem.IsSelectedPill" Value="True">
+                    <Setter TargetName="border" Property="Background" Value="Navy" />
+                    <Setter TargetName="txtTitle" Property="Foreground" Value="Yellow" />
+                    <Setter TargetName="txtTitle" Property="FontWeight" Value="Bold" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Template>
+
+
+</UserControl>

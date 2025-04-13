@@ -140,90 +140,17 @@
         </Border>
 
         <!--  Статистика по оплатам  -->
-        <DockPanel
+        <con:TodoListPaymentsPanel
             Grid.Row="1"
             Grid.RowSpan="2"
-            Grid.Column="1">
-            <Border DockPanel.Dock="Bottom" Style="{StaticResource ColumnBorderStyle}">
-                <con:TodoListTabEmployeerPaymentStatistics DataContext="{Binding PaymentsStatistic}" />
-            </Border>
-            <Border Style="{StaticResource ColumnBorderStyle}">
-                <ItemsControl ItemsSource="{Binding SortedEmployeerPayments}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    Margin="6,6,20,6"
-                                    VerticalAlignment="Center"
-                                    FontSize="14"
-                                    Foreground="Blue"
-                                    Text="{Binding TransferArrivalDate, StringFormat='dd.MM.yyyy'}" />
-
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Margin="6"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    FontSize="16"
-                                    FontWeight="Bold"
-                                    Foreground="{StaticResource MoneyGreenBrush}"
-                                    Text="{Binding Amount, StringFormat={}{0:F0}}" />
-
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Border>
-        </DockPanel>
+            Grid.Column="1"
+            DataContext="{Binding}" />
 
         <!--  Кнопки навигации по месяцам  -->
-        <Border
+        <con:TodoListMonthPillsNavigation
             Grid.Row="2"
             Grid.Column="0"
-            Style="{StaticResource ColumnBorderStyle}">
-            <ScrollViewer
-                Grid.Row="2"
-                MinHeight="30"
-                BorderThickness="0"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Hidden">
-                <ItemsControl ItemsSource="{Binding MonthPills}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel IsItemsHost="True" Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button
-                                MinWidth="80"
-                                Margin="2,2,8,2"
-                                Padding="8,2,8,4"
-                                HorizontalContentAlignment="Center"
-                                Background="RoyalBlue"
-                                Command="{Binding MonthPillClickCommand}"
-                                Content="{Binding DisplayName}"
-                                FontSize="22"
-                                Foreground="{Binding IsActive, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#B1CE09;#ffffff'}">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="4" />
-                                        <Setter Property="SnapsToDevicePixels" Value="True" />
-                                        <Setter Property="BorderThickness" Value="0" />
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </Border>
+            DataContext="{Binding}" />
 
         <!--  Статус бар  -->
         <con:TodoListTabStatusBar

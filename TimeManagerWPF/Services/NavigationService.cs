@@ -17,6 +17,8 @@ public partial class NavigationLocator : ObservableObject
     {
         this.todoListViewModel = todoListViewModel;
         this.settingsViewModel = settingsViewModel;
+
+        ActiveViewModel = todoListViewModel;
     }
 
     public void Navigate(ViewModelType type)

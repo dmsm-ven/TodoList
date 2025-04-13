@@ -66,11 +66,17 @@ public partial class JobItemViewModel : ObservableObject
             if (!isInitialized) { return; }
 
             var pi = this.GetType().GetProperty(e.PropertyName);
+
             string title = PropertyNameToTitle[e.PropertyName];
-            string value = pi.GetValue(this).ToString();
+            string value = string.Empty;
+
             if (pi.PropertyType == typeof(bool))
             {
                 value = (bool)pi.GetValue(this) ? "Да" : "Нет";
+            }
+            else
+            {
+                value = pi.GetValue(this).ToString();
             }
 
             WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, title, value));

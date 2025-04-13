@@ -16,7 +16,8 @@ using TodoListApp.DataAccess.Repositories.Interfaces;
 namespace TodoList.WPF.Models.TodoList;
 
 public partial class EmployeerTabViewModel : ObservableRecipient,
-    IRecipient<JobItemFieldUpdatedMessage>
+    IRecipient<JobItemFieldUpdatedMessage>,
+    IRecipient<MonthPillSelectionChangedMessage>
 {
     public const int MAX_PILLS_COUNT = 12;
 
@@ -39,6 +40,12 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
     private MonthPillViewModel selectedMonthPill;
+
+    async partial void OnSelectedMonthPillChanged(MonthPillViewModel value)
+    {
+        if (value == null) { return; }
+        await RefreshSource();
+    }
 
     [ObservableProperty]
     private JobItemViewModel selectedJobItem;
@@ -155,10 +162,6 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         }
 
         SelectedMonthPill = MonthPills?.FirstOrDefault();
-        if (SelectedMonthPill != null)
-        {
-            SelectedMonthPill.IsActive = true;
-        }
     }
 
     [RelayCommand]
@@ -243,6 +246,20 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         if (message.FieldName == nameof(message.Value.IsCompleted))
         {
             OnPropertyChanged(nameof(HasActiveTasks));
+        }
+    }
+
+    public void Receive(MonthPillSelectionChangedMessage message)
+    {
+        if (message.Value.ParentEmployee == this)
+        {
+            foreach (var item in MonthPills)
+            {
+                item.IsSelected = false;
+            }
+
+            SelectedMonthPill = message.Value;
+            SelectedMonthPill.IsSelected = true;
         }
     }
 }

@@ -15,8 +15,7 @@ using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoList.WPF.ViewModels;
 
-public partial class TodoListViewModel : ObservableRecipient
-    ,
+public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
     IRecipient<JobItemHistoryDisplayMessage>,
     IRecipient<MonthPillSelectionChangedMessage>
@@ -100,9 +99,6 @@ public partial class TodoListViewModel : ObservableRecipient
 
     public void Receive(MonthPillSelectionChangedMessage message)
     {
-        foreach (var pill in message.Value.MonthPills.Where(p => p != message.Value.SelectedMonthPill))
-        {
-            pill.IsActive = false;
-        }
+
     }
 }

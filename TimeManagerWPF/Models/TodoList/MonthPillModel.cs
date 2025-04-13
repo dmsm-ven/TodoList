@@ -8,10 +8,13 @@ namespace TodoList.WPF.Models.TodoList;
 
 public partial class MonthPillViewModel : ObservableObject
 {
-    private readonly EmployeerTabViewModel parent;
+    public EmployeerTabViewModel ParentEmployee { get; }
 
     public required int MonthNumber { get; init; }
     public required int Year { get; init; }
+
+    [ObservableProperty]
+    private bool isSelected = false;
 
     public string MonthName => new DateTime(Year, MonthNumber, 1).ToString("MMMM");
 
@@ -27,18 +30,14 @@ public partial class MonthPillViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty]
-    private bool isActive;
-
     public MonthPillViewModel(EmployeerTabViewModel parent)
     {
-        this.parent = parent;
+        ParentEmployee = parent;
     }
 
     [RelayCommand]
     private void MonthPillClick()
     {
-        IsActive = true;
-        WeakReferenceMessenger.Default.Send(new MonthPillSelectionChangedMessage(parent));
+        WeakReferenceMessenger.Default.Send(new MonthPillSelectionChangedMessage(this));
     }
 }
