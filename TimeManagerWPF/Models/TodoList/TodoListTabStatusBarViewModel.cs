@@ -33,6 +33,7 @@ public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
     public void SetSourceItems(IEnumerable<JobItemViewModel> newItemsSource)
     {
         sourceItems = newItemsSource;
+        RefreshProperties();
     }
 
     public void Receive(JobItemFieldUpdatedMessage message)

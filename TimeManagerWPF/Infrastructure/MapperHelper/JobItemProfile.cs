@@ -19,7 +19,7 @@ public static class JobItemMapperHelper
             IsPayed = jobItem.is_payed,
             StartDate = jobItem.start_date,
             EndDate = jobItem.end_date,
-            EmployeerId = jobItem.employeer_id
+            EmployeerId = jobItem.employeer_id,
         };
     }
 
@@ -34,12 +34,19 @@ public static class JobItemMapperHelper
             is_payed = jobItem.IsPayed,
             start_date = jobItem.StartDate,
             end_date = jobItem.EndDate,
-            employeer_id = jobItem.EmployeerId
+            employeer_id = jobItem.EmployeerId,
+            price = jobItem.Price,
+            website = jobItem.Website
         };
     }
 
     public static JobItemHistoryLineModel ToModel(this JobItemHistoryEntity jobItemHistory)
     {
-        return new JobItemHistoryLineModel(jobItemHistory.date_time, jobItemHistory.property_name, jobItemHistory.new_value);
+        return new JobItemHistoryLineModel()
+        {
+            LocalTime = jobItemHistory.date_time.LocalDateTime,
+            ChangedPropertyName = jobItemHistory.property_name,
+            NewValue = jobItemHistory.new_value,
+        };
     }
 }

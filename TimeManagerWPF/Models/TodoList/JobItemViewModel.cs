@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using TodoList.WPF.Models.Messages;
 
@@ -12,7 +13,19 @@ public partial class JobItemViewModel : ObservableObject
     public int Id { get; set; }
     public int EmployeerId { get; set; }
 
-    public bool IsLoaded { get; set; }
+    private bool isInitialized = false;
+
+    public IReadOnlyDictionary<string, string> PropertyNameToTitle = new Dictionary<string, string>()
+    {
+        ["Title"] = "Заголовок",
+        ["Description"] = "Описание",
+        ["Website"] = "Сайт",
+        ["Price"] = "Цена",
+        ["StartDate"] = "Дата создания",
+        ["EndDate"] = "Дата выполения",
+        ["IsPayed"] = "Оплачено",
+        ["IsCompleted"] = "Выполнено"
+    };
 
     [ObservableProperty] private string title = string.Empty;
 
@@ -44,14 +57,23 @@ public partial class JobItemViewModel : ObservableObject
 
     public int DaysAgo => (int)Math.Floor((DateTimeOffset.UtcNow - StartDate).TotalDays);
 
-    public JobItemViewModel()
+    public void Initialize()
     {
+        isInitialized = true;
+
         PropertyChanged += (s, e) =>
         {
-            if (IsLoaded)
+            if (!isInitialized) { return; }
+
+            var pi = this.GetType().GetProperty(e.PropertyName);
+            string title = PropertyNameToTitle[e.PropertyName];
+            string value = pi.GetValue(this).ToString();
+            if (pi.PropertyType == typeof(bool))
             {
-                WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, e.PropertyName, string.Empty));
+                value = (bool)pi.GetValue(this) ? "Да" : "Нет";
             }
+
+            WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, title, value));
         };
     }
 

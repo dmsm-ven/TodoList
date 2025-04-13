@@ -36,8 +36,12 @@
             <DataGrid.Columns>
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding DateTime, ConverterCulture=ru-RU}"
+                    Binding="{Binding LocalTime, ConverterCulture=ru-RU}"
                     Header="Дата/Время" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Elapsed}"
+                    Header="Прошло" />
                 <DataGridTextColumn
                     Width="*"
                     Binding="{Binding ChangedPropertyName}"

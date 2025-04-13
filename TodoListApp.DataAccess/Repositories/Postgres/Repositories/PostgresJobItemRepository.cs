@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TodoListApp.DataAccess.Entities;
+﻿using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoListApp.DataAccess.Repositories.Postgres.Repositories;

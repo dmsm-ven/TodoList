@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TodoList.WPF.Infrastructure.MapperHelper;
 using TodoList.WPF.Models.Messages;
 using TodoList.WPF.Models.TodoList;
+using TodoList.WPF.ViewModels.Windows;
 using TodoList.WPF.Views;
 using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
@@ -81,12 +82,19 @@ public partial class TodoListViewModel : ObservableRecipient
         jobItemRepository.AddHistoryChanges(message.Value.Id, message.FieldName, message.FieldValue);
     }
 
-    public void Receive(JobItemHistoryDisplayMessage message)
+    public async void Receive(JobItemHistoryDisplayMessage message)
     {
-        int id = message.Value.Id;
         var window = new JobItemChangesHistoryWindow();
-        throw new NotImplementedException();
-        //window.DataContext = new JobItemChangesHistoryWindowViewModel(id, jobItemRepository);
+        var windowViewModel = new JobItemChangesHistoryWindowViewModel();
+
+        var historyItems = jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
+        foreach (var item in historyItems.Select(i => i.ToModel()))
+        {
+            windowViewModel.HistoryItems.Add(item);
+        }
+
+        window.DataContext = windowViewModel;
+
         window.ShowDialog();
     }
 

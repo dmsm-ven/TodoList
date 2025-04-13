@@ -110,7 +110,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
             .ForEach(i =>
             {
                 Employeer.TodoItems.Add(i);
-                i.IsLoaded = true;
+                i.Initialize();
             });
 
         paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id)
@@ -121,6 +121,10 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());
 
         await RefreshSource();
+
+        StatusBarData.SetSourceItems(FilteredTodoItems);
+
+        WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
 
         IsLoading = false;
     }
@@ -208,9 +212,6 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         }
 
         FilteredTodoItems = source;
-        StatusBarData.SetSourceItems(source);
-
-        WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
     }
 
     private void TodoItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
