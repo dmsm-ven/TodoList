@@ -57,7 +57,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     [RelayCommand]
     private async Task Loaded()
     {
-        var employeers = await Task.Run(() => employeerRepository.GetAllEmployeer());
+        var employeers = await employeerRepository.GetAllEmployeer();
 
         foreach (var emp in employeers)
         {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TodoListApp.DataAccess.Entities;
+﻿using TodoListApp.DataAccess.Entities;
 using TodoListApp.DataAccess.Repositories.Interfaces;
 
 namespace TodoListApp.DataAccess.Repositories.Postgres.Repositories;
@@ -33,9 +32,9 @@ public class PostgresEmployeerRepository : IEmployeerRepository
         database.Execute("DELETE FROM employeer WHERE id = @id", new { id });
     }
 
-    public IEnumerable<EmployeerEntity> GetAllEmployeer()
+    public async Task<List<EmployeerEntity>> GetAllEmployeer()
     {
-        var items = database.GetList<EmployeerEntity>("SELECT * FROM employeer");
+        var items = await database.GetListAsync<EmployeerEntity>("SELECT * FROM employeer");
         return items;
     }
 

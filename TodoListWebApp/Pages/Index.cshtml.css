@@ -1,0 +1,17 @@
+﻿.employeer_tabs__panel {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    gap: 1rem;
+}
+.employeer_tabs__nav_list {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+.employeer_tabs__nav_list li {
+    display: block;
+    width: 100%;
+}
