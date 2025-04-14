@@ -14,9 +14,10 @@
     Title="Список дел"
     Width="1600"
     Height="800"
+    d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:Height="250"
     d:Width="1000"
-    d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel, IsDesignTimeCreatable=True}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <beh:Interaction.Triggers>
@@ -25,7 +26,7 @@
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
 
-    <Grid>
+    <Grid Background="{StaticResource MainGridImageBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -33,11 +34,12 @@
 
         <Border
             Grid.Row="1"
+            Padding="20"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Background="{StaticResource MainContentBackground}"
             BorderBrush="{StaticResource ToolPanelBackground}"
-            BorderThickness="1" >
+            BorderThickness="1">
             <ContentPresenter Content="{Binding NavigationLocator.ActiveViewModel}">
                 <ContentPresenter.Resources>
                     <DataTemplate DataType="{x:Type vm:TodoListViewModel}">

@@ -18,7 +18,14 @@
   <ItemGroup>
     <None Remove="Assets\Images\Login\login-background.jpeg" />
     <None Remove="Assets\Images\Login\login-logo.png" />
+    <None Remove="Assets\Images\maze-white.png" />
     <None Remove="Assets\Images\TodoList\geometric-seamless-pattern_97458.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\maze-white.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

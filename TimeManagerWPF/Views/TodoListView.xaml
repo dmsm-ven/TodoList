@@ -48,6 +48,7 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
+                
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <Grid Margin="8,2,2,2">
