@@ -20,6 +20,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 {
     public const int MAX_PILLS_COUNT = 12;
 
+    private bool isLoaded = false;
     private readonly IJobItemRepository jobItemRepository;
     private readonly IEmployeerPaymentRepository paymentRepository;
 
@@ -97,6 +98,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     public void SetEmployeer(EmployeerViewModel emp)
     {
         Employeer = emp;
+        Employeer.TodoItems.CollectionChanged += async (o, e) => await RefreshSource();
     }
 
     [RelayCommand]
@@ -108,6 +110,9 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [RelayCommand]
     private async Task Loaded()
     {
+        if (isLoaded) { return; }
+        isLoaded = true;
+
         if (Employeer == null)
         {
             throw new InvalidOperationException("Employeer is not set");
@@ -180,18 +185,19 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         };
         item.Id = jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
         Employeer.TodoItems.Add(item);
+        item.Initialize();
     }
 
     [RelayCommand]
-    private void DeleteSelectedJobItem()
+    private void DeleteSelectedJobItem(JobItemViewModel item)
     {
-        if (SelectedJobItem == null) { return; }
-        var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{SelectedJobItem.Title}' от [{SelectedJobItem.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (item == null) { return; }
+
+        var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{item.Title}' от [{item.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) { return; }
 
-        var temp = SelectedJobItem;
-        Employeer.TodoItems.Remove(temp);
-        jobItemRepository.DeleteJobItem(temp.Id);
+        jobItemRepository.DeleteJobItem(item.Id);
+        Employeer.TodoItems.Remove(item);
 
         SelectedJobItem = null;
     }
@@ -236,5 +242,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         {
             SelectedMonthPill = message.Value;
         }
+
+        StatusBarData.SetSourceItems(FilteredTodoItems);
     }
 }

@@ -16,12 +16,6 @@
     d:DesignWidth="800"
     Background="Transparent"
     mc:Ignorable="d">
-    <beh:Interaction.Triggers>
-        <beh:EventTrigger EventName="Loaded">
-            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
-        </beh:EventTrigger>
-    </beh:Interaction.Triggers>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -41,7 +35,7 @@
             Grid.Column="0"
             LastChildFill="True">
             <Button
-                Command="{Binding AddJobCommand}"
+                Command="{Binding AddJobItemCommand}"
                 DockPanel.Dock="Left"
                 Style="{StaticResource ToolButtonStyle}">
                 <icons:PackIconFontAwesome

@@ -13,7 +13,11 @@ public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
 {
     private IEnumerable<JobItemViewModel> sourceItems = new List<JobItemViewModel>();
 
+    public int ActiveOrNotPayedTasks =>
+        sourceItems?.Count(t => !t.IsCompleted && !t.IsPayed) ?? 0;
+
     public int ActiveTasks => sourceItems?.Count(t => !t.IsCompleted) ?? 0;
+
     public string ActiveTasksMessage => $"Активные задачи: {ActiveTasks} из {sourceItems?.Count() ?? 0}";
 
     public decimal TotalWorkCash => sourceItems?.Where(t => t.IsCompleted).Sum(t => t.Price) ?? 0;
@@ -48,6 +52,7 @@ public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
 
     private void RefreshProperties()
     {
+        OnPropertyChanged(nameof(ActiveOrNotPayedTasks));
         OnPropertyChanged(nameof(ActiveTasks));
         OnPropertyChanged(nameof(ActiveTasksMessage));
         OnPropertyChanged(nameof(TotalWorkCash));

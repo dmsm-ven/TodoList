@@ -17,8 +17,7 @@ namespace TodoList.WPF.ViewModels;
 
 public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
-    IRecipient<JobItemHistoryDisplayMessage>,
-    IRecipient<MonthPillSelectionChangedMessage>
+    IRecipient<JobItemHistoryDisplayMessage>
 {
 
     private readonly IEmployeerRepository employeerRepository;
@@ -34,6 +33,14 @@ public partial class TodoListViewModel : ObservableRecipient,
 
     [ObservableProperty]
     private EmployeerTabViewModel? selectedTab;
+
+    async partial void OnSelectedTabChanged(EmployeerTabViewModel? oldValue, EmployeerTabViewModel? newValue)
+    {
+        if (newValue != null)
+        {
+            await newValue.LoadedCommand.ExecuteAsync(null);
+        }
+    }
 
     public TodoListViewModel(IEmployeerRepository employeerRepository,
         IEmployeerPaymentRepository employeerPaymentRepository,
@@ -95,10 +102,5 @@ public partial class TodoListViewModel : ObservableRecipient,
         window.DataContext = windowViewModel;
 
         window.ShowDialog();
-    }
-
-    public void Receive(MonthPillSelectionChangedMessage message)
-    {
-
     }
 }

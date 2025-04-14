@@ -37,7 +37,7 @@
                     Kind="UserPlusSolid" />
             </Button>
         </StackPanel>
-        
+
         <TabControl
             BorderThickness="0"
             ItemsSource="{Binding Tabs}"
@@ -60,9 +60,9 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 d:Text="99"
-                                FontSize="13"
+                                FontSize="14"
                                 Foreground="White"
-                                Text="{Binding StatusBarData.ActiveTasks}" />
+                                Text="{Binding StatusBarData.ActiveOrNotPayedTasks}" />
                         </Grid>
 
                         <TextBlock
