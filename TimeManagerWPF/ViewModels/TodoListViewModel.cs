@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using TodoList.WPF.Infrastructure.MapperHelper;
 using TodoList.WPF.Models.Messages;
 using TodoList.WPF.Models.TodoList;
@@ -59,6 +60,17 @@ public partial class TodoListViewModel : ObservableRecipient,
         var window = new AddEmployeerWindow();
         window.DataContext = new AddEmployeerWindowViewModel();
         window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void RemoveEmployeerTab()
+    {
+        var result = MessageBox.Show($"Удалить вкладку '{SelectedTab.Employeer.Name}' ?", "Внимание", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+        {
+            employeerRepository.DeleteEmployeer(SelectedTab.Employeer.Id);
+            Tabs.Remove(SelectedTab);
+        }
     }
 
     [RelayCommand]

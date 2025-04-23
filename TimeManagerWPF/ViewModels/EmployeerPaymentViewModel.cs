@@ -10,7 +10,7 @@ public partial class EmployeerPaymentViewModel : ObservableObject
     public string EmployeerName { get; init; }
 
     [ObservableProperty]
-    private DateTimeOffset transferArrivalDate = DateTimeOffset.UtcNow;
+    private DateTime transferArrivalDate = DateTime.Now;
 
     [ObservableProperty]
     private decimal amount;

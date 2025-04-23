@@ -30,7 +30,7 @@ public static class EmployeerMapperHelper
             Id = x.id,
             Amount = x.amount,
             EmployeerId = x.employeer_id,
-            TransferArrivalDate = x.transfer_arrival_date
+            TransferArrivalDate = x.transfer_arrival_date.DateTime
         };
     }
 
@@ -41,7 +41,7 @@ public static class EmployeerMapperHelper
             id = x.Id,
             amount = x.Amount,
             employeer_id = x.EmployeerId,
-            transfer_arrival_date = x.TransferArrivalDate
+            transfer_arrival_date = new System.DateTimeOffset(x.TransferArrivalDate).UtcDateTime
         };
     }
 }

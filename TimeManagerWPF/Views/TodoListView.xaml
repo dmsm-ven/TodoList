@@ -27,13 +27,25 @@
             Panel.ZIndex="10"
             Orientation="Horizontal">
             <Button
+                Command="{Binding RemoveEmployeerTabCommand}"
+                Style="{StaticResource ToolButtonStyle}"
+                ToolTip="Удалить текущую вкладку с работами">
+                <icons:PackIconFontAwesome
+                    Width="22"
+                    Height="22"
+                    Opacity="0.4"
+                    Foreground="Red"
+                    Kind="UserMinusSolid" />
+            </Button>
+            <Button
                 Command="{Binding AddNewEmployeerTabCommand}"
                 Style="{StaticResource ToolButtonStyle}"
                 ToolTip="Создать новую вкладку с работами">
                 <icons:PackIconFontAwesome
                     Width="22"
                     Height="22"
-                    Foreground="LightGray"
+                    Opacity="0.4"
+                    Foreground="LawnGreen"
                     Kind="UserPlusSolid" />
             </Button>
         </StackPanel>
@@ -48,7 +60,7 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
             <TabControl.ItemTemplate>
-                
+
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <Grid Margin="8,2,2,2">

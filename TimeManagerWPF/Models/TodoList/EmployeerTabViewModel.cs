@@ -98,6 +98,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     public void SetEmployeer(EmployeerViewModel emp)
     {
         Employeer = emp;
+        this.NewPayment = new EmployeerPaymentViewModel() { EmployeerId = emp.Id, EmployeerName = emp.Name };
         Employeer.TodoItems.CollectionChanged += async (o, e) => await RefreshSource();
     }
 
@@ -152,7 +153,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         paymentRepository.AddPayment(NewPayment.ToEntity());
         Employeer.Payments.Insert(0, NewPayment);
         IsShowPaymentField = false;
-        NewPayment = new EmployeerPaymentViewModel();
+        NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id, EmployeerName = Employeer.Name };
     }
 
     private void LoadMonthPills()
