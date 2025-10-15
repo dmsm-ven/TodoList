@@ -4,7 +4,7 @@ namespace TodoListApp.DataAccess.Repositories.Interfaces;
 
 public interface IJobItemRepository
 {
-    Task<List<JobItemEntity>> GetAllJobItems(int employeer_id);
+    Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears);
     JobItemEntity GetJobItem(int id);
     void DeleteJobItem(int id);
     int AddOrUpdateJobItem(JobItemEntity entity);

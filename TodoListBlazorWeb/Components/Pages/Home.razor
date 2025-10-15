@@ -1,0 +1,114 @@
+﻿@page "/"
+@using Humanizer
+@using TodoListApp.DataAccess.Entities
+@using TodoListApp.DataAccess.Repositories.Interfaces
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Таблица</h1>
+
+@if (jobItems == null)
+{
+    <p><em>Загрузка списка</em></p>
+}
+else
+{
+    <div class="employeer-filter-box">
+
+        @foreach(var item in employeerMap)
+        {
+            <button class="btn btn-sm@((item.Key == employeerFilter) ? " btn-danger" : " btn-primary")"
+                id="emp-filter-@item.Key"
+                @onclick="() => RefreshFilter(item.Key)">
+                @item.Value.name
+            </button>
+        }
+    </div>
+    <div class="table-responsive">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Дата создания</th>
+                <th></th>
+                <th>Заказчик</th>
+                <th>Заголовок</th>
+                <th>Цена</th>
+                <th>Оплачено</th>
+                <th>Выполнено</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in jobItems)
+            {
+                <tr>
+                    <td>@item.start_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@item.start_date.ToLocalTime().Humanize()</td>
+                    <td>@employeerMap[item.employeer_id].name</td>
+                    <td>@item.title</td>
+                    <td>@item.price</td>
+                    <td>@BoolToSymbol(item.is_payed)</td>
+                    <td>@BoolToSymbol(item.is_completed)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+}
+
+<style>
+    .employeer-filter-box {
+        display: flex;
+        justify-content: flex-start;
+        gap: 15px;
+    }
+</style>
+
+@code {
+    [Inject] private IJobItemRepository jobItemRepository { get; set; }
+    [Inject] private IEmployeerRepository employeerRepository { get; set; }
+
+    private int? employeerFilter = null;
+    private readonly List<JobItemEntity> jobItems = new();
+    private readonly Dictionary<int, EmployeerEntity> employeerMap = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        var employeers = await employeerRepository.GetAllEmployeer();
+        foreach (var emp in employeers)
+        {
+            employeerMap[emp.id] = emp;
+        }
+        await RefreshSource();
+    }
+
+    private async Task RefreshFilter(int empId)
+    {
+        employeerFilter = employeerFilter.HasValue && employeerFilter.Value == empId ? null : empId;
+        await RefreshSource();
+        StateHasChanged();
+    }
+
+    private async Task RefreshSource()
+    {
+        jobItems.Clear();
+
+        List<JobItemEntity> tmpJobList = new();
+        foreach (var emp in employeerMap)
+        {
+            if (!employeerFilter.HasValue || (employeerFilter.HasValue && employeerFilter.Value == emp.Key)) 
+            {
+                var empJobs = await jobItemRepository.GetAllJobItems(emp.Key, takeMaxYears: 1);
+                tmpJobList.AddRange(empJobs);
+            }
+        }
+
+        jobItems.AddRange(tmpJobList.OrderByDescending(j => j.start_date).Take(100).ToArray());
+        StateHasChanged();
+    }
+
+    private string BoolToSymbol(bool val)
+    {
+        return val ? "❌" : "✅";
+    }
+}

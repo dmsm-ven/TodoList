@@ -121,7 +121,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         IsLoading = true;
 
-        (await jobItemRepository.GetAllJobItems(Employeer.Id))
+        (await jobItemRepository.GetAllJobItems(Employeer.Id, takeMaxYears: 1))
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i =>
@@ -158,6 +158,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     private void LoadMonthPills()
     {
+        MonthPills.Clear();
+
         var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
             .Select(date => new { date.Year, date.Month })
             .GroupBy(i => $"{i.Year}-{i.Month}")
@@ -187,6 +189,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         item.Id = jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
         Employeer.TodoItems.Add(item);
         item.Initialize();
+
+
+        var firstPill = MonthPills.FirstOrDefault();
+        var isRefreshNeeded = (firstPill == null || (firstPill != null && firstPill.MonthNumber != DateTime.Now.Month));
+        if (isRefreshNeeded)
+        {
+            LoadMonthPills();
+        }
     }
 
     [RelayCommand]

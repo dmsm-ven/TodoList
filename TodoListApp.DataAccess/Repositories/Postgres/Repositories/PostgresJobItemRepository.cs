@@ -52,10 +52,12 @@ public class PostgresJobItemRepository : IJobItemRepository
         database.Execute("DELETE FROM job_item WHERE id = @id", new { id });
     }
 
-    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
+    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears)
     {
-        string sql = "SELECT * FROM job_item WHERE employeer_id = @employeer_id";
-        var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id });
+        string sql = @"SELECT * 
+                       FROM job_item 
+                       WHERE employeer_id = @employeer_id AND date_part('year', start_date) > (date_part('year', CURRENT_DATE) - @takeMaxYears)";
+        var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id, takeMaxYears });
         return items;
     }
 
