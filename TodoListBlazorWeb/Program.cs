@@ -7,7 +7,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 
-builder.Services.ConfigureMyDatabaseRepositories(builder.Configuration);
+builder.Services.ConfigureMyServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -19,9 +19,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();

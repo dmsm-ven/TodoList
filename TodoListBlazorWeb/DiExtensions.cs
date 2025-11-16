@@ -5,7 +5,7 @@ using TodoListApp.DataAccess.Repositories.Postgres.Repositories;
 
 public static class DiExtensions
 {
-    public static IServiceCollection ConfigureMyDatabaseRepositories(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureMyServices(this IServiceCollection services, IConfiguration configuration)
     {
         string connectionString = configuration.GetConnectionString("default");
         services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
