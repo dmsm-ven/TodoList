@@ -1,12 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using TodoList.WPF.Services;
-using TodoListApp.DataAccess.Entities;
+using TodoListApp.Desktop.Services;
+using TodoListApp.Core.Entities;
+using System;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoListApp.Desktop.ViewModels;
 
-public partial class SettingsViewModel(UserManager userManager) : ObservableObject
+public partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty]
     private bool isLoaded = false;
@@ -20,7 +21,8 @@ public partial class SettingsViewModel(UserManager userManager) : ObservableObje
     [RelayCommand]
     private void Loaded()
     {
-        LogEntries = userManager.LogEntries;
+        //LogEntries = 
+        throw new NotImplementedException("тут вызов API");
         IsLoaded = true;
     }
 }

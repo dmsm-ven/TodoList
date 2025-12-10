@@ -7,12 +7,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using TodoList.WPF.Infrastructure.MapperHelper;
-using TodoList.WPF.Models.Messages;
-using TodoList.WPF.ViewModels;
-using TodoListApp.DataAccess.Repositories.Interfaces;
+using TodoListApp.Desktop.Infrastructure.MapperHelper;
+using TodoListApp.Desktop.Models.Messages;
+using TodoListApp.Desktop.ViewModels;
+using TodoListApp.Core.Repositories.Interfaces;
 
-namespace TodoList.WPF.Models.TodoList;
+namespace TodoListApp.Desktop.Models.TodoList;
 
 public partial class EmployeerTabViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,

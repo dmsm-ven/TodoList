@@ -1,5 +1,5 @@
-﻿using TodoList.WPF.ViewModels;
+﻿using TodoListApp.Desktop.ViewModels;
 
-namespace TodoList.WPF.Models.Messages;
+namespace TodoListApp.Desktop.Models.Messages;
 
 public record JobItemHistoryDisplayMessage(JobItemViewModel Value);

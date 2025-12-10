@@ -2,10 +2,10 @@
 using CommunityToolkit.Mvvm.Messaging;
 using System.Collections.Generic;
 using System.Linq;
-using TodoList.WPF.Models.Messages;
-using TodoList.WPF.ViewModels;
+using TodoListApp.Desktop.Models.Messages;
+using TodoListApp.Desktop.ViewModels;
 
-namespace TodoList.WPF.Models.TodoList;
+namespace TodoListApp.Desktop.Models.TodoList;
 
 public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,

@@ -2,9 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System;
-using TodoList.WPF.Models.Messages;
+using TodoListApp.Desktop.Models.Messages;
 
-namespace TodoList.WPF.Models.TodoList;
+namespace TodoListApp.Desktop.Models.TodoList;
 
 public partial class MonthPillViewModel : ObservableObject
 {

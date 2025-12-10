@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace TodoList.WPF.Views.Controls;
+namespace TodoListApp.Desktop.Views.Controls;
 /// <summary>
 /// Interaction logic for TodoListTabEmployeerPaymentStatistics.xaml
 /// </summary>

@@ -1,6 +1,6 @@
-﻿using TodoList.WPF.Models;
-using TodoList.WPF.Models.TodoList;
-using TodoListApp.DataAccess.Entities;
+﻿using TodoListApp.Desktop.Models;
+using TodoListApp.Desktop.Models.TodoList;
+using TodoListApp.Core.Entities;
 
 public static class EmployeerMapperHelper
 {

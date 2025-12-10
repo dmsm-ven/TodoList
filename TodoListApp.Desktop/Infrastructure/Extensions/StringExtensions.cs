@@ -1,7 +1,7 @@
 ﻿using MahApps.Metro.IconPacks;
 using System;
 
-namespace TodoList.WPF.Infrastructure.Extensions;
+namespace TodoListApp.Desktop.Infrastructure.Extensions;
 
 public static class StringExtensions
 {

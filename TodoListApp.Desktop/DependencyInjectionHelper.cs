@@ -1,44 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
-using TodoList.WPF.Models.TodoList;
-using TodoList.WPF.Services;
-using TodoList.WPF.Services.Options;
-using TodoList.WPF.ViewModels;
-using TodoList.WPF.ViewModels.Windows;
+using TodoListApp.Desktop.Models.TodoList;
+using TodoListApp.Desktop.Services;
+using TodoListApp.Desktop.Services.Options;
+using TodoListApp.Desktop.ViewModels;
+using TodoListApp.Desktop.ViewModels.Windows;
 using TodoListApp.Core;
-using TodoListApp.DataAccess.Entities;
-using TodoListApp.DataAccess.Repositories.Interfaces;
-using TodoListApp.DataAccess.Repositories.Postgres.Base;
-using TodoListApp.DataAccess.Repositories.Postgres.Repositories;
+using TodoListApp.Core.Entities;
+using TodoListApp.Core.Repositories.Interfaces;
 
-namespace TodoList.WPF;
+namespace TodoListApp.Desktop;
 
 public static class DependencyInjectionHelper
 {
-    public static IServiceCollection ConfigureMyDatabaseRepositories(this IServiceCollection services, IConfiguration configuration)
-    {
-        string connectionString = configuration.GetConnectionString("default");
-        services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
-        services.AddSingleton<IUserDataEncryptValidator, BCryptUserDataValidator>();
-
-        services.AddTransient<IAppLogger, PostgresAppLogger>();
-        services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
-        services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
-        services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
-
-        return services;
-    }
-    public static IServiceCollection ConfigureMyServices(this IServiceCollection services)
-    {
-        services.AddSingleton<UserManager>();
-
-        return services;
-    }
     public static IServiceCollection ConfigureMyOptions(this IServiceCollection services)
     {
         services.Configure<ScreenshotFolderOptions>(x =>

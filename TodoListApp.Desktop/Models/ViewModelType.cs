@@ -1,4 +1,4 @@
-﻿namespace TodoList.WPF.Models;
+﻿namespace TodoListApp.Desktop.Models;
 
 public enum ViewModelType
 {

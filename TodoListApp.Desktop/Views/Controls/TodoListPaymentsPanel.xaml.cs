@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TodoList.WPF.Views.Controls;
+namespace TodoListApp.Desktop.Views.Controls;
 /// <summary>
 /// Interaction logic for TodoListPaymentsPanel.xaml
 /// </summary>

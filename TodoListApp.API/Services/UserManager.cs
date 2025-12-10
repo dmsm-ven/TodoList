@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TodoListApp.DataAccess.Entities;
-using TodoListApp.DataAccess.Repositories.Interfaces;
+using TodoListApp.Core.Entities;
+using TodoListApp.Core.Repositories.Interfaces;
 
-namespace TodoList.WPF.Services;
+namespace TodoListApp.Desktop.Services;
 
 public class UserManager
 {

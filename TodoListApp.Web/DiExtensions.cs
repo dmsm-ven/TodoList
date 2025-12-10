@@ -1,7 +1,7 @@
 using TodoListApp.Core;
-using TodoListApp.DataAccess.Repositories.Interfaces;
-using TodoListApp.DataAccess.Repositories.Postgres.Base;
-using TodoListApp.DataAccess.Repositories.Postgres.Repositories;
+using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.Core.Repositories.Postgres.Base;
+using TodoListApp.Core.Repositories.Postgres.Repositories;
 
 public static class DiExtensions
 {

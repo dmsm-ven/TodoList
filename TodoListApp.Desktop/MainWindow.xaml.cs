@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TodoList.WPF;
+namespace TodoListApp.Desktop;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>

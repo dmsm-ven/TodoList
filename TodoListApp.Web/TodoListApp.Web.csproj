@@ -6,8 +6,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TodoListApp.DataAccess\TodoListApp.DataAccess.csproj" />
-  </ItemGroup>
-
 </Project>

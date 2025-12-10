@@ -4,13 +4,12 @@ using MahApps.Metro.IconPacks;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using TodoList.WPF.Services;
+using TodoListApp.Desktop.Services;
 
-namespace TodoList.WPF.ViewModels.Windows;
+namespace TodoListApp.Desktop.ViewModels.Windows;
 
-public partial class LoginWindowViewModel(UserManager userManager) : ObservableObject
+public partial class LoginWindowViewModel : ObservableObject
 {
-    private readonly UserManager userManager;
     public event Action OnUserEnter;
 
     [ObservableProperty]
@@ -40,7 +39,8 @@ public partial class LoginWindowViewModel(UserManager userManager) : ObservableO
 
         try
         {
-            var connectResult = await userManager.Login(UserLogin, enteredPassword);
+            throw new NotImplementedException("Вызов API на авторизацию не реализован");
+            var connectResult = false;
 
             if (connectResult)
             {
@@ -51,7 +51,7 @@ public partial class LoginWindowViewModel(UserManager userManager) : ObservableO
                 HasErrors = true;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             HasErrors = true;
         }

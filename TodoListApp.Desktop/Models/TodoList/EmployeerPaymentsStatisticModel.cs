@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TodoList.WPF.Models.TodoList;
+namespace TodoListApp.Desktop.Models.TodoList;
 
 public class EmployeerPaymentsStatisticModel : ObservableObject
 {

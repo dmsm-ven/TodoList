@@ -1,6 +1,7 @@
 <Solution>
+  <Project Path="TodoListApp.API/TodoListApp.API.csproj" Id="ae38044d-341f-456f-a510-48979969c066" />
+  <Project Path="TodoListApp.ApiClient/TodoListApp.ApiClient.csproj" Id="d932ca83-8dd1-49f1-8324-aad3c6d3bb5e" />
   <Project Path="TodoListApp.Core/TodoListApp.Core.csproj" />
-  <Project Path="TodoListApp.DataAccess/TodoListApp.DataAccess.csproj" />
   <Project Path="TodoListApp.Desktop/TodoListApp.Desktop.csproj" />
   <Project Path="TodoListApp.Web/TodoListApp.Web.csproj" />
 </Solution>

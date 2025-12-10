@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace TodoList.WPF.Infrastructure.Converters;
+namespace TodoListApp.Desktop.Infrastructure.Converters;
 
 
 public class BoolToVisibilityConverter : IValueConverter

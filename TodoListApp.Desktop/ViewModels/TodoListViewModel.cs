@@ -6,15 +6,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using TodoList.WPF.Infrastructure.MapperHelper;
-using TodoList.WPF.Models.Messages;
-using TodoList.WPF.Models.TodoList;
-using TodoList.WPF.ViewModels.Windows;
-using TodoList.WPF.Views;
-using TodoListApp.DataAccess.Entities;
-using TodoListApp.DataAccess.Repositories.Interfaces;
+using TodoListApp.Desktop.Infrastructure.MapperHelper;
+using TodoListApp.Desktop.Models.Messages;
+using TodoListApp.Desktop.Models.TodoList;
+using TodoListApp.Desktop.ViewModels.Windows;
+using TodoListApp.Desktop.Views;
+using TodoListApp.Core.Entities;
+using TodoListApp.Core.Repositories.Interfaces;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoListApp.Desktop.ViewModels;
 
 public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,

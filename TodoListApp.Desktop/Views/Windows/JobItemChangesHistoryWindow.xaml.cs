@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TodoList.WPF.Views;
+namespace TodoListApp.Desktop.Views;
 /// <summary>
 /// Interaction logic for JobItemChangesHistoryWindow.xaml
 /// </summary>

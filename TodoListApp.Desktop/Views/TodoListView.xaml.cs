@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace TodoList.WPF.Views;
+namespace TodoListApp.Desktop.Views;
 /// <summary>
 /// Interaction logic for TodoTabControl.xaml
 /// </summary>

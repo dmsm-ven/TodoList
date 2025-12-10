@@ -1,8 +1,8 @@
-﻿using TodoList.WPF.ViewModels;
+﻿using TodoListApp.Desktop.ViewModels;
 using TodoListApp.Core.Models;
-using TodoListApp.DataAccess.Entities;
+using TodoListApp.Core.Entities;
 
-namespace TodoList.WPF.Infrastructure.MapperHelper;
+namespace TodoListApp.Desktop.Infrastructure.MapperHelper;
 
 public static class JobItemMapperHelper
 {

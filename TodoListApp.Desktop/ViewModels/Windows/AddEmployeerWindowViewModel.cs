@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Windows;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoListApp.Desktop.ViewModels;
 
 public record EmployeerCreatedMessage(string newEmployeerName);
 

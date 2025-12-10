@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
-namespace TodoList.WPF.Models;
+namespace TodoListApp.Desktop.Models;
 
 public partial class EmployeerPaymentViewModel : ObservableObject
 {

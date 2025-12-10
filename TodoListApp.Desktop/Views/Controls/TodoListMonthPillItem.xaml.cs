@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace TodoList.WPF.Views.Controls;
+namespace TodoListApp.Desktop.Views.Controls;
 /// <summary>
 /// Interaction logic for TodoListMonthPillItem.xaml
 /// </summary>

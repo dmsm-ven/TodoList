@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace TodoList.WPF.ViewModels.Windows;
+namespace TodoListApp.Desktop.ViewModels.Windows;
 
 public partial class ConnectionErrorWindowViewModel : ObservableObject
 {

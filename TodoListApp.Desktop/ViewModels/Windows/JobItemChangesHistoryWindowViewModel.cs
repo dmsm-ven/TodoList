@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using TodoListApp.Core.Models;
 
-namespace TodoList.WPF.ViewModels.Windows;
+namespace TodoListApp.Desktop.ViewModels.Windows;
 
 public partial class JobItemChangesHistoryWindowViewModel : ObservableObject
 {

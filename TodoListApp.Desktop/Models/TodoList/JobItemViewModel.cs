@@ -4,9 +4,9 @@ using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TodoList.WPF.Models.Messages;
+using TodoListApp.Desktop.Models.Messages;
 
-namespace TodoList.WPF.ViewModels;
+namespace TodoListApp.Desktop.ViewModels;
 
 public partial class JobItemViewModel : ObservableObject
 {

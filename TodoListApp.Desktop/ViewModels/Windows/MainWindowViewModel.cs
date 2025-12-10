@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using TodoList.WPF.Models;
-using TodoList.WPF.Services;
+using TodoListApp.Desktop.Models;
+using TodoListApp.Desktop.Services;
 
-namespace TodoList.WPF.ViewModels.Windows;
+namespace TodoListApp.Desktop.ViewModels.Windows;
 
 public partial class MainWindowViewModel : ObservableObject
 {
