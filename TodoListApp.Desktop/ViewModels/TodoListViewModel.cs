@@ -24,6 +24,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     private readonly IEmployeerRepository employeerRepository;
     private readonly IEmployeerPaymentRepository employeerPaymentRepository;
     private readonly IJobItemRepository jobItemRepository;
+    private readonly SettingsViewModel settingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
 
     [ObservableProperty]
@@ -33,8 +34,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     private ObservableCollection<EmployeerTabViewModel> tabs = new();
 
     [ObservableProperty]
-    private EmployeerTabViewModel? selectedTab;
-
+    private EmployeerTabViewModel? selectedTab = null;
     async partial void OnSelectedTabChanged(EmployeerTabViewModel? oldValue, EmployeerTabViewModel? newValue)
     {
         if (newValue != null)
@@ -46,11 +46,13 @@ public partial class TodoListViewModel : ObservableRecipient,
     public TodoListViewModel(IEmployeerRepository employeerRepository,
         IEmployeerPaymentRepository employeerPaymentRepository,
         IJobItemRepository jobItemRepository,
+        SettingsViewModel settingsViewModel,
         Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
         this.employeerRepository = employeerRepository;
         this.employeerPaymentRepository = employeerPaymentRepository;
         this.jobItemRepository = jobItemRepository;
+        this.settingsViewModel = settingsViewModel;
         this.todoListTabFactory = todoListTabFactory;
     }
 
@@ -59,6 +61,14 @@ public partial class TodoListViewModel : ObservableRecipient,
     {
         var window = new AddEmployeerWindow();
         window.DataContext = new AddEmployeerWindowViewModel();
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void ShowLogsWindow()
+    {
+        var window = new SettingsView();
+        window.DataContext = settingsViewModel;
         window.ShowDialog();
     }
 
@@ -76,6 +86,8 @@ public partial class TodoListViewModel : ObservableRecipient,
     [RelayCommand]
     private async Task Loaded()
     {
+        this.Tabs.Clear();
+
         var employeers = await employeerRepository.GetAllEmployeer();
 
         foreach (var emp in employeers)

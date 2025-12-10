@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;

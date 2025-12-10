@@ -36,7 +36,8 @@ public partial class App : Application
             {
                 services.AddHttpClient(nameof(TodoListAppApiClient), client =>
                 {
-                    client.BaseAddress = new Uri(context.Configuration["ApiHost"]!);
+                    client.BaseAddress = new Uri(context.Configuration["API_HOST"] ?? throw new ArgumentException("API HOST must be provided"));
+                    client.DefaultRequestHeaders.Add("X-API-KEY", context.Configuration["API_KEY"] ?? throw new ArgumentException("API KEY must be provided"));
                 });
                 services.AddSingleton<TodoListAppApiClient>(sp =>
                 {
@@ -44,7 +45,7 @@ public partial class App : Application
                     var httpClient = factory.CreateClient(nameof(TodoListAppApiClient));
                     return new TodoListAppApiClient(httpClient);
                 });
-                services.AddSingleton<IUserRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
+                services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.AddSingleton<ISettingsRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());

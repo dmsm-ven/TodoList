@@ -13,16 +13,16 @@ public class PostgresAppLogger : IAppLogger
         this.dapper = dapper;
     }
 
-    public List<LogEntryEntity> GetLastRows(int takeCount)
+    public async Task<List<LogEntryEntity>> GetLastRows(int takeCount)
     {
-        var items = dapper.GetList<LogEntryEntity>("SELECT * FROM log_entry ORDER BY id DESC LIMIT @takeCount"
+        var items = await dapper.GetListAsync<LogEntryEntity>("SELECT * FROM log_entry ORDER BY id DESC LIMIT @takeCount"
             , new { takeCount });
         return items;
     }
 
-    public void WriteLog(string message)
+    public async Task WriteLog(string message)
     {
-        dapper.Execute("INSERT INTO log_entry (message) VALUES (@message)", new { message });
+        await dapper.ExecuteAsync("INSERT INTO log_entry (date_time, message) VALUES (@dt, @message)", new { message, dt = DateTime.Now });
     }
 }
 
