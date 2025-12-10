@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TodoListApp.Core/TodoListApp.Core.csproj" />
+  <Project Path="TodoListApp.DataAccess/TodoListApp.DataAccess.csproj" />
+  <Project Path="TodoListApp.Desktop/TodoListApp.Desktop.csproj" />
+  <Project Path="TodoListApp.Web/TodoListApp.Web.csproj" />
+</Solution>
