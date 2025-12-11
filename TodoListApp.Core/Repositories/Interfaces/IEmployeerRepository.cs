@@ -5,7 +5,9 @@ namespace TodoListApp.Core.Repositories.Interfaces;
 public interface IEmployeerRepository
 {
     Task<List<EmployeerEntity>> GetAllEmployeer();
-    EmployeerEntity GetEmployeer(int id);
-    void DeleteEmployeer(int id);
-    int AddOrUpdateEmployeer(EmployeerEntity entity);
+    Task<EmployeerEntity> GetEmployeer(int id);
+    Task DeleteEmployeer(int id);
+    Task<int> AddOrUpdateEmployeer(EmployeerEntity entity);
+    Task<List<EmployeerPaymentEntity>> GetAllPaymentsForEmployeer(int employeer_id);
+    Task AddPayment(EmployeerPaymentEntity payment);
 }

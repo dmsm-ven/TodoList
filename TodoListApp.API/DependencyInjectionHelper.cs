@@ -12,9 +12,7 @@ public static class DependencyInjectionHelper
         services.AddTransient<IAppLogger, PostgresAppLogger>();
         services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
         services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
         services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
-        services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
 
         return services;
     }

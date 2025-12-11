@@ -22,7 +22,6 @@ public partial class TodoListViewModel : ObservableRecipient,
 {
 
     private readonly IEmployeerRepository employeerRepository;
-    private readonly IEmployeerPaymentRepository employeerPaymentRepository;
     private readonly IJobItemRepository jobItemRepository;
     private readonly SettingsViewModel settingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
@@ -44,13 +43,11 @@ public partial class TodoListViewModel : ObservableRecipient,
     }
 
     public TodoListViewModel(IEmployeerRepository employeerRepository,
-        IEmployeerPaymentRepository employeerPaymentRepository,
         IJobItemRepository jobItemRepository,
         SettingsViewModel settingsViewModel,
         Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
         this.employeerRepository = employeerRepository;
-        this.employeerPaymentRepository = employeerPaymentRepository;
         this.jobItemRepository = jobItemRepository;
         this.settingsViewModel = settingsViewModel;
         this.todoListTabFactory = todoListTabFactory;
@@ -109,7 +106,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     public void Receive(JobItemFieldUpdatedMessage message)
     {
         jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
-        jobItemRepository.AddHistoryChanges(message.Value.Id, message.FieldName, message.FieldValue);
+        jobItemRepository.AddHistoryChanges(new(message.Value.Id, message.FieldName, message.FieldValue));
     }
 
     public async void Receive(JobItemHistoryDisplayMessage message)

@@ -3,49 +3,71 @@ using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
 using TodoListApp.Core.Entities;
+using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.ApiClient;
 
-public class TodoListAppApiClient(HttpClient client) : IEmployeerPaymentRepository,
-    IEmployeerRepository,
+public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
     IJobItemRepository,
-    ISettingsRepository,
     IAppLogger
 {
-    void IJobItemRepository.AddHistoryChanges(int job_item_id, string propertyName, string newValue)
+    async Task IJobItemRepository.AddHistoryChanges(JobItemHistoryChangeRequest payload)
     {
-        throw new NotImplementedException();
+        var result = await client.PostAsJsonAsync($"api/jobs/{payload.JobItemId}/changed", payload);
+        if(result.IsSuccessStatusCode == false)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }
     }
 
-    int IEmployeerRepository.AddOrUpdateEmployeer(EmployeerEntity entity)
+    async Task<int> IJobItemRepository.AddOrUpdateJobItem(JobItemEntity payload)
     {
-        throw new NotImplementedException();
+        var result = await client.PutAsJsonAsync($"api/jobs/{payload.id}/updated", payload);
+        if (result.IsSuccessStatusCode == false)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }
+        var id = await result.Content.ReadFromJsonAsync<int>();
+        return id;
     }
 
-    int IJobItemRepository.AddOrUpdateJobItem(JobItemEntity entity)
+    async Task<int> IEmployeerRepository.AddOrUpdateEmployeer(EmployeerEntity entity)
     {
-        throw new NotImplementedException();
+        var result = await client.PostAsJsonAsync($"api/employeers/add", entity);
+        if (result.IsSuccessStatusCode == false)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }
+        var id = await result.Content.ReadFromJsonAsync<int>();
+        return id;
     }
 
-    void IEmployeerPaymentRepository.AddPayment(EmployeerPaymentEntity payment)
+    async Task IEmployeerRepository.AddPayment(EmployeerPaymentEntity payment)
     {
-        throw new NotImplementedException();
+        var result = await client.PostAsJsonAsync($"api/employeers/{payment.employeer_id}/payments", payment);
+        if (result.IsSuccessStatusCode == false)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }   
     }
 
-    void IEmployeerRepository.DeleteEmployeer(int id)
+    async Task IEmployeerRepository.DeleteEmployeer(int id)
     {
-        throw new NotImplementedException();
+        var result = await client.DeleteAsync($"api/employeers/{id}");
+        if (!result.IsSuccessStatusCode)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }
     }
 
-    void IJobItemRepository.DeleteJobItem(int id)
+    async Task IJobItemRepository.DeleteJobItem(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    IReadOnlyDictionary<string, string> ISettingsRepository.GetAll()
-    {
-        throw new NotImplementedException();
+        var result = await client.DeleteAsync($"api/jobs/{id}");
+        if (!result.IsSuccessStatusCode)
+        {
+            throw new Exception($"Error calling API: {result.StatusCode}");
+        }
     }
 
     async Task<List<EmployeerEntity>> IEmployeerRepository.GetAllEmployeer()
@@ -60,9 +82,9 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerPaymentReposito
         return jobs ?? new();
     }
 
-    async Task<List<EmployeerPaymentEntity>> IEmployeerPaymentRepository.GetAllPaymentsForEmployeer(int employeer_id)
+    async Task<List<EmployeerPaymentEntity>> IEmployeerRepository.GetAllPaymentsForEmployeer(int employeer_id)
     {
-        var payments = await client.GetFromJsonAsync<List<EmployeerPaymentEntity>>($"api/payments/{employeer_id}");
+        var payments = await client.GetFromJsonAsync<List<EmployeerPaymentEntity>>($"api/employeers/{employeer_id}/payments");
         return payments ?? new();
     }
 
@@ -72,24 +94,22 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerPaymentReposito
         return logs ?? new();
     }
 
-    EmployeerEntity IEmployeerRepository.GetEmployeer(int id)
+    async Task<EmployeerEntity> IEmployeerRepository.GetEmployeer(int id)
     {
-        throw new NotImplementedException();
+        var emp = await client.GetFromJsonAsync<EmployeerEntity?>($"api/employeers/{id}");
+        return emp ?? throw new Exception("Employeer not found");
     }
 
-    Task<List<JobItemHistoryEntity>> IJobItemRepository.GetHistoryChangesForJobItem(int job_item_id)
+    async Task<List<JobItemHistoryEntity>> IJobItemRepository.GetHistoryChangesForJobItem(int job_item_id)
     {
-        throw new NotImplementedException();
+        var changes = await client.GetFromJsonAsync<List<JobItemHistoryEntity>>($"api/jobs/{job_item_id}/changes-log");
+        return changes ?? new();
     }
 
-    JobItemEntity IJobItemRepository.GetJobItem(int id)
+    async Task<JobItemEntity> IJobItemRepository.GetJobItem(int id)
     {
-        throw new NotImplementedException();
-    }
-
-    void ISettingsRepository.Set(string name, string value)
-    {
-        throw new NotImplementedException();
+        var jobs = await client.GetFromJsonAsync<JobItemEntity>($"api/jobs/{id}");
+        return jobs ?? throw new Exception("Job item not found");
     }
 
     Task IAppLogger.WriteLog(string message) => throw new NotSupportedException();

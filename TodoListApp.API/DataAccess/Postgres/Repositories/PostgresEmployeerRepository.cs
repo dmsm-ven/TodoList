@@ -27,9 +27,9 @@ public class PostgresEmployeerRepository : IEmployeerRepository
         return id;
     }
 
-    public void DeleteEmployeer(int id)
+    public async Task DeleteEmployeer(int id)
     {
-        database.Execute("DELETE FROM employeer WHERE id = @id", new { id });
+        await database.ExecuteAsync("DELETE FROM employeer WHERE id = @id", new { id });
     }
 
     public async Task<List<EmployeerEntity>> GetAllEmployeer()
@@ -38,9 +38,24 @@ public class PostgresEmployeerRepository : IEmployeerRepository
         return items;
     }
 
-    public EmployeerEntity GetEmployeer(int id)
+    public async Task<EmployeerEntity> GetEmployeer(int id)
     {
-        var employeer = database.GetSingle<EmployeerEntity>("SELECT * FROM employeer WHERE id = @id", new { id });
+        var employeer = await database.GetSingleAsync<EmployeerEntity>("SELECT * FROM employeer WHERE id = @id", new { id });
         return employeer;
+    }
+
+    public async Task<List<EmployeerPaymentEntity>> GetAllPaymentsForEmployeer(int employeer_id)
+    {
+        var sql = "SELECT * FROM employeer_payment WHERE employeer_id = @employeer_id";
+        var items = await database.GetListAsync<EmployeerPaymentEntity>(sql, new { employeer_id });
+        return items;
+    }
+
+    public async Task AddPayment(EmployeerPaymentEntity payment)
+    {
+        string sql = @"INSERT INTO employeer_payment (employeer_id, amount, transfer_arrival_date) VALUES
+                                                     (@employeer_id, @amount, @transfer_arrival_date)";
+
+        await database.ExecuteAsync(sql, payment);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace TodoListApp.Core.Models;
 
+public record JobItemHistoryChangeRequest(int JobItemId, string PropertyName, string NewValue);
 public class JobItemHistoryLineModel
 {
     public required DateTime LocalTime { get; init; }

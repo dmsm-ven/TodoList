@@ -46,10 +46,8 @@ public partial class App : Application
                     return new TodoListAppApiClient(httpClient);
                 });
                 services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
-                services.AddSingleton<ISettingsRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
-                services.AddSingleton<IEmployeerPaymentRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.ConfigureMyOptions();
                 services.ConfigureFactoryInitializators();
                 services.ConfigureMyViewModels();

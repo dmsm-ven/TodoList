@@ -1,4 +1,5 @@
 ﻿using TodoListApp.Core.Entities;
+using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Core.Repositories.Postgres.Repositories;
@@ -12,14 +13,14 @@ public class PostgresJobItemRepository : IJobItemRepository
         this.database = database;
     }
 
-    public void AddHistoryChanges(int job_item_id, string propertyName, string newValue)
+    public async Task AddHistoryChanges(JobItemHistoryChangeRequest data)
     {
         string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
-                                                    (@job_item_id, @propertyName, @newValue)";
-        database.Execute(sql, new { job_item_id, propertyName, newValue });
+                                                    (@JobItemId, @PropertyName, @NewValue)";
+        database.Execute(sql, data);
     }
 
-    public int AddOrUpdateJobItem(JobItemEntity entity)
+    public async Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
         int max_id = entity.id != 0 ?
             entity.id :
@@ -42,14 +43,14 @@ public class PostgresJobItemRepository : IJobItemRepository
                                 start_date = @start_date,
                                 end_date = @end_date";
 
-        database.Execute(sql, entity);
+        await database.ExecuteAsync(sql, entity);
 
         return max_id;
     }
 
-    public void DeleteJobItem(int id)
+    public async Task DeleteJobItem(int id)
     {
-        database.Execute("DELETE FROM job_item WHERE id = @id", new { id });
+        await database.ExecuteAsync("DELETE FROM job_item WHERE id = @id", new { id });
     }
 
     public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears)
@@ -71,9 +72,9 @@ public class PostgresJobItemRepository : IJobItemRepository
         return items;
     }
 
-    public JobItemEntity GetJobItem(int id)
+    public async Task<JobItemEntity> GetJobItem(int id)
     {
-        var jobItem = database.GetSingle<JobItemEntity>("SELECT * FROM job_item WHERE id = @id", new { id });
+        var jobItem = await database.GetSingleAsync<JobItemEntity>("SELECT * FROM job_item WHERE id = @id", new { id });
         return jobItem;
     }
 }

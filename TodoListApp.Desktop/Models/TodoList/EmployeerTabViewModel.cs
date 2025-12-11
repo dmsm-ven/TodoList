@@ -22,7 +22,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     private bool isLoaded = false;
     private readonly IJobItemRepository jobItemRepository;
-    private readonly IEmployeerPaymentRepository paymentRepository;
+    private readonly IEmployeerRepository paymentRepository;
 
     public EmployeerViewModel Employeer { get; private set; }
 
@@ -87,7 +87,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     }
 
     public EmployeerTabViewModel(IJobItemRepository jobItemRepository,
-        IEmployeerPaymentRepository paymentRepository)
+        IEmployeerRepository paymentRepository)
     {
         this.jobItemRepository = jobItemRepository;
         this.paymentRepository = paymentRepository;
@@ -178,7 +178,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
-    public void AddJobItem()
+    public async Task AddJobItem()
     {
         var item = new JobItemViewModel()
         {
@@ -186,7 +186,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
             Title = "Новая задача",
             EmployeerId = Employeer.Id
         };
-        item.Id = jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
+        item.Id = await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
         Employeer.TodoItems.Add(item);
         item.Initialize();
 
