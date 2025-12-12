@@ -1,12 +1,17 @@
 ﻿@page "/"
 @using Humanizer
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using TodoListApp.Core.Entities
 @using TodoListApp.Core.Repositories.Interfaces
 <PageTitle>Weather</PageTitle>
 
 <h1>Таблица</h1>
 
-@if (jobItems == null)
+@if (!string.IsNullOrWhiteSpace(errors))
+{
+    <h1>@errors</h1>
+}
+else if (jobItems.Count == 0 && string.IsNullOrWhiteSpace(errors))
 {
     <p><em>Загрузка списка</em></p>
 }
@@ -65,20 +70,25 @@ else
 @code {
     [Inject] private IJobItemRepository jobItemRepository { get; set; }
     [Inject] private IEmployeerRepository employeerRepository { get; set; }
+    [Inject] private IConfiguration configuration { get; set; }
+    [Inject] private ProtectedLocalStorage localStorage { get; set; }
 
+    private string errors = "";
     private int? employeerFilter = null;
     private readonly List<JobItemEntity> jobItems = new();
     private readonly Dictionary<int, EmployeerEntity> employeerMap = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Task.Delay(500);
-        var employeers = await employeerRepository.GetAllEmployeer();
-        foreach (var emp in employeers)
+        if (firstRender)
         {
-            employeerMap[emp.id] = emp;
+            var employeers = await employeerRepository.GetAllEmployeer();
+            foreach (var emp in employeers)
+            {
+                employeerMap[emp.id] = emp;
+            }
+            await RefreshSource();
         }
-        await RefreshSource();
     }
 
     private async Task RefreshFilter(int empId)
@@ -91,7 +101,6 @@ else
     private async Task RefreshSource()
     {
         jobItems.Clear();
-
         List<JobItemEntity> tmpJobList = new();
         foreach (var emp in employeerMap)
         {
