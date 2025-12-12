@@ -32,7 +32,7 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         return id;
     }
 
-    async Task<int> IEmployeerRepository.AddOrUpdateEmployeer(EmployeerEntity entity)
+    async Task<int> IEmployeerRepository.AddEmployeer(EmployeerEntity entity)
     {
         var result = await client.PostAsJsonAsync($"api/employeers/add", entity);
         if (result.IsSuccessStatusCode == false)
@@ -43,7 +43,7 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         return id;
     }
 
-    async Task IEmployeerRepository.AddPayment(EmployeerPaymentEntity payment)
+    async Task IEmployeerRepository.AddPayment(EmployeerPaymentPayload payment)
     {
         var result = await client.PostAsJsonAsync($"api/employeers/{payment.employeer_id}/payments", payment);
         if (result.IsSuccessStatusCode == false)

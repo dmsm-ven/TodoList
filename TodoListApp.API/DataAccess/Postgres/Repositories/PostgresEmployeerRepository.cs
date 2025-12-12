@@ -1,4 +1,5 @@
 ﻿using TodoListApp.Core.Entities;
+using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Core.Repositories.Postgres.Repositories;
@@ -12,13 +13,13 @@ public class PostgresEmployeerRepository : IEmployeerRepository
         this.database = database;
     }
 
-    public int AddOrUpdateEmployeer(EmployeerEntity entity)
+    public async Task<int> AddEmployeer(EmployeerEntity entity)
     {
         string sql = @"INSERT INTO employeer (id, name) VALUES(@id, @name) 
                        ON CONFLICT(id) DO UPDATE 
                        SET name = @name";
 
-        database.Execute(sql, entity);
+        await database.ExecuteAsync(sql, entity);
 
         int id = entity.id != 0 ?
             entity.id :
@@ -51,7 +52,7 @@ public class PostgresEmployeerRepository : IEmployeerRepository
         return items;
     }
 
-    public async Task AddPayment(EmployeerPaymentEntity payment)
+    public async Task AddPayment(EmployeerPaymentPayload payment)
     {
         string sql = @"INSERT INTO employeer_payment (employeer_id, amount, transfer_arrival_date) VALUES
                                                      (@employeer_id, @amount, @transfer_arrival_date)";

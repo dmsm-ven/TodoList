@@ -5,12 +5,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
+    xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     x:Name="window"
     Width="500"
     Height="300"
     d:Background="White"
-    d:DataContext="{d:DesignInstance Type=vm:AddEmployeerWindowViewModel,
+    d:DataContext="{d:DesignInstance Type={x:Type vm:AddEmployeerWindowViewModel},
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="200"
     d:DesignWidth="300"
@@ -50,7 +50,7 @@
             Margin="20,20">
 
             <Label HorizontalContentAlignment="Center" Content="ФИО/Название работодателя" />
-            <TextBox HorizontalContentAlignment="Center" Text="{Binding NewEmployeer.Name, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox HorizontalContentAlignment="Center" Text="{Binding NewEmployeerName, UpdateSourceTrigger=PropertyChanged}" />
 
             <StackPanel
                 Margin="4"

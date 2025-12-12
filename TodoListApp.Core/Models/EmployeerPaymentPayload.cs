@@ -1,10 +1,12 @@
-﻿namespace TodoListApp.Core.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-public class EmployeerPaymentEntity
+namespace TodoListApp.Core.Models;
+
+public class EmployeerPaymentPayload
 {
-    public int id { get; set; }
     public int employeer_id { get; set; }
     public DateTimeOffset transfer_arrival_date { get; set; }
     public decimal amount { get; set; }
 }
-

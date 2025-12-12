@@ -18,7 +18,8 @@ namespace TodoListApp.Desktop.ViewModels;
 
 public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
-    IRecipient<JobItemHistoryDisplayMessage>
+    IRecipient<JobItemHistoryDisplayMessage>,
+    IRecipient<EmployeerCreatedMessage>
 {
 
     private readonly IEmployeerRepository employeerRepository;
@@ -123,5 +124,17 @@ public partial class TodoListViewModel : ObservableRecipient,
         window.DataContext = windowViewModel;
 
         window.ShowDialog();
+    }
+
+    public async void Receive(EmployeerCreatedMessage message)
+    {
+        var emp = new EmployeerEntity() { name = message.newEmployeerName };
+        var id = await employeerRepository.AddEmployeer(emp);
+        emp.id = id;
+
+        var newTab = todoListTabFactory(emp);
+        Tabs.Add(newTab);
+        SelectedTab = newTab;
+
     }
 }

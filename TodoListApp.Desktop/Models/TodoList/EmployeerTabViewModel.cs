@@ -150,7 +150,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [RelayCommand]
     private void AddEmployeerPayment()
     {
-        paymentRepository.AddPayment(NewPayment.ToEntity());
+        paymentRepository.AddPayment(NewPayment.ToPayload());
         Employeer.Payments.Insert(0, NewPayment);
         IsShowPaymentField = false;
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id, EmployeerName = Employeer.Name };

@@ -1,6 +1,7 @@
 ﻿using TodoListApp.Desktop.Models;
 using TodoListApp.Desktop.Models.TodoList;
 using TodoListApp.Core.Entities;
+using TodoListApp.Core.Models;
 
 public static class EmployeerMapperHelper
 {
@@ -39,6 +40,16 @@ public static class EmployeerMapperHelper
         return new EmployeerPaymentEntity
         {
             id = x.Id,
+            amount = x.Amount,
+            employeer_id = x.EmployeerId,
+            transfer_arrival_date = new System.DateTimeOffset(x.TransferArrivalDate).UtcDateTime
+        };
+    }
+
+    public static EmployeerPaymentPayload ToPayload(this EmployeerPaymentViewModel x)
+    {
+        return new EmployeerPaymentPayload
+        {
             amount = x.Amount,
             employeer_id = x.EmployeerId,
             transfer_arrival_date = new System.DateTimeOffset(x.TransferArrivalDate).UtcDateTime

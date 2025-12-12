@@ -1,19 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Core.Entities;
+using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.API.Controllers;
 
 [ApiController]
-public class EmployeersController : ControllerBase
+public class EmployeersController(IEmployeerRepository repo) : ControllerBase
 {
-    private readonly IEmployeerRepository repo;
-
-    public EmployeersController(IEmployeerRepository repo)
-    {
-        this.repo = repo;
-    }
     [HttpGet("api/employeers")]
     public async Task<ActionResult<IEnumerable<EmployeerEntity>>> GetAll()
     {
@@ -48,7 +43,7 @@ public class EmployeersController : ControllerBase
     }
 
     [HttpPost("api/employeers/{employeer_id}/payments")]
-    public async Task<IActionResult> AddPaymentFromEmployeer([FromRoute] int employeer_id, [FromBody] EmployeerPaymentEntity payment)
+    public async Task<IActionResult> AddPaymentFromEmployeer([FromRoute] int employeer_id, [FromBody] EmployeerPaymentPayload payment)
     {
         if (payment is null || (payment?.amount ?? 0) <= 0 || employeer_id == 0)
         {
@@ -65,21 +60,20 @@ public class EmployeersController : ControllerBase
     }
 
     [HttpPost("api/employeers/add")]
-    public async Task<ActionResult<int>> AddOrUpdateEmployeer([FromBody] EmployeerEntity payload)
+    public async Task<ActionResult<int>> AddEmployeer([FromBody] EmployeerEntity payload)
     {
-        if(payload is null || string.IsNullOrWhiteSpace(payload?.name))
+        if (payload is null || string.IsNullOrWhiteSpace(payload?.name))
         {
             return BadRequest();
         }
-        if(payload.id != 0)
-        { 
-            var emp = await repo.GetEmployeer(payload.id);
-            if(emp is null)
-            {
-                return NotFound();
-            }
+        var allEmployeers = await repo.GetAllEmployeer();
+
+        if(allEmployeers.Any(e => e.name.Equals(payload.name, StringComparison.OrdinalIgnoreCase)))
+        {
+            return Conflict("Employeer with the same name already exists.");
         }
-        var empId = await repo.AddOrUpdateEmployeer(payload);
+
+        var empId = await repo.AddEmployeer(payload);
         return empId;
     }
 }
