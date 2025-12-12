@@ -1,22 +1,26 @@
+using System;
+using TodoListApp.ApiClient;
 using TodoListApp.Core;
 using TodoListApp.Core.Repositories.Interfaces;
-using TodoListApp.Core.Repositories.Postgres.Base;
-using TodoListApp.Core.Repositories.Postgres.Repositories;
 
 public static class DiExtensions
 {
     public static IServiceCollection ConfigureMyServices(this IServiceCollection services, IConfiguration configuration)
     {
-        string connectionString = configuration.GetConnectionString("default");
-        services.AddTransient<IDapperDatabaseAccess>(x => new PostgresDapperDatabaseAccess(connectionString));
-        services.AddSingleton<IUserDataEncryptValidator, BCryptUserDataValidator>();
-
-        services.AddTransient<IAppLogger, PostgresAppLogger>();
-        services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddTransient<IEmployeerPaymentRepository, PostgresEmployeerPaymentRepository>();
-        services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
-        services.AddTransient<ISettingsRepository, PostgresSettingsRepository>();
+        services.AddHttpClient(nameof(TodoListAppApiClient), client =>
+        {
+            client.BaseAddress = new Uri(configuration["API_HOST"] ?? throw new ArgumentException("API HOST must be provided"));
+            client.DefaultRequestHeaders.Add("X-API-KEY", configuration["API_KEY"] ?? throw new ArgumentException("API KEY must be provided"));
+        });
+        services.AddSingleton<TodoListAppApiClient>(sp =>
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            var httpClient = factory.CreateClient(nameof(TodoListAppApiClient));
+            return new TodoListAppApiClient(httpClient);
+        });
+        services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
+        services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
+        services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
 
         return services;
     }

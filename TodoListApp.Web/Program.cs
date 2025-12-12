@@ -1,4 +1,4 @@
-using TodoListBlazorWeb.Components;
+using TodoListApp.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

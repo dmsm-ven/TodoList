@@ -39,7 +39,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
             return;
         }
 
-        logger.LogInformation("Пользователь обратился к API по пути {path} с IP {clientIp}", context.Request.Path, clientIp);
+        logger.LogInformation("[{clientIp}] Обращение к API {patch}", clientIp, context.Request.Path);
         appLogger.WriteLog($"Пользователь обратился к API по пути {context.Request.Path} с IP {clientIp}");
 
         await next(context);
