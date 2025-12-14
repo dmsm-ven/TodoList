@@ -3,5 +3,5 @@
   <Project Path="TodoListApp.ApiClient/TodoListApp.ApiClient.csproj" Id="d932ca83-8dd1-49f1-8324-aad3c6d3bb5e" />
   <Project Path="TodoListApp.Core/TodoListApp.Core.csproj" />
   <Project Path="TodoListApp.Desktop/TodoListApp.Desktop.csproj" />
-  <Project Path="TodoListApp.Web/TodoListApp.Web.csproj" />
+  <Project Path="TodoListApp.WebUI/TodoListApp.WebUI.csproj" Id="7f216f53-2eae-4547-ae12-ae0a501ea011" />
 </Solution>
