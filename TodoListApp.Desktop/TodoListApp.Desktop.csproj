@@ -55,10 +55,4 @@
     <Resource Include="Assets\Images\TodoList\geometric-seamless-pattern_97458.jpg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

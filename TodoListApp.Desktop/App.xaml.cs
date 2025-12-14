@@ -11,6 +11,7 @@ using TodoListApp.Desktop.Views;
 using TodoListApp.Core.Repositories.Interfaces;
 using System;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace TodoListApp.Desktop;
 /// <summary>
@@ -27,6 +28,10 @@ public partial class App : Application
         Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location));
 
         AppHost = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddUserSecrets(assembly, optional: true);
+            })
             .UseDefaultServiceProvider((context, options) =>
             {
                 options.ValidateScopes = true;

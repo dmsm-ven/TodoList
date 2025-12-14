@@ -20,9 +20,14 @@ public class PostgresAppLogger : IAppLogger
         return items;
     }
 
-    public async Task WriteLog(string message)
+    public async Task WriteLog(string clientIp, string path, string message)
     {
-        await dapper.ExecuteAsync("INSERT INTO log_entry (date_time, message) VALUES (@dt, @message)", new { message, dt = DateTime.Now });
+        await dapper.ExecuteAsync("INSERT INTO log_entry (date_time, client_ip, path, message) VALUES (@dt, @client_ip, @path, @message)", new 
+        { 
+            client_ip = clientIp,
+            path,
+            message, dt = DateTime.Now,
+        });
     }
 }
 

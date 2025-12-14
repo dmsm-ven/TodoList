@@ -60,12 +60,14 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn
                         Binding="{Binding Created, ConverterCulture=ru-RU, StringFormat=dd.MM.yyyy HH:mm}"
-                        Foreground="Blue"
+                        Foreground="Navy"
                         Header="Дата/Время" />
                     <DataGridTextColumn
                         Binding="{Binding Elapsed}"
-                        Foreground="Blue"
+                        Foreground="LightBlue"
                         Header="Прошло" />
+                    <DataGridTextColumn Binding="{Binding ClientIp}" Header="IP" />
+                    <DataGridTextColumn Binding="{Binding Path}" Header="Путь" />
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding Message}"

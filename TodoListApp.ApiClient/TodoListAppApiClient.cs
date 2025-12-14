@@ -112,5 +112,5 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         return jobs ?? throw new Exception("Job item not found");
     }
 
-    Task IAppLogger.WriteLog(string message) => throw new NotSupportedException();
+    async Task IAppLogger.WriteLog(string userIp, string path, string message) => throw new NotSupportedException();
 }
