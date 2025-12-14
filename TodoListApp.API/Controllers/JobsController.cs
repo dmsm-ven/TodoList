@@ -15,9 +15,12 @@ public class JobsController : ControllerBase
         this.repo = repo;
     }
     [HttpGet("api/jobs")]
-    public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer([FromQuery] int employeer_id, [FromQuery] int take_max_years)
+    public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer(
+        [FromQuery] int employeer_id, 
+        [FromQuery] int take_max_years, 
+        [FromQuery] bool only_this_month)
     {
-        var jobs = await repo.GetAllJobItems(employeer_id, take_max_years);
+        var jobs = await repo.GetAllJobItems(employeer_id, take_max_years, only_this_month);
         return jobs != null ? Ok(jobs) : NoContent();
     }
 

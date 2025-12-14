@@ -76,9 +76,9 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         return employeers ?? new();
     }
 
-    async Task<List<JobItemEntity>> IJobItemRepository.GetAllJobItems(int employeer_id, int take_max_years)
+    async Task<List<JobItemEntity>> IJobItemRepository.GetAllJobItems(int employeer_id, int take_max_years, bool only_this_month)
     {
-        var jobs = await client.GetFromJsonAsync<List<JobItemEntity>>($"api/jobs?employeer_id={employeer_id}&take_max_years={take_max_years}");
+        var jobs = await client.GetFromJsonAsync<List<JobItemEntity>>($"api/jobs?employeer_id={employeer_id}&take_max_years={take_max_years}&only_this_month={only_this_month}");
         return jobs ?? new();
     }
 

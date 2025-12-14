@@ -121,7 +121,12 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         IsLoading = true;
 
-        (await jobItemRepository.GetAllJobItems(Employeer.Id, takeMaxYears: 1))
+        var jobsTaskThisMonth = jobItemRepository.GetAllJobItems(Employeer.Id, takeMaxYears: 1, only_this_month: false);
+        var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
+
+        await Task.WhenAll(jobsTaskThisMonth, paymentsTask);
+
+        jobsTaskThisMonth.Result
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i =>
@@ -130,10 +135,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
                 i.Initialize();
             });
 
-        (await paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id))
+        paymentsTask.Result
             .Select(i => i.ToViewModel())
             .ToList()
             .ForEach(i => Employeer.Payments.Add(i));
+
         Employeer.Initialize();
 
         await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());

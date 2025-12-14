@@ -66,14 +66,6 @@ public partial class App : Application
         ShowMainWindow();
     }
 
-    private void ShowLoginWindow()
-    {
-        var loginWindowViewModel = AppHost.Services.GetRequiredService<LoginWindow>();
-        LoginWindow loginWindow = new();
-        loginWindow.DataContext = loginWindowViewModel;
-        loginWindow.Show();
-    }
-
     private void ShowMainWindow()
     {
         var mainWindow = new MainWindow();
