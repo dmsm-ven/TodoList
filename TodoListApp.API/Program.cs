@@ -3,6 +3,7 @@ using System.Threading.RateLimiting;
 using TodoListApp.API.Model;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 
