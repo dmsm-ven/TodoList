@@ -1,0 +1,42 @@
+﻿@page "/login"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@attribute [AllowAnonymous]
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ProtectedLocalStorage localStorage
+
+<h1>Login</h1>
+<div>
+    <input type="text" @bind="token" />
+    <button class="btn btn-primary" @onclick="OnLoginClicked">Подтвердить</button>
+</div>
+
+@code {
+    string token = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task OnLoginClicked()
+    {
+        await localStorage.SetAsync(CustomAuthStateProvider.LocalStorageKeyName, token);
+
+        CustomAuthStateProvider stateProvider = ((CustomAuthStateProvider)AuthStateProvider);
+
+        var result = await stateProvider.GetAuthenticationStateAsync(); 
+        if (result.User.IsInRole("app_user"))
+        {
+            NavigationManager.NavigateTo("/list");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/error");
+        }
+    }
+}
