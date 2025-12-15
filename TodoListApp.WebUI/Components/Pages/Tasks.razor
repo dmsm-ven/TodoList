@@ -1,0 +1,171 @@
+﻿@page "/tasks"
+@* @attribute [Authorize] *@
+@rendermode InteractiveServer
+@inject IJobItemRepository JobItemRepository
+@inject IEmployeerRepository EmployeerRepository
+
+@using Humanizer
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using TodoListApp.Core.Entities
+@using TodoListApp.Core.Repositories.Interfaces
+
+<PageTitle>Todolist</PageTitle>
+
+<div class="employeer-filter-box">
+    @foreach (var item in employeerMap)
+    {
+        <button class="btn btn-sm@((item.Key == employeerFilter) ? " btn-danger" : " btn-primary")"
+                id="emp-filter-@item.Key"
+                @onclick="() => RefreshFilter(item.Key)">
+            @item.Value.name
+        </button>
+    }
+</div>
+
+@if (jobItems == null)
+{
+    <p><em>Загрузка списка</em></p>
+}
+else if (jobItems != null && jobItems.Count == 0)
+{
+    <p><em>Нет записей</em></p>
+}
+else
+{
+    <div class="table-responsive work-table-container">
+        <table class="work-table">
+            <thead>
+                <tr>
+                    <th>Дата создания</th>
+                    <th></th>
+                    <th>Заказчик</th>
+                    <th>Заголовок</th>
+                    <th>Цена</th>
+                    <th>Оплачено</th>
+                    <th>Выполнено</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in jobItems)
+                {
+                    <tr>
+                        <td>@item.start_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.start_date.ToLocalTime().Humanize()</td>
+                        <td>@employeerMap[item.employeer_id].name</td>
+                        <td>@item.title</td>
+                        <td>@item.price</td>
+                        <td>@BoolToStatusSymbol(item.is_payed)</td>
+                        <td>@BoolToStatusSymbol(item.is_completed)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .employeer-filter-box {
+        display: flex;
+        justify-content: flex-start;
+        gap: 15px;
+        margin: 10px 0px;
+    }
+
+        .employeer-filter-box > button{
+            margin-right: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: Calibri;
+        }
+
+.work-table-container {
+    background: rgba(0,0,0,0.9);
+}
+    .work-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+        /* Заголовки таблицы */
+        .work-table th {
+            background-color: rgba(0, 0, 80, 0.3); /* полупрозрачный синий */
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(0, 102, 204, 0.5);
+        }
+
+        /* Ячейки таблицы */
+        .work-table td {
+            padding: 2px;
+            border-bottom: 1px solid #808080;
+            color: #fff;
+            background-color: rgba(0, 0, 80, 0.1); 
+        }
+
+        /* Наведение на строку */
+        .work-table tr:hover td {
+            background-color: rgba(0, 102, 204, 0.15);
+            cursor: pointer;
+        }
+</style>
+
+@code {
+    private const int ITEMS_PER_PAGE = 100;
+
+    private List<JobItemEntity>? jobItems = null;
+    private readonly Dictionary<int, EmployeerEntity> employeerMap = new();
+
+    private int? currentPage = 1;
+
+    [SupplyParameterFromQuery]
+    private int? employeerFilter { get; set; } = 1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var employeers = await EmployeerRepository.GetAllEmployeer();
+            foreach (var emp in employeers)
+            {
+                employeerMap[emp.id] = emp;
+            }
+            await RefreshSource();
+        }
+    }
+
+    private async Task RefreshFilter(int empId)
+    {
+        jobItems = null;
+        StateHasChanged();
+        employeerFilter = employeerFilter.HasValue && employeerFilter.Value == empId ? null : empId;
+        await RefreshSource();
+        StateHasChanged();
+    }
+
+    private async Task RefreshSource()
+    {
+        jobItems = new();
+        List<JobItemEntity> tmpJobList = new();
+        foreach (var emp in employeerMap)
+        {
+            if (!employeerFilter.HasValue || (employeerFilter.HasValue && employeerFilter.Value == emp.Key))
+            {
+                var empJobs = await JobItemRepository.GetAllJobItems(emp.Key, takeMaxYears: 1, only_this_month: true);
+                tmpJobList.AddRange(empJobs);
+            }
+        }
+
+        jobItems.AddRange(tmpJobList.OrderByDescending(j => j.start_date).Take(ITEMS_PER_PAGE).ToArray());
+        StateHasChanged();
+    }
+
+    private string BoolToStatusSymbol(bool val)
+    {
+        return val ? "❌" : "✅";
+    }
+}

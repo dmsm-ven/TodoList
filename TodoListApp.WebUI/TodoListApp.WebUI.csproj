@@ -5,6 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <UserSecretsId>8b9fcd1e-24c4-45e8-9ae6-83138de090d1</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TodoListApp.ApiClient\TodoListApp.ApiClient.csproj" />
+    <ProjectReference Include="..\TodoListApp.Core\TodoListApp.Core.csproj" />
+  </ItemGroup>
 
 </Project>
