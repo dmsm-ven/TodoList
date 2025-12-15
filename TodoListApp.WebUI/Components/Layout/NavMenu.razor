@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">TodoListApp.WebUI</a>
+        <a class="navbar-brand" href="">Список дел</a>
     </div>
 </div>
 
@@ -9,16 +9,28 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">        
+                <i class="bi bi-house-door-fill-nav-menu"></i>Главная
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="tasks">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <i class="bi bi-align-bottom"></i> Войти
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="tasks">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Список дел
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 </div>
 

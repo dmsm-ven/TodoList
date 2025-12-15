@@ -4,7 +4,6 @@ using MahApps.Metro.IconPacks;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using TodoListApp.Desktop.Services;
 
 namespace TodoListApp.Desktop.ViewModels.Windows;
 

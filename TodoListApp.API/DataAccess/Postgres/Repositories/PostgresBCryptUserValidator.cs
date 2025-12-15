@@ -1,5 +1,4 @@
-﻿using TodoListApp.Core;
-using TodoListApp.Core.Entities;
+﻿using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Core.Repositories.Postgres.Repositories;

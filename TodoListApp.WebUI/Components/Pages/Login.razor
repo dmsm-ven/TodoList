@@ -1,0 +1,58 @@
+﻿@page "/login"
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ProtectedLocalStorage LocalStorage
+@inject NavigationManager Navigation
+
+<div class="login-content">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="material-logo">
+          <div class="logo-layers">
+            <div class="layer layer-1"></div>
+            <div class="layer layer-2"></div>
+            <div class="layer layer-3"></div>
+          </div>
+        </div>
+        <h2>Sign in</h2>
+        <p>to continue to your account</p>
+      </div>
+
+      <div class="login-form" id="loginForm">
+        <div class="form-group">
+          <div class="input-wrapper">
+            <input type="text" id="user_token" name="user_token" @bind="userToken">
+            <label for="user_token">Token</label>
+            <div class="input-line"></div>
+            <div class="ripple-container"></div>
+          </div>
+        </div>
+
+        <button type="button" class="login-btn material-btn"
+                disabled="@(string.IsNullOrWhiteSpace(userToken))"
+                @onclick="LoginClick">
+          <div class="btn-ripple"></div>
+          <span class="btn-text">SIGN IN</span>
+          <div class="btn-loader">
+            <svg class="loader-circle" viewBox="0 0 50 50">
+              <circle class="loader-path" cx="25" cy="25" r="12" fill="none" stroke="currentColor" stroke-width="3" />
+            </svg>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+@code {
+  private string userToken = string.Empty;
+
+  private async Task LoginClick()
+  {
+    await LocalStorage.SetAsync("auth_token", userToken);
+    await ((CustomAuthStateProvider)AuthStateProvider).InitializeAsync();
+    Navigation.NavigateTo("tasks");
+  }
+}

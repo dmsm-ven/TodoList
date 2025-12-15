@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TodoListApp.Core.Entities;
+﻿using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Core.Repositories.Postgres.Repositories;
@@ -22,11 +21,12 @@ public class PostgresAppLogger : IAppLogger
 
     public async Task WriteLog(string clientIp, string path, string message)
     {
-        await dapper.ExecuteAsync("INSERT INTO log_entry (date_time, client_ip, path, message) VALUES (@dt, @client_ip, @path, @message)", new 
-        { 
+        await dapper.ExecuteAsync("INSERT INTO log_entry (date_time, client_ip, path, message) VALUES (@dt, @client_ip, @path, @message)", new
+        {
             client_ip = clientIp,
             path,
-            message, dt = DateTime.Now,
+            message,
+            dt = DateTime.Now,
         });
     }
 }

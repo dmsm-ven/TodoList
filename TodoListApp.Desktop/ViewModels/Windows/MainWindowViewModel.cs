@@ -1,7 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using TodoListApp.Desktop.Models;
-using TodoListApp.Desktop.Services;
 
 namespace TodoListApp.Desktop.ViewModels.Windows;
 

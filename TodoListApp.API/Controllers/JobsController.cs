@@ -16,8 +16,8 @@ public class JobsController : ControllerBase
     }
     [HttpGet("api/jobs")]
     public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer(
-        [FromQuery] int employeer_id, 
-        [FromQuery] int take_max_years, 
+        [FromQuery] int employeer_id,
+        [FromQuery] int take_max_years,
         [FromQuery] bool only_this_month)
     {
         var jobs = await repo.GetAllJobItems(employeer_id, take_max_years, only_this_month);
@@ -35,7 +35,7 @@ public class JobsController : ControllerBase
     public async Task<IActionResult> DeleteJobById([FromQuery] int id)
     {
         var item = await repo.GetJobItem(id);
-        if(item is null)
+        if (item is null)
         {
             return NotFound();
         }
@@ -52,7 +52,7 @@ public class JobsController : ControllerBase
         }
         var result = await repo.GetHistoryChangesForJobItem(JobItemId);
 
-        if(result.Count == 0)
+        if (result.Count == 0)
         {
             return NoContent();
         }

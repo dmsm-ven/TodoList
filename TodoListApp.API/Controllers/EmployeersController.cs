@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
@@ -68,7 +67,7 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
         }
         var allEmployeers = await repo.GetAllEmployeer();
 
-        if(allEmployeers.Any(e => e.name.Equals(payload.name, StringComparison.OrdinalIgnoreCase)))
+        if (allEmployeers.Any(e => e.name.Equals(payload.name, StringComparison.OrdinalIgnoreCase)))
         {
             return Conflict("Employeer with the same name already exists.");
         }

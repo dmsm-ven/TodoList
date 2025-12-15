@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-
-namespace TodoListApp.Core.Repositories.Interfaces;
+﻿namespace TodoListApp.Core.Repositories.Interfaces;
 
 public interface IUserRepository
 {

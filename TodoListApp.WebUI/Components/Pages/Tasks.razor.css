@@ -1,0 +1,47 @@
+﻿.employeer-filter-box {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin: 10px 0px;
+}
+
+    .employeer-filter-box > button {
+        margin-right: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        font-family: Calibri;
+    }
+
+.work-table-container {
+    background: rgba(0,0,0,0.9);
+}
+
+.work-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    /* Заголовки таблицы */
+    .work-table th {
+        background-color: rgba(0, 0, 80, 0.3); /* полупрозрачный синий */
+        color: #ffffff;
+        padding: 12px;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid rgba(0, 102, 204, 0.5);
+    }
+
+    /* Ячейки таблицы */
+    .work-table td {
+        padding: 2px;
+        border-bottom: 1px solid #808080;
+        color: #fff;
+        background-color: rgba(0, 0, 80, 0.1);
+    }
+
+    /* Наведение на строку */
+    .work-table tr:hover td {
+        background-color: rgba(0, 102, 204, 0.15);
+        cursor: pointer;
+    }

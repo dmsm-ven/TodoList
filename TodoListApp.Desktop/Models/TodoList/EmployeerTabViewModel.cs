@@ -7,10 +7,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.ViewModels;
-using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Desktop.Models.TodoList;
 

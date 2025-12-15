@@ -1,7 +1,4 @@
 ﻿using Humanizer;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TodoListApp.Core.Entities;
 
 namespace TodoListApp.Core.Models;

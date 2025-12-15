@@ -1,17 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using TodoListApp.ApiClient;
-using Microsoft.Extensions.Http;
-using TodoListApp.Desktop.Services;
-using TodoListApp.Desktop.ViewModels.Windows;
-using TodoListApp.Desktop.Views;
 using TodoListApp.Core.Repositories.Interfaces;
-using System;
-using System.Net.Http;
-using Microsoft.Extensions.Configuration;
+using TodoListApp.Desktop.ViewModels.Windows;
 
 namespace TodoListApp.Desktop;
 /// <summary>

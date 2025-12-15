@@ -15,7 +15,7 @@ public class LogsController : ControllerBase
         this.logger = logger;
     }
     [HttpGet("api/logs")]
-    public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetAllJobItems([FromQuery]int take_count) 
+    public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetAllJobItems([FromQuery] int take_count)
     {
         int count = take_count <= 0 ? 1 : take_count;
         count = count >= MAX_LOGS_ITEMS ? MAX_LOGS_ITEMS : count;

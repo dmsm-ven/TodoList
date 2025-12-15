@@ -6,13 +6,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TodoListApp.Core.Entities;
+using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.Models.TodoList;
 using TodoListApp.Desktop.ViewModels.Windows;
 using TodoListApp.Desktop.Views;
-using TodoListApp.Core.Entities;
-using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Desktop.ViewModels;
 

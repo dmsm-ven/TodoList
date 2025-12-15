@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http.Json;
-using System.Text;
+﻿using System.Net.Http.Json;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
@@ -15,7 +12,7 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
     async Task IJobItemRepository.AddHistoryChanges(JobItemHistoryChangeRequest payload)
     {
         var result = await client.PostAsJsonAsync($"api/jobs/{payload.JobItemId}/changed", payload);
-        if(result.IsSuccessStatusCode == false)
+        if (result.IsSuccessStatusCode == false)
         {
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
@@ -49,7 +46,7 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         if (result.IsSuccessStatusCode == false)
         {
             throw new Exception($"Error calling API: {result.StatusCode}");
-        }   
+        }
     }
 
     async Task IEmployeerRepository.DeleteEmployeer(int id)

@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using TodoListApp.Core.Entities;
 using TodoListApp.Desktop.Models.TodoList;
-using TodoListApp.Desktop.Services;
 using TodoListApp.Desktop.Services.Options;
 using TodoListApp.Desktop.ViewModels;
 using TodoListApp.Desktop.ViewModels.Windows;
-using TodoListApp.Core;
-using TodoListApp.Core.Entities;
-using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Desktop;
 

@@ -20,7 +20,7 @@ public class BoolToVisibilityConverter : IValueConverter
         {
             result = (!string.IsNullOrWhiteSpace(s)) ? Visibility.Visible : Visibility.Collapsed;
         }
-        else 
+        else
         {
             result = value != null ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -32,7 +32,7 @@ public class BoolToVisibilityConverter : IValueConverter
             {
                 result = (result == Visibility.Visible) ? Visibility.Collapsed : Visibility.Visible;
             }
-            if(strParam == "hidden")
+            if (strParam == "hidden")
             {
                 result = (result == Visibility.Collapsed) ? Visibility.Hidden : result;
             }
@@ -40,7 +40,7 @@ public class BoolToVisibilityConverter : IValueConverter
 
 
         return result;
-       
+
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

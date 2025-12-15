@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TodoListApp.Core.Models;
+﻿namespace TodoListApp.Core.Models;
 
 public class EmployeerPaymentPayload
 {

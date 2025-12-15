@@ -1,6 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using TodoListApp.API.Model;
 using TodoListApp.Core.Repositories.Interfaces;
 
@@ -11,7 +9,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
     private readonly ILogger<AuthApiKeyMiddleware> logger;
     private readonly IAppLogger appLogger;
 
-    public AuthApiKeyMiddleware(IOptions<ApiKeyConfiguration> options, 
+    public AuthApiKeyMiddleware(IOptions<ApiKeyConfiguration> options,
         ILogger<AuthApiKeyMiddleware> logger,
         IAppLogger appLogger)
     {
@@ -31,7 +29,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
             return;
         }
 
-        if(apiKey != extractedApiKey)
+        if (apiKey != extractedApiKey)
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("401 Unauthorized");

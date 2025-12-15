@@ -1,14 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.Generic;
-using TodoListApp.Desktop.Services;
-using TodoListApp.Core.Entities;
-using System;
-using TodoListApp.Core.Repositories.Interfaces;
-using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using TodoListApp.Core.Models;
+using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.Desktop.ViewModels;
 
@@ -34,7 +30,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         var items = await appLogger.GetLastRows(100);
 
-        foreach(var item in items.OrderByDescending(i => i.id).Select(i => LogEntryModel.FromEntity(i)))
+        foreach (var item in items.OrderByDescending(i => i.id).Select(i => LogEntryModel.FromEntity(i)))
         {
             LogEntries.Add(item);
         }

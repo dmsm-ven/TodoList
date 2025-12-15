@@ -1,6 +1,6 @@
-﻿using TodoListApp.Desktop.ViewModels;
+﻿using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
-using TodoListApp.Core.Entities;
+using TodoListApp.Desktop.ViewModels;
 
 namespace TodoListApp.Desktop.Infrastructure.MapperHelper;
 

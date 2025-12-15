@@ -1,7 +1,7 @@
-﻿using TodoListApp.Desktop.Models;
-using TodoListApp.Desktop.Models.TodoList;
-using TodoListApp.Core.Entities;
+﻿using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
+using TodoListApp.Desktop.Models;
+using TodoListApp.Desktop.Models.TodoList;
 
 public static class EmployeerMapperHelper
 {
