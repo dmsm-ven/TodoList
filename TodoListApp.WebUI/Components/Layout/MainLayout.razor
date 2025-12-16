@@ -1,66 +1,66 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-  <div class="sidebar">
-    <NavMenu />
-  </div>
-
-  <main>
-    <div class="main-content">
-      <div class="auth-info-panel">
-        <AuthorizeView>
-          <Authorized>
-            <p>Hello, @context.User.Identity?.Name!</p>
-          </Authorized>
-          <NotAuthorized>
-            <p>You're not authorized.</p>
-          </NotAuthorized>
-        </AuthorizeView>
-      </div>
-      <div class="article-content-box">
-        <article class="content px-4">
-          @Body
-        </article>
-      </div>
+    <div class="sidebar">
+        <NavMenu />
     </div>
-  </main>
+
+    <main>
+        <div class="main-content">
+            <div class="auth-info-panel">
+                <AuthorizeView>
+                    <Authorized>
+                        <p>Hello, @context.User.Identity?.Name!</p>
+                    </Authorized>
+                    <NotAuthorized>
+                        <p>You're not authorized.</p>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+            <div class="article-content-box">
+                <article class="content px-4">
+                    @Body
+                </article>
+            </div>
+        </div>
+    </main>
 </div>
 
 <style>
-  .main-content {
-    display: grid;
-    grid-template-rows: auto 1fr;
-  }
+    .main-content {
+        display: grid;
+        grid-template-rows: auto 1fr;
+    }
 
-  .auth-info-panel {
-    padding: 10px 0;
-    display: flex;
-    justify-content: flex-end;
-    border-bottom: 1px solid #808080;
-  }
+    .auth-info-panel {
+        padding: 10px 0;
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 1px solid #808080;
+    }
 </style>
 
 <div id="blazor-error-ui" data-nosnippet>
-  An unhandled error has occurred.
-  <a href="." class="reload">Reload</a>
-  <span class="dismiss">🗙</span>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
 </div>
 
 
 
 @code {
-  [Inject] public AuthenticationStateProvider AuthProvider { get; set; }
+    [Inject] public AuthenticationStateProvider AuthProvider { get; set; }
 
-  protected override Task OnInitializedAsync()
-  {
-    return base.OnInitializedAsync();
-  }
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender && AuthProvider is CustomAuthStateProvider custom)
+    protected override Task OnInitializedAsync()
     {
-      await custom.InitializeAsync();
+        return base.OnInitializedAsync();
     }
-  }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AuthProvider is CustomAuthStateProvider custom)
+        {
+            await custom.InitializeAsync();
+        }
+    }
 }
