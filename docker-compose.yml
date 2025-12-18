@@ -1,0 +1,30 @@
+name: todo
+
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: TodoListApp.API/Dockerfile
+    image: painven/todo_api:latest
+    container_name: todo_api
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+
+  webui:
+    build:
+      context: .
+      dockerfile: TodoListApp.WebUI/Dockerfile
+    image: painven/todo_web:latest
+    container_name: todo_web
+    restart: unless-stopped
+    ports:
+      - "8070:80"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      ApiConfiguration__Host: "http://api:80"
+    depends_on:
+      - api

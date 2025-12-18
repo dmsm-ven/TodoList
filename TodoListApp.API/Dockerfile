@@ -4,15 +4,13 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8090
-EXPOSE 8091
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Directory.Build.props", "."]
+COPY ["Directory.Build.props", "./"]
 COPY ["TodoListApp.API/TodoListApp.API.csproj", "TodoListApp.API/"]
 COPY ["TodoListApp.Core/TodoListApp.Core.csproj", "TodoListApp.Core/"]
 RUN dotnet restore "./TodoListApp.API/TodoListApp.API.csproj"
