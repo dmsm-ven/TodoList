@@ -7,6 +7,7 @@ builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 
+builder.Services.AddMemoryCache();
 builder.Services.ConfigureMyDatabaseRepositories(builder.Configuration);
 builder.Services.Configure<ApiKeyConfiguration>(builder.Configuration.GetSection(nameof(ApiKeyConfiguration)));
 builder.Services.AddScoped<AuthApiKeyMiddleware>();

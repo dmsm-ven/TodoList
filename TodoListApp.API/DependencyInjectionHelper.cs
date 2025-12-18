@@ -1,3 +1,4 @@
+using TodoListApp.API.DataAccess;
 using TodoListApp.Core;
 using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Core.Repositories.Postgres.Base;
@@ -12,7 +13,8 @@ public static class DependencyInjectionHelper
         services.AddTransient<IAppLogger, PostgresAppLogger>();
         services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
         services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddTransient<IJobItemRepository, PostgresJobItemRepository>();
+        services.AddScoped<IJobItemRepository, PostgresJobItemRepository>();
+        services.Decorate<IJobItemRepository, CachedJobItemRepository>();
 
         return services;
     }
