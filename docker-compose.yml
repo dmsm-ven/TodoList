@@ -13,6 +13,16 @@ services:
     networks:
     - todo_network
 
+  db:
+    image: postgres
+    container_name: todo_database
+    restart: always
+    env_file: ".env.db"
+    volumes:
+      - todolist_pgdata:/var/lib/postgresql/data # Persists data in a named volume
+    networks:
+      - todo_network
+
   webui:
     image: painven/todo_web:latest
     container_name: todo_web
@@ -31,4 +41,8 @@ services:
 networks:  
   todo_network:
     name: todo_network
+    external: true
+
+volumes:
+  todolist_pgdata:
     external: true
