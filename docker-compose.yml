@@ -14,7 +14,7 @@ services:
     - todo_network
 
   db:
-    image: postgres
+    image: postgres@sha256:10d6e725f9b2f5531617d93164f4fc85b1739e04cab62cbfbfb81ccd866513b8
     container_name: todo_database
     restart: always
     env_file: ".env.db"

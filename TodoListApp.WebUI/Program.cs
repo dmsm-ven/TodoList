@@ -3,7 +3,7 @@ using TodoListApp.WebUI.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.ResolveAppDependencies();
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication("Custom").AddCookie("Custom");
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
