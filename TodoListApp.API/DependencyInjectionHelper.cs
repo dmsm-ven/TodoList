@@ -12,9 +12,8 @@ public static class DependencyInjectionHelper
         services.AddSingleton<IUserDataEncryptValidator, BCryptUserDataValidator>();
         services.AddTransient<IAppLogger, PostgresAppLogger>();
         services.AddTransient<IUserRepository, PostgresBCryptUserValidator>();
-        services.AddTransient<IEmployeerRepository, PostgresEmployeerRepository>();
-        services.AddScoped<IJobItemRepository, PostgresJobItemRepository>();
-        services.Decorate<IJobItemRepository, CachedJobItemRepository>();
+        services.AddScoped<IJobItemRepository, PostgresJobItemRepository>().Decorate<IJobItemRepository, CachedJobItemRepository>();
+        services.AddScoped<IEmployeerRepository, PostgresEmployeerRepository>().Decorate<IEmployeerRepository, CachedEmployeerRepository>();
 
         return services;
     }
