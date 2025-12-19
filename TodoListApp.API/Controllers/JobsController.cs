@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Core.Entities;
-using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.API.Controllers;
@@ -58,17 +57,6 @@ public class JobsController : ControllerBase
         }
 
         return Ok(result);
-    }
-
-    [HttpPost("api/jobs/{JobItemId}/changed")]
-    public async Task<IActionResult> UpdateJobItem([FromRoute] int JobItemId, [FromBody] JobItemHistoryChangeRequest payload)
-    {
-        if (repo.GetJobItem(JobItemId) is null)
-        {
-            return NotFound();
-        }
-        await repo.AddHistoryChanges(payload);
-        return Ok();
     }
 
     [HttpPut("api/jobs/{JobItemId}/updated")]

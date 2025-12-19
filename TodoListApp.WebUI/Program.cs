@@ -3,7 +3,20 @@ using TodoListApp.WebUI.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.ResolveAppDependencies();
-builder.Services.AddAuthentication("Custom").AddCookie("Custom");
+builder.Services.AddAuthentication("Custom").AddCookie("Custom", options =>
+{
+    options.LoginPath = "/todoweb/login";
+    options.LogoutPath = "/todoweb/login";
+    options.AccessDeniedPath = "/todoweb";
+    options.Cookie.Path = "/todoweb";
+
+    // Prevent redirect loops for Blazor Server
+    options.Events.OnRedirectToLogin = ctx =>
+    {
+        ctx.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()

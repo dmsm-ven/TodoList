@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using TodoListApp.Core.Entities;
-using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
 
 namespace TodoListApp.API.DataAccess;
@@ -16,10 +15,6 @@ public class CachedJobItemRepository : IJobItemRepository
         this.cache = cache;
     }
 
-    public Task AddHistoryChanges(JobItemHistoryChangeRequest request)
-    {
-        return decorator.AddHistoryChanges(request);
-    }
 
     public Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {

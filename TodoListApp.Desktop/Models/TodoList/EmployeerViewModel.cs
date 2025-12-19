@@ -62,9 +62,6 @@ public partial class EmployeerViewModel : ObservableRecipient,
 
     public void Receive(JobItemFieldUpdatedMessage message)
     {
-        if (message.FieldName == nameof(message.Value.IsCompleted))
-        {
-            OnPropertyChanged(nameof(ActiveTasksCount));
-        }
+        OnPropertyChanged(nameof(ActiveTasksCount));
     }
 }

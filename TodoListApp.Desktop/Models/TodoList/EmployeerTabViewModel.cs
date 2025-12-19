@@ -167,7 +167,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         MonthPills.Clear();
 
         var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
-            .Select(date => new { date.Year, date.Month })
+            .Select(date => new { date.Value.Year, date.Value.Month })
             .GroupBy(i => $"{i.Year}-{i.Month}")
             .Select(i => i.First())
             .OrderByDescending(i => i.Year)
@@ -188,7 +188,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         var item = new JobItemViewModel()
         {
-            StartDate = DateTimeOffset.UtcNow,
+            StartDate = DateTime.UtcNow,
             Title = "Новая задача",
             EmployeerId = Employeer.Id
         };
@@ -233,7 +233,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
             if (activePill != null)
             {
                 var data = Employeer.TodoItems
-                .Where(i => i.StartDate.Month == activePill.MonthNumber && i.StartDate.Year == activePill.Year)
+                .Where(i => i.StartDate.Value.Month == activePill.MonthNumber && i.StartDate.Value.Year == activePill.Year)
                 .OrderByDescending(i => i.IsCompleted ? 0 : 1)
                 .ThenByDescending(i => i.StartDate)
                 .ToList();
@@ -247,10 +247,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     public void Receive(JobItemFieldUpdatedMessage message)
     {
-        if (message.FieldName == nameof(message.Value.IsCompleted))
-        {
-            OnPropertyChanged(nameof(HasActiveTasks));
-        }
+        OnPropertyChanged(nameof(HasActiveTasks));
     }
 
     public void Receive(MonthPillSelectionChangedMessage message)

@@ -17,7 +17,7 @@ public static class JobItemMapperHelper
             Description = jobItem.description ?? string.Empty,
             IsCompleted = jobItem.is_completed,
             IsPayed = jobItem.is_payed,
-            StartDate = jobItem.start_date,
+            StartDate = jobItem.start_date.DateTime,
             EndDate = jobItem.end_date,
             EmployeerId = jobItem.employeer_id,
         };
@@ -32,7 +32,7 @@ public static class JobItemMapperHelper
             description = jobItem.Description,
             is_completed = jobItem.IsCompleted,
             is_payed = jobItem.IsPayed,
-            start_date = jobItem.StartDate,
+            start_date = jobItem.StartDate.Value,
             end_date = jobItem.EndDate,
             employeer_id = jobItem.EmployeerId,
             price = jobItem.Price,

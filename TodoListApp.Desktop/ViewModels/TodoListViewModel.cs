@@ -106,9 +106,7 @@ public partial class TodoListViewModel : ObservableRecipient,
 
     public void Receive(JobItemFieldUpdatedMessage message)
     {
-        //TODO: перенести AddHistoryChanges на строну API
         jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
-        jobItemRepository.AddHistoryChanges(new(message.Value.Id, message.FieldName, message.FieldValue));
     }
 
     public async void Receive(JobItemHistoryDisplayMessage message)

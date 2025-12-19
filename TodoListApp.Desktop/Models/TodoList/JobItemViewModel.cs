@@ -35,7 +35,8 @@ public partial class JobItemViewModel : ObservableObject
 
     [ObservableProperty] private decimal price;
 
-    [ObservableProperty] private DateTimeOffset startDate;
+    //TODO: пофиксить что при выборе в DateTimePicker берется UTC время, т.е. получается на 1 день меньше для +03 00
+    [ObservableProperty] private DateTime? startDate;
 
     [ObservableProperty] private DateTimeOffset? endDate;
 
@@ -55,7 +56,7 @@ public partial class JobItemViewModel : ObservableObject
         }
     }
 
-    public int DaysAgo => (int)Math.Floor((DateTimeOffset.UtcNow - StartDate).TotalDays);
+    public int DaysAgo => (int)Math.Floor((DateTimeOffset.UtcNow - StartDate.Value).TotalDays);
 
     public void Initialize()
     {
@@ -68,21 +69,7 @@ public partial class JobItemViewModel : ObservableObject
 
         PropertyChanged += (s, e) =>
         {
-            var pi = this.GetType().GetProperty(e.PropertyName);
-
-            string title = PropertyNameToTitle[e.PropertyName];
-            string value = string.Empty;
-
-            if (pi.PropertyType == typeof(bool))
-            {
-                value = (bool)pi.GetValue(this) ? "Да" : "Нет";
-            }
-            else
-            {
-                value = pi.GetValue(this)?.ToString() ?? "null";
-            }
-
-            WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this, title, value));
+            WeakReferenceMessenger.Default.Send(new JobItemFieldUpdatedMessage(this));
         };
     }
 

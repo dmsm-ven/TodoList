@@ -31,32 +31,6 @@ public partial class LoginWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task Login(PasswordBox pb)
     {
-        HasErrors = false;
-        IsConnecting = true;
 
-        string enteredPassword = pb.Password;
-
-        try
-        {
-            throw new NotImplementedException("Вызов API на авторизацию не реализован");
-            var connectResult = false;
-
-            if (connectResult)
-            {
-                OnUserEnter?.Invoke();
-            }
-            else
-            {
-                HasErrors = true;
-            }
-        }
-        catch (Exception)
-        {
-            HasErrors = true;
-        }
-        finally
-        {
-            IsConnecting = false;
-        }
     }
 }

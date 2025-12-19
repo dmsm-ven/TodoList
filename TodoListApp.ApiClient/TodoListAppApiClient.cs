@@ -9,15 +9,6 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
     IJobItemRepository,
     IAppLogger
 {
-    async Task IJobItemRepository.AddHistoryChanges(JobItemHistoryChangeRequest payload)
-    {
-        var result = await client.PostAsJsonAsync($"api/jobs/{payload.JobItemId}/changed", payload);
-        if (result.IsSuccessStatusCode == false)
-        {
-            throw new Exception($"Error calling API: {result.StatusCode}");
-        }
-    }
-
     async Task<int> IJobItemRepository.AddOrUpdateJobItem(JobItemEntity payload)
     {
         var result = await client.PutAsJsonAsync($"api/jobs/{payload.id}/updated", payload);
@@ -39,7 +30,6 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         var id = await result.Content.ReadFromJsonAsync<int>();
         return id;
     }
-
     async Task IEmployeerRepository.AddPayment(EmployeerPaymentPayload payment)
     {
         var result = await client.PostAsJsonAsync($"api/employeers/{payment.employeer_id}/payments", payment);

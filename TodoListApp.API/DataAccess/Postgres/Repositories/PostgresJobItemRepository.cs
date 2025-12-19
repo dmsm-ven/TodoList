@@ -7,21 +7,46 @@ namespace TodoListApp.Core.Repositories.Postgres.Repositories;
 public class PostgresJobItemRepository : IJobItemRepository
 {
     private readonly IDapperDatabaseAccess database;
+    private readonly ILogger<PostgresJobItemRepository> logger;
 
-    public PostgresJobItemRepository(IDapperDatabaseAccess database)
+    public PostgresJobItemRepository(IDapperDatabaseAccess database, ILogger<PostgresJobItemRepository> logger)
     {
         this.database = database;
+        this.logger = logger;
     }
 
-    public async Task AddHistoryChanges(JobItemHistoryChangeRequest data)
+    private async Task AddHistoryChangesFor(JobItemEntity newItem, JobItemEntity oldItem)
+    {
+        var diffProps = PropertyComprasionHelper.GetDifferentProperties(newItem, oldItem);
+        foreach (var (propName, newPropValue) in diffProps)
+        {
+            logger.LogTrace("Изменение задачи {jobTitle}: {propName} -> {newPropValue}", newItem.title, propName, newPropValue);
+            await AddHistoryChanges(new JobItemHistoryChangeRequest(newItem.id, propName, newPropValue));
+        }
+
+    }
+    private async Task AddHistoryChanges(JobItemHistoryChangeRequest data)
     {
         string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
                                                     (@JobItemId, @PropertyName, @NewValue)";
         database.Execute(sql, data);
     }
-
     public async Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
+        //Преобразовать в UTC время т.к. postgres не дает загрузить с поясами
+        entity.start_date = entity.start_date.ToUniversalTime();
+        if (entity.end_date.HasValue)
+        {
+            entity.end_date = entity.end_date.Value.ToUniversalTime();
+        }
+
+        //Загружаем изменение по каждому свойству для отображения в истории
+        if (entity.id > 0)
+        {
+            var oldItem = await GetJobItem(entity.id);
+            await AddHistoryChangesFor(newItem: entity, oldItem);
+        }
+
         int max_id = entity.id != 0 ?
             entity.id :
             database.GetSingle<int>("SELECT MAX(id) FROM job_item") + 1;
@@ -47,12 +72,10 @@ public class PostgresJobItemRepository : IJobItemRepository
 
         return max_id;
     }
-
     public async Task DeleteJobItem(int id)
     {
         await database.ExecuteAsync("DELETE FROM job_item WHERE id = @id", new { id });
     }
-
     public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears, bool only_this_month)
     {
         string sql = @"SELECT * 
@@ -71,7 +94,6 @@ public class PostgresJobItemRepository : IJobItemRepository
         var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id, takeMaxYears });
         return items;
     }
-
     public async Task<List<JobItemHistoryEntity>> GetHistoryChangesForJobItem(int job_item_id)
     {
         string sql = @"SELECT * 
@@ -81,7 +103,6 @@ public class PostgresJobItemRepository : IJobItemRepository
         var items = await database.GetListAsync<JobItemHistoryEntity>(sql, new { job_item_id });
         return items;
     }
-
     public async Task<JobItemEntity> GetJobItem(int id)
     {
         var jobItem = await database.GetSingleAsync<JobItemEntity>("SELECT * FROM job_item WHERE id = @id", new { id });
