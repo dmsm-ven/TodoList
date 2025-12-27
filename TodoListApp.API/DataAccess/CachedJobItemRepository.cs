@@ -15,7 +15,6 @@ public class CachedJobItemRepository : IJobItemRepository
         this.cache = cache;
     }
 
-
     public Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
         ((MemoryCache)cache).Clear();

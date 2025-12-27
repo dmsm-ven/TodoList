@@ -13,7 +13,7 @@ builder.Services.AddAuthentication("Custom").AddCookie("Custom", options =>
     // Prevent redirect loops for Blazor Server
     options.Events.OnRedirectToLogin = ctx =>
     {
-        ctx.Response.StatusCode = 401;
+        ctx.Response.StatusCode = 406;
         return Task.CompletedTask;
     };
 });

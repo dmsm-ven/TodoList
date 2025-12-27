@@ -24,32 +24,27 @@ public class JobsController : ControllerBase
     }
 
     [HttpGet("api/jobs/{id}")]
-    public async Task<ActionResult<JobItemEntity>> GetJobById([FromQuery] int id)
+    public async Task<ActionResult<JobItemEntity>> GetJobById([FromRoute] int id)
     {
         var item = await repo.GetJobItem(id);
         return item != null ? Ok(item) : NotFound();
     }
 
     [HttpDelete("api/jobs/{id}")]
-    public async Task<IActionResult> DeleteJobById([FromQuery] int id)
+    public async Task<IActionResult> DeleteJobById([FromRoute] int id)
     {
-        var item = await repo.GetJobItem(id);
-        if (item is null)
-        {
-            return NotFound();
-        }
         await repo.DeleteJobItem(id);
-        return Ok();
+        return NoContent();
     }
 
-    [HttpGet("api/jobs/{JobItemId}/changes-log")]
-    public async Task<ActionResult<IEnumerable<JobItemHistoryEntity>>> GetJobChangesLog([FromRoute] int JobItemId)
+    [HttpGet("api/jobs/{id}/changes-log")]
+    public async Task<ActionResult<IEnumerable<JobItemHistoryEntity>>> GetJobChangesLog([FromRoute] int id)
     {
-        if (repo.GetJobItem(JobItemId) is null)
+        if (await repo.GetJobItem(id) is null)
         {
             return NotFound();
         }
-        var result = await repo.GetHistoryChangesForJobItem(JobItemId);
+        var result = await repo.GetHistoryChangesForJobItem(id);
 
         if (result.Count == 0)
         {
