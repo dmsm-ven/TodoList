@@ -162,7 +162,7 @@ else
         {
             if (EmployeerFilter == 0 || (EmployeerFilter == emp.Key))
             {
-                var empJobs = await JobItemRepository.GetAllJobItems(emp.Key, takeMaxYears: 1, only_this_month: false);
+                var empJobs = await JobItemRepository.GetAllJobItems(emp.Key);
                 tmpJobList.AddRange(empJobs);
             }
         }

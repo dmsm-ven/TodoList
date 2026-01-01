@@ -19,7 +19,6 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
         var id = await result.Content.ReadFromJsonAsync<int>();
         return id;
     }
-
     async Task<int> IEmployeerRepository.AddEmployeer(EmployeerEntity entity)
     {
         var result = await client.PostAsJsonAsync($"api/employeers/add", entity);
@@ -38,7 +37,6 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
     }
-
     async Task IEmployeerRepository.DeleteEmployeer(int id)
     {
         var result = await client.DeleteAsync($"api/employeers/{id}");
@@ -47,7 +45,6 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
     }
-
     async Task IJobItemRepository.DeleteJobItem(int id)
     {
         var result = await client.DeleteAsync($"api/jobs/{id}");
@@ -56,48 +53,40 @@ public class TodoListAppApiClient(HttpClient client) : IEmployeerRepository,
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
     }
-
     async Task<List<EmployeerEntity>> IEmployeerRepository.GetAllEmployeer()
     {
         var employeers = await client.GetFromJsonAsync<List<EmployeerEntity>>("api/employeers");
         return employeers ?? new();
     }
-
-    async Task<List<JobItemEntity>> IJobItemRepository.GetAllJobItems(int employeer_id, int take_max_years, bool only_this_month)
+    async Task<List<JobItemEntity>> IJobItemRepository.GetAllJobItems(int employeer_id)
     {
-        var jobs = await client.GetFromJsonAsync<List<JobItemEntity>>($"api/jobs?employeer_id={employeer_id}&take_max_years={take_max_years}&only_this_month={only_this_month}");
+        var jobs = await client.GetFromJsonAsync<List<JobItemEntity>>($"api/jobs?employeer_id={employeer_id}");
         return jobs ?? new();
     }
-
     async Task<List<EmployeerPaymentEntity>> IEmployeerRepository.GetAllPaymentsForEmployeer(int employeer_id)
     {
         var payments = await client.GetFromJsonAsync<List<EmployeerPaymentEntity>>($"api/employeers/{employeer_id}/payments");
         return payments ?? new();
     }
-
     async Task<List<LogEntryEntity>> IAppLogger.GetLastRows(int take_count)
     {
         var logs = await client.GetFromJsonAsync<List<LogEntryEntity>>($"api/logs?take_count={take_count}");
         return logs ?? new();
     }
-
     async Task<EmployeerEntity> IEmployeerRepository.GetEmployeer(int id)
     {
         var emp = await client.GetFromJsonAsync<EmployeerEntity?>($"api/employeers/{id}");
         return emp ?? throw new Exception("Employeer not found");
     }
-
     async Task<List<JobItemHistoryEntity>> IJobItemRepository.GetHistoryChangesForJobItem(int job_item_id)
     {
         var changes = await client.GetFromJsonAsync<List<JobItemHistoryEntity>>($"api/jobs/{job_item_id}/changes-log");
         return changes ?? new();
     }
-
     async Task<JobItemEntity> IJobItemRepository.GetJobItem(int id)
     {
         var jobs = await client.GetFromJsonAsync<JobItemEntity>($"api/jobs/{id}");
         return jobs ?? throw new Exception("Job item not found");
     }
-
     async Task IAppLogger.WriteLog(string userIp, string path, string message) => throw new NotSupportedException();
 }

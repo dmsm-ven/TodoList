@@ -76,22 +76,14 @@ public class PostgresJobItemRepository : IJobItemRepository
     {
         await database.ExecuteAsync("DELETE FROM job_item WHERE id = @id", new { id });
     }
-    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears, bool only_this_month)
+    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
     {
+        //Берутся только задачи этого года или прошлого, более старые не попадают
         string sql = @"SELECT * 
                        FROM job_item 
-                       WHERE employeer_id = @employeer_id";
-        if (only_this_month)
-        {
-            sql += " AND date_part('month', start_date) = date_part('month', CURRENT_DATE)"
-                 + " AND date_part('year', start_date) = date_part('year', CURRENT_DATE)";
-        }
-        else if (takeMaxYears > 0)
-        {
-            sql += " AND date_part('year', start_date) > (date_part('year', CURRENT_DATE) - @takeMaxYears)";
-        }
+                       WHERE employeer_id = @employeer_id AND date_part('year', start_date) > (date_part('year', CURRENT_DATE) - 2)";
 
-        var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id, takeMaxYears });
+        var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id });
         return items;
     }
     public async Task<List<JobItemHistoryEntity>> GetHistoryChangesForJobItem(int job_item_id)

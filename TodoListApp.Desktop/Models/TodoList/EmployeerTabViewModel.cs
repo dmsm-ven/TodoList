@@ -121,7 +121,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         IsLoading = true;
 
-        var jobsTaskThisMonth = jobItemRepository.GetAllJobItems(Employeer.Id, takeMaxYears: 1, only_this_month: false);
+        var jobsTaskThisMonth = jobItemRepository.GetAllJobItems(Employeer.Id);
         var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
 
         await Task.WhenAll(jobsTaskThisMonth, paymentsTask);

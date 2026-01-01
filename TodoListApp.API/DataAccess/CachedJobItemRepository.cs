@@ -27,13 +27,13 @@ public class CachedJobItemRepository : IJobItemRepository
         return decorator.DeleteJobItem(id);
     }
 
-    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id, int takeMaxYears, bool only_this_month)
+    public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
     {
-        var cacheKey = $"jobs-emp-{employeer_id}-take-years-{takeMaxYears}-only-{only_this_month}";
+        var cacheKey = $"jobs-emp-{employeer_id}";
 
         if (!cache.TryGetValue<List<JobItemEntity>>(cacheKey, out var items))
         {
-            items = await decorator.GetAllJobItems(employeer_id, takeMaxYears, only_this_month);
+            items = await decorator.GetAllJobItems(employeer_id);
             cache.Set(cacheKey, items);
         }
 
