@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using TodoListApp.ApiClient;
+﻿using TodoListApp.ApiClient;
 using TodoListApp.Core.Repositories.Interfaces;
-using TodoListApp.WebUI;
 using TodoListApp.WebUI.Models;
+
+public static class AuthDefaults
+{
+    public const string AuthScheme = "login_page_cookie_auth";
+}
 
 public static class DiExtensions
 {
@@ -23,7 +26,6 @@ public static class DiExtensions
         builder.Services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
         builder.Services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
         builder.Services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
-        builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
         return builder;
     }
 }

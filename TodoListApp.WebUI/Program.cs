@@ -1,28 +1,63 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using TodoListApp.WebUI.Components;
+using TodoListApp.WebUI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.ResolveAppDependencies();
-builder.Services.AddAuthentication("Custom").AddCookie("Custom", options =>
+builder.Services.AddAntiforgery(options =>
 {
-    options.LoginPath = "/todoweb/login";
-    options.LogoutPath = "/todoweb/login";
-    options.AccessDeniedPath = "/todoweb";
-    options.Cookie.Path = "/todoweb";
-
-    // Prevent redirect loops for Blazor Server
-    options.Events.OnRedirectToLogin = ctx =>
-    {
-        ctx.Response.StatusCode = 406;
-        return Task.CompletedTask;
-    };
+    //options.Cookie.Path = "/todoweb";
+    options.Cookie.Path = "/";
 });
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication(AuthDefaults.AuthScheme).AddCookie(AuthDefaults.AuthScheme, options =>
+{
+    //options.LoginPath = "/todoweb/login";
+    //options.AccessDeniedPath = "/todoweb";
+    options.LoginPath = "/login";
+    options.AccessDeniedPath = "/";
+});
+builder.ResolveAppDependencies();
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
+app.MapPost("/login-check", async ([FromForm] LoginModel loginModel,
+    IOptions<AppUserLoginConfiguration> options,
+    IHttpContextAccessor httpCa) =>
+{
+    string validToken = options.Value.Token;
+
+    await Task.Delay(Random.Shared.Next(500, 1000));
+
+    if (!loginModel.UserToken.Equals(validToken))
+    {
+        return Results.BadRequest();
+    }
+
+    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "app_user")
+            };
+
+    var identity = new ClaimsIdentity(claims, AuthDefaults.AuthScheme);
+    var principal = new ClaimsPrincipal(identity);
+
+    await httpCa.HttpContext!.SignInAsync(
+        AuthDefaults.AuthScheme,
+        principal,
+        new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTime.UtcNow.AddDays(31)
+        });
+
+    return Results.Redirect("/todoweb/tasks");
+}).WithMetadata(new IgnoreAntiforgeryTokenAttribute());
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -31,13 +66,17 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 app.UseForwardedHeaders();
-app.UseAntiforgery();
 app.UsePathBase("/todoweb");
 app.UseStaticFiles();
 app.MapStaticAssets();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

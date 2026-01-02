@@ -1,58 +1,43 @@
 ﻿@page "/login"
-@inject AuthenticationStateProvider AuthStateProvider
-@inject ProtectedLocalStorage LocalStorage
-@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@using TodoListApp.WebUI.Models
+@inject IOptions<AppUserLoginConfiguration> serverTokenOptions
+@inject NavigationManager nav
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var tokens = Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext);
+}
 
-<div class="login-content">
-  <div class="login-container">
-    <div class="login-card">
-      <div class="login-header">
-        <div class="material-logo">
-          <div class="logo-layers">
-            <div class="layer layer-1"></div>
-            <div class="layer layer-2"></div>
-            <div class="layer layer-3"></div>
-          </div>
-        </div>
-        <h2>Sign in</h2>
-        <p>to continue to your account</p>
-      </div>
-
-      <div class="login-form" id="loginForm">
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input type="text" id="user_token" name="user_token" @bind="userToken">
-            <label for="user_token">Token</label>
-            <div class="input-line"></div>
-            <div class="ripple-container"></div>
-          </div>
-        </div>
-
-        <button type="button" class="login-btn material-btn"
-                disabled="@(string.IsNullOrWhiteSpace(userToken))"
-                @onclick="LoginClick">
-          <div class="btn-ripple"></div>
-          <span class="btn-text">SIGN IN</span>
-          <div class="btn-loader">
-            <svg class="loader-circle" viewBox="0 0 50 50">
-              <circle class="loader-path" cx="25" cy="25" r="12" fill="none" stroke="currentColor" stroke-width="3" />
-            </svg>
-          </div>
-        </button>
-      </div>
-
-    </div>
-  </div>
+<div>
+    <input name="__RequestVerificationToken" type="hidden" value="@tokens.RequestToken" />
+    <input name="UserToken" placeholder="UserToken" @bind="@loginModel.UserToken" />
+    <br />
+    <button type="button" onclick="@LoginAsync">Login</button>
 </div>
 
-
 @code {
-  private string userToken = string.Empty;
 
-  private async Task LoginClick()
-  {
-    await LocalStorage.SetAsync("auth_token", userToken);
-    await ((CustomAuthStateProvider)AuthStateProvider).InitializeAsync();
-    Navigation.NavigateTo("tasks");
-  }
+    private LoginModel loginModel { get; set; } = new LoginModel() { UserToken = 
+"insert token here"
+    };
+
+    private async Task LoginAsync()
+    {
+        string validToken = serverTokenOptions.Value.Token;
+
+        await Task.Delay(Random.Shared.Next(500, 1000));
+
+        if (!loginModel.UserToken.Equals(validToken))
+        {
+            return;
+        }
+
+        var payload = new Dictionary<string, string> { { "UserToken", loginModel.UserToken } };
+        await JS.InvokeVoidAsync("blazorSubmitForm", "/todoweb/login-check", payload);
+    }
+
 }

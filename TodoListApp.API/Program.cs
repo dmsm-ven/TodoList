@@ -30,7 +30,6 @@ builder.Services.AddRateLimiter(options =>
             }));
     options.RejectionStatusCode = 429;
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
