@@ -19,7 +19,7 @@ services:
     restart: always
     env_file: ".env.db"
     volumes:
-      - todolist_pgdata:/var/lib/postgresql/data # Persists data in a named volume
+      - pgdata:/var/lib/postgresql
     networks:
       - todo_network
 
@@ -41,8 +41,7 @@ services:
 networks:  
   todo_network:
     name: todo_network
-    external: false
 
 volumes:
-  todolist_pgdata:
-    external: false
+  pgdata:
+    name: pgdata_todo
