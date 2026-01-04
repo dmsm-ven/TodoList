@@ -11,7 +11,7 @@
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     xmlns:vmw="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     x:Name="window"
-    Title="Список дел"
+    Title="{Binding Title}"
     Width="1600"
     Height="800"
     d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel,
@@ -40,7 +40,7 @@
             Background="{StaticResource MainContentBackground}"
             BorderBrush="{StaticResource ToolPanelBackground}"
             BorderThickness="1">
-            <v:TodoListView DataContext="{Binding TodoListViewModel}"/>
+            <v:TodoListView DataContext="{Binding TodoListViewModel}" />
         </Border>
     </Grid>
 
