@@ -16,7 +16,7 @@
     <input name="__RequestVerificationToken" type="hidden" value="@tokens.RequestToken" />
     <input name="UserToken" placeholder="UserToken" @bind="@loginModel.UserToken" />
     <br />
-    <button type="button" onclick="@LoginAsync">Login</button>
+    <button type="button" class="btn btn-primary mx-2" onclick="@LoginAsync">Login</button>
 </div>
 
 @code {

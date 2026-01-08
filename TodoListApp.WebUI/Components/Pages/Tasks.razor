@@ -27,6 +27,15 @@
             @item.Value.name
         </button>
     }
+    <button class="btn btn-secondary"
+            id="btn-emp-new"
+            onclick="@AddNewEmployeer">
+        Добавить
+    </button>
+    @if (!string.IsNullOrWhiteSpace(newEmployeer?.name))
+    {
+        <input type="text" class="form-control" placeholder="Новый заказчик" @bind="newEmployeer.name" />
+    }
 </div>
 
 @if (jobItems == null)
@@ -37,12 +46,41 @@ else if (jobItems != null && jobItems.Count == 0)
 {
     <p><em>Нет записей</em></p>
 }
-else
+
+@if (EmployeerFilter != 0)
 {
+    <p>
+        Новая задача <span style="font-size: 32px;">➕</span>
+    </p>
+    <div class="new-job-box">
+        <label for="newjob-title">Заголовок</label>
+        <input type="text" id="newjob-title" class="form-control" placeholder="Новая задача" @bind="newJob.title" />
+
+        <label for="newjob-website">Вебсайт</label>
+        <input type="text" id="newjob-website" class="form-control" placeholder="https://" @bind="newJob.website" />
+
+        <label for="newjob-price">Цена</label>
+        <input type="number" id="newjob-price" class="form-control" placeholder="Цена" @bind="newJob.price" />
+
+        <label for="newjob-startdate">Дата создания</label>
+        <input type="date" id="newjob-startdate" class="form-control" @bind="newJob.start_date" />
+
+        <label for="newjob-payed">Оплачено</label>
+        <input type="checkbox" id="newjob-payed" class="form-check" @bind="newJob.is_payed" />
+
+        <label for="newjob-completed">Выполнено</label>
+        <input type="checkbox" id="newjob-completed" class="form-check" @bind="newJob.is_completed" />
+
+        <button class="btn btn-sm btn-success" onclick="@AddNewJob" disabled="@inProgress">
+            Добавить
+        </button>
+    </div>
+   
     <div class="table-responsive work-table-container">
         <table class="work-table">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Дата создания</th>
                     <th></th>
                     <th>Заказчик</th>
@@ -55,7 +93,12 @@ else
             <tbody>
                 @foreach (var item in jobItems)
                 {
+                    if (editJob == null || (editJob?.id ?? 0) != item.id)
+                    {
                     <tr>
+                        <td>
+                            <button class="btn btn-sm btn-secondary-outline" @onclick="(() => ChangeEditJob(item))">✏️</button>
+                        </td>
                         <td>@item.start_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                         <td>@item.start_date.ToLocalTime().Humanize()</td>
                         <td>@employeerMap[item.employeer_id].name</td>
@@ -64,6 +107,38 @@ else
                         <td>@BoolToStatusSymbol(item.is_payed)</td>
                         <td>@BoolToStatusSymbol(item.is_completed)</td>
                     </tr>
+                    }
+                    if (editJob != null && editJob.id == item.id)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-success w-100" onclick="@SaveEditJob">Сохранить</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary w-100" @onclick="(() => editJob = null)">Отменить</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger w-100" onclick="DeleteEditJob">Удалить</button>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                            <td>
+                                <input type="date" id="edit-job-date-@editJob.id" @bind="editJob.start_date" class="form-control" />
+                            </td>
+                            <td>@item.start_date.ToLocalTime().Humanize()</td>
+                            <td>@employeerMap[editJob.employeer_id].name</td>
+                            <td><input type="text" id="edit-job-title-@editJob.id" @bind="editJob.title" class="form-control" /> </td>
+                            <td><input type="number" id="edit-job-price-@editJob.id" @bind="editJob.price" class="form-control" /> </td>
+                            <td><input type="checkbox" id="edit-job-payed-@editJob.id" @bind="editJob.is_payed" class="form-check" /> </td>
+                            <td><input type="checkbox" id="edit-job-completed-@editJob.id" @bind="editJob.is_completed" class="form-check" /> </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -71,11 +146,22 @@ else
 }
 
 <style>
+    .new-job-box {
+        display: flex;
+        gap: 10px;
+        flex-direction: row;
+        margin: 15px 0px;
+    }
+
+        .new-job-box > label {
+            align-self: center;
+        }
+
     .employeer-filter-box {
         display: flex;
         justify-content: flex-start;
         gap: 15px;
-        margin: 10px 0px;
+        margin: 15px 0px;
     }
 
         .employeer-filter-box > button {
@@ -125,12 +211,17 @@ else
     private const int ITEMS_PER_PAGE = 100;
 
     private List<JobItemEntity>? jobItems = null;
-    private readonly Dictionary<int, EmployeerEntity> employeerMap = new();
+    private JobItemEntity newJob = new();
+    private JobItemEntity? editJob = null;
+    private EmployeerEntity? newEmployeer = null;
 
-    private int? currentPage = 1;
+    private bool inProgress = false;
+
+    private readonly Dictionary<int, EmployeerEntity> employeerMap = new();
 
     [SupplyParameterFromQuery(Name = nameof(EmployeerFilter))]
     public int EmployeerFilter { get; set; } = 1;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -169,6 +260,77 @@ else
 
         jobItems.AddRange(tmpJobList.OrderByDescending(j => j.start_date).Take(ITEMS_PER_PAGE).ToArray());
         StateHasChanged();
+    }
+
+    private async Task AddNewJob()
+    {
+
+        if (string.IsNullOrWhiteSpace(newJob.title))
+        {
+            return;
+        }
+
+        inProgress = true;
+        newJob.employeer_id = EmployeerFilter;
+
+        jobItems!.Insert(0, newJob);
+        try
+        {
+            await JobItemRepository.AddOrUpdateJobItem(newJob);
+            newJob = new();
+        }
+        finally
+        {
+            inProgress = false;
+        }
+    }
+
+    private async Task AddNewEmployeer()
+    {
+        if (!string.IsNullOrWhiteSpace(newEmployeer?.name) && newEmployeer.name != "Название/компания")
+        {
+            var newEmpId = await EmployeerRepository.AddEmployeer(newEmployeer);
+            newEmployeer.id = newEmpId;
+            employeerMap[newEmpId] = newEmployeer;
+            EmployeerFilter = newEmpId;
+            newEmployeer = new();
+            await RefreshSource();
+        }
+        else
+        {
+            newEmployeer = (newEmployeer == null ? new() { name = "Название/компания" } : null);
+        }
+    }
+
+    private void ChangeEditJob(JobItemEntity selectedItem)
+    {
+        editJob = selectedItem;
+    }
+
+    private async Task SaveEditJob()
+    {
+        if (editJob == null)
+        {
+            return;
+        }
+
+        await JobItemRepository.AddOrUpdateJobItem(editJob);
+        editJob = null;
+
+    }
+
+    private async Task DeleteEditJob()
+    {
+        if (editJob == null)
+        {
+            return;
+        }
+
+        await JobItemRepository.DeleteJobItem(editJob.id);
+        jobItems.Remove(editJob);
+        editJob = null;
+            
+        
     }
 
     private string BoolToStatusSymbol(bool val)
