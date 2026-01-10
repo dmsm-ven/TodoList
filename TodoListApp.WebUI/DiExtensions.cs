@@ -1,4 +1,5 @@
-﻿using TodoListApp.ApiClient;
+﻿using PainvenNotificator;
+using TodoListApp.ApiClient;
 using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.WebUI.Models;
 
@@ -9,6 +10,7 @@ public static class AuthDefaults
 
 public static class DiExtensions
 {
+
     public static WebApplicationBuilder ResolveAppDependencies(this WebApplicationBuilder builder)
     {
         builder.Services.Configure<AppUserLoginConfiguration>(builder.Configuration.GetSection(nameof(AppUserLoginConfiguration)));
@@ -26,6 +28,21 @@ public static class DiExtensions
         builder.Services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
         builder.Services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
         builder.Services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
+
+
+
         return builder;
     }
+
+    public static WebApplicationBuilder AddNotificatorSender(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHttpClient();
+        builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(GeoDataExtractorConfiguration)));
+        builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(TelegramConfiguration)));
+        builder.Services.AddSingleton<IGeoDataExtractor, BasicGeoDataExtractor>();
+        builder.Services.AddSingleton<IApiEventNotificator, TelegramApiEventNotificator>();
+
+        return builder;
+    }
+
 }

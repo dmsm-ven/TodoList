@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using PainvenNotificator;
 using System.Security.Claims;
 using TodoListApp.WebUI.Components;
 using TodoListApp.WebUI.Models;
@@ -20,6 +21,7 @@ builder.Services.AddAuthentication(AuthDefaults.AuthScheme).AddCookie(AuthDefaul
     options.AccessDeniedPath = "/";
 });
 builder.ResolveAppDependencies();
+builder.AddNotificatorSender();
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
@@ -66,6 +68,16 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+var appNotificator = app.Services.GetRequiredService<IApiEventNotificator>();
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    appNotificator.Notify("TODO Web приложение остановлено");
+});
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    appNotificator.Notify("TODO Web приложение запущено");
+});
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
