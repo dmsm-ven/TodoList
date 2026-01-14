@@ -17,14 +17,15 @@ public class CachedJobItemRepository : IJobItemRepository
 
     public Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
-        ((MemoryCache)cache).Clear();
+        cache.Remove($"jobs-emp-{entity.employeer_id}");
         return decorator.AddOrUpdateJobItem(entity);
     }
 
-    public Task DeleteJobItem(int id)
+    public async Task DeleteJobItem(int id)
     {
-        ((MemoryCache)cache).Clear();
-        return decorator.DeleteJobItem(id);
+        var job = await decorator.GetJobItem(id);
+        cache.Remove($"jobs-emp-{job.employeer_id}");
+        await decorator.DeleteJobItem(id);
     }
 
     public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)

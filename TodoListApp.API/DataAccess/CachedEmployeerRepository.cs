@@ -18,19 +18,21 @@ public class CachedEmployeerRepository : IEmployeerRepository
 
     public Task<int> AddEmployeer(EmployeerEntity entity)
     {
-        ((MemoryCache)cache).Clear();
+        cache.Remove("emp-all");
+        cache.Remove($"emp-{entity.id}");
         return decorator.AddEmployeer(entity);
     }
 
     public Task AddPayment(EmployeerPaymentPayload payment)
     {
-        ((MemoryCache)cache).Clear();
+        cache.Remove($"emp-payments-{payment.employeer_id}");
         return decorator.AddPayment(payment);
     }
 
     public Task DeleteEmployeer(int id)
     {
-        ((MemoryCache)cache).Clear();
+        cache.Remove("emp-all");
+        cache.Remove($"emp-{id}");
         return decorator.DeleteEmployeer(id);
     }
 

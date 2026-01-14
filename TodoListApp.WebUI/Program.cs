@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using PainvenNotificator;
 using System.Security.Claims;
 using TodoListApp.WebUI.Components;
 using TodoListApp.WebUI.Models;
@@ -21,7 +20,7 @@ builder.Services.AddAuthentication(AuthDefaults.AuthScheme).AddCookie(AuthDefaul
     options.AccessDeniedPath = "/";
 });
 builder.ResolveAppDependencies();
-builder.AddNotificatorSender();
+//builder.AddNotificatorSender();
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
@@ -69,14 +68,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-var appNotificator = app.Services.GetRequiredService<IApiEventNotificator>();
+//var appNotificator = app.Services.GetRequiredService<IApiEventNotificator>();
 app.Lifetime.ApplicationStopping.Register(() =>
 {
-    appNotificator.Notify("TODO Web приложение остановлено");
+    //appNotificator.Notify("TODO Web приложение остановлено");
 });
 app.Lifetime.ApplicationStarted.Register(() =>
 {
-    appNotificator.Notify("TODO Web приложение запущено");
+    //appNotificator.Notify("TODO Web приложение запущено");
 });
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);

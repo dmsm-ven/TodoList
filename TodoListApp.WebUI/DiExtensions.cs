@@ -1,5 +1,4 @@
-﻿using PainvenNotificator;
-using TodoListApp.ApiClient;
+﻿using TodoListApp.ApiClient;
 using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.WebUI.Models;
 
@@ -36,11 +35,11 @@ public static class DiExtensions
 
     public static WebApplicationBuilder AddNotificatorSender(this WebApplicationBuilder builder)
     {
-        builder.Services.AddHttpClient();
-        builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(GeoDataExtractorConfiguration)));
-        builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(TelegramConfiguration)));
-        builder.Services.AddSingleton<IGeoDataExtractor, BasicGeoDataExtractor>();
-        builder.Services.AddSingleton<IApiEventNotificator, TelegramApiEventNotificator>();
+        //builder.Services.AddHttpClient();
+        //builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(GeoDataExtractorConfiguration)));
+        //builder.Services.Configure<GeoDataExtractorConfiguration>(builder.Configuration.GetSection(nameof(TelegramConfiguration)));
+        //builder.Services.AddSingleton<IGeoDataExtractor, BasicGeoDataExtractor>();
+        //builder.Services.AddSingleton<IApiEventNotificator, TelegramApiEventNotificator>();
 
         return builder;
     }
