@@ -90,6 +90,8 @@ else if (jobItems != null && jobItems.Count == 0)
             <thead>
                 <tr>
                     <th></th>
+                    <th></th>
+                    <th></th>
                     <th>Дата создания</th>
                     <th></th>
                     <th>Заказчик</th>
@@ -108,6 +110,8 @@ else if (jobItems != null && jobItems.Count == 0)
                         <td>
                             <button class="btn btn-sm btn-secondary-outline" @onclick="(() => ChangeEditJob(item))">✏️</button>
                         </td>
+                        <td></td>
+                        <td></td>
                         <td>@item.start_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
                         <td>@item.start_date.ToLocalTime().Humanize()</td>
                         <td>@employeerMap[item.employeer_id].name</td>
