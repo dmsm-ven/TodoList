@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.ApiClient;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.ViewModels;
@@ -19,10 +19,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     IRecipient<MonthPillSelectionChangedMessage>
 {
     public const int MAX_PILLS_COUNT = 12;
-
+    private readonly TodoListAppApiClient apiClient;
     private bool isLoaded = false;
-    private readonly IJobItemRepository jobItemRepository;
-    private readonly IEmployeerRepository paymentRepository;
 
     public EmployeerViewModel Employeer { get; private set; }
 
@@ -86,13 +84,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         }
     }
 
-    public EmployeerTabViewModel(IJobItemRepository jobItemRepository,
-        IEmployeerRepository paymentRepository)
+    public EmployeerTabViewModel(TodoListAppApiClient apiClient)
     {
-        this.jobItemRepository = jobItemRepository;
-        this.paymentRepository = paymentRepository;
-
+        this.apiClient = apiClient;
         WeakReferenceMessenger.Default.RegisterAll(this);
+
     }
 
     public void SetEmployeer(EmployeerViewModel emp)
@@ -121,8 +117,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         IsLoading = true;
 
-        var jobsTaskThisMonth = jobItemRepository.GetAllJobItems(Employeer.Id);
-        var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
+        var jobsTaskThisMonth = apiClient.GetAllJobItems(Employeer.Id);
+        var paymentsTask = apiClient.GetAllPaymentsForEmployeer(Employeer.Id);
 
         await Task.WhenAll(jobsTaskThisMonth, paymentsTask);
 
@@ -154,9 +150,9 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
-    private void AddEmployeerPayment()
+    private async Task AddEmployeerPayment()
     {
-        paymentRepository.AddPayment(NewPayment.ToPayload());
+        await apiClient.AddPayment(NewPayment.ToPayload());
         Employeer.Payments.Insert(0, NewPayment);
         IsShowPaymentField = false;
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id, EmployeerName = Employeer.Name };
@@ -192,7 +188,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
             Title = "Новая задача",
             EmployeerId = Employeer.Id
         };
-        item.Id = await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
+        item.Id = await apiClient.AddJobItem(item.ToCreateJobItem());
         Employeer.TodoItems.Add(item);
         item.Initialize();
 
@@ -206,14 +202,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
-    private void DeleteSelectedJobItem(JobItemViewModel item)
+    private async Task DeleteSelectedJobItem(JobItemViewModel item)
     {
         if (item == null) { return; }
 
         var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{item.Title}' от [{item.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) { return; }
 
-        jobItemRepository.DeleteJobItem(item.Id);
+        await apiClient.DeleteJobItem(item.Id);
         Employeer.TodoItems.Remove(item);
 
         SelectedJobItem = null;

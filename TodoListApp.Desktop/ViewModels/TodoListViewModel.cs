@@ -6,8 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TodoListApp.ApiClient;
 using TodoListApp.Core.Entities;
-using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.Models.TodoList;
@@ -21,9 +21,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemHistoryDisplayMessage>,
     IRecipient<EmployeerCreatedMessage>
 {
-
-    private readonly IEmployeerRepository employeerRepository;
-    private readonly IJobItemRepository jobItemRepository;
+    private readonly TodoListAppApiClient apiClient;
     private readonly SettingsViewModel settingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
 
@@ -43,13 +41,11 @@ public partial class TodoListViewModel : ObservableRecipient,
         }
     }
 
-    public TodoListViewModel(IEmployeerRepository employeerRepository,
-        IJobItemRepository jobItemRepository,
+    public TodoListViewModel(TodoListAppApiClient apiClient,
         SettingsViewModel settingsViewModel,
         Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
-        this.employeerRepository = employeerRepository;
-        this.jobItemRepository = jobItemRepository;
+        this.apiClient = apiClient;
         this.settingsViewModel = settingsViewModel;
         this.todoListTabFactory = todoListTabFactory;
     }
@@ -71,12 +67,12 @@ public partial class TodoListViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
-    private void RemoveEmployeerTab()
+    private async Task RemoveEmployeerTab()
     {
         var result = MessageBox.Show($"Удалить вкладку '{SelectedTab.Employeer.Name}' ?", "Внимание", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)
         {
-            employeerRepository.DeleteEmployeer(SelectedTab.Employeer.Id);
+            await apiClient.DeleteEmployeer(SelectedTab.Employeer.Id);
             Tabs.Remove(SelectedTab);
         }
     }
@@ -86,7 +82,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     {
         this.Tabs.Clear();
 
-        var employeers = await employeerRepository.GetAllEmployeer();
+        var employeers = await apiClient.GetAllEmployeer();
 
         foreach (var emp in employeers)
         {
@@ -104,9 +100,9 @@ public partial class TodoListViewModel : ObservableRecipient,
         IsLoading = false;
     }
 
-    public void Receive(JobItemFieldUpdatedMessage message)
+    public async void Receive(JobItemFieldUpdatedMessage message)
     {
-        jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
+        await apiClient.UpdateJobItem(message.Value.ToUpdateJobItem());
     }
 
     public async void Receive(JobItemHistoryDisplayMessage message)
@@ -114,7 +110,7 @@ public partial class TodoListViewModel : ObservableRecipient,
         var window = new JobItemChangesHistoryWindow();
         var windowViewModel = new JobItemChangesHistoryWindowViewModel();
 
-        var historyItems = await jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
+        var historyItems = await apiClient.GetHistoryChangesForJobItem(message.Value.Id);
         foreach (var item in historyItems.Select(i => i.ToModel()))
         {
             windowViewModel.HistoryItems.Add(item);
@@ -128,7 +124,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     public async void Receive(EmployeerCreatedMessage message)
     {
         var emp = new EmployeerEntity() { name = message.newEmployeerName };
-        var id = await employeerRepository.AddEmployeer(emp);
+        var id = await apiClient.AddEmployeer(emp);
         emp.id = id;
 
         var newTab = todoListTabFactory(emp);

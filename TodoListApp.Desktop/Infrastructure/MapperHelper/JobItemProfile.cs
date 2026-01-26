@@ -1,4 +1,6 @@
-﻿using TodoListApp.Core.Entities;
+﻿using System;
+using TodoListApp.Core.Dtos;
+using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Desktop.ViewModels;
 
@@ -37,6 +39,34 @@ public static class JobItemMapperHelper
             employeer_id = jobItem.EmployeerId,
             price = jobItem.Price,
             website = jobItem.Website
+        };
+    }
+    public static UpdateJobDto ToUpdateJobItem(this JobItemViewModel jobItem)
+    {
+        return new UpdateJobDto
+        {
+            Id = jobItem.Id,
+            Title = jobItem.Title,
+            Description = jobItem.Description,
+            IsCompleted = jobItem.IsCompleted,
+            IsPayed = jobItem.IsPayed,
+            StartDate = jobItem.StartDate.Value,
+            EndDate = jobItem.EndDate != null ? DateOnly.FromDateTime(jobItem.EndDate.Value.UtcDateTime) : null,
+            Price = jobItem.Price,
+            Website = jobItem.Website
+        };
+    }
+
+    public static CreateJobDto ToCreateJobItem(this JobItemViewModel jobItem)
+    {
+        return new CreateJobDto
+        {
+            Title = jobItem.Title,
+            Description = jobItem.Description,
+            StartDate = jobItem.StartDate.Value,
+            Price = jobItem.Price,
+            Website = jobItem.Website,
+            EmployeerId = jobItem.EmployeerId
         };
     }
 

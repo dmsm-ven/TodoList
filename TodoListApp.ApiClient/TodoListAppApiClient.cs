@@ -25,9 +25,9 @@ public class TodoListAppApiClient(HttpClient client)
         var id = await result.Content.ReadFromJsonAsync<int>();
         return id;
     }
-    public async Task<int> AddEmployeer(EmployeerEntity entity)
+    public async Task<int> AddEmployeer(CreateEmployeerDto employeer)
     {
-        var result = await client.PostAsJsonAsync($"api/employeers/add", entity);
+        var result = await client.PostAsJsonAsync($"api/employeers", employeer);
         if (result.IsSuccessStatusCode == false)
         {
             throw new Exception($"Error calling API: {result.StatusCode}");

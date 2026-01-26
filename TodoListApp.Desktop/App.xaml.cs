@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using TodoListApp.ApiClient;
-using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.ViewModels.Windows;
 
 namespace TodoListApp.Desktop;
@@ -47,9 +46,6 @@ public partial class App : Application
                     var httpClient = factory.CreateClient(nameof(TodoListAppApiClient));
                     return new TodoListAppApiClient(httpClient);
                 });
-                services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
-                services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
-                services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
                 services.ConfigureMyOptions();
                 services.ConfigureFactoryInitializators();
                 services.ConfigureMyViewModels();

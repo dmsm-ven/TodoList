@@ -1,5 +1,4 @@
 ﻿using TodoListApp.ApiClient;
-using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.WebUI.Models;
 
 public static class AuthDefaults
@@ -24,10 +23,6 @@ public static class DiExtensions
             var httpClient = factory.CreateClient(nameof(TodoListAppApiClient));
             return new TodoListAppApiClient(httpClient);
         });
-        builder.Services.AddSingleton<IAppLogger>(x => x.GetRequiredService<TodoListAppApiClient>());
-        builder.Services.AddSingleton<IJobItemRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
-        builder.Services.AddSingleton<IEmployeerRepository>(x => x.GetRequiredService<TodoListAppApiClient>());
-
 
 
         return builder;

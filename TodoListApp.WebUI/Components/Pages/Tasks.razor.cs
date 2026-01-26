@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 
 namespace TodoListApp.WebUI.Components.Pages;
@@ -21,7 +22,7 @@ public partial class Tasks
     {
         if (firstRender)
         {
-            var employeers = await EmployeerRepository.GetAllEmployeer();
+            var employeers = await ApiClient.GetAllEmployeer();
             foreach (var emp in employeers)
             {
                 employeerMap[emp.id] = emp;
@@ -45,7 +46,7 @@ public partial class Tasks
         {
             if (EmployeerFilter == 0 || (EmployeerFilter == emp.Key))
             {
-                var empJobs = await JobItemRepository.GetAllJobItems(emp.Key);
+                var empJobs = await ApiClient.GetAllJobItems(emp.Key);
                 tmpJobList.AddRange(empJobs);
             }
         }
@@ -67,7 +68,7 @@ public partial class Tasks
         jobItems!.Insert(0, newJob);
         try
         {
-            await JobItemRepository.AddOrUpdateJobItem(newJob);
+            await ApiClient.AddJobItem(newJob.ToCreateJobDto());
             newJob = new();
         }
         finally
@@ -79,7 +80,7 @@ public partial class Tasks
     {
         if (!string.IsNullOrWhiteSpace(newEmployeer?.name) && newEmployeer.name != "Название/компания")
         {
-            var newEmpId = await EmployeerRepository.AddEmployeer(newEmployeer);
+            var newEmpId = await ApiClient.AddEmployeer(newEmployeer);
             newEmployeer.id = newEmpId;
             employeerMap[newEmpId] = newEmployeer;
             EmployeerFilter = newEmpId;
@@ -102,7 +103,7 @@ public partial class Tasks
             return;
         }
 
-        await JobItemRepository.AddOrUpdateJobItem(editJob);
+        await ApiClient.UpdateJobItem(editJob.ToUpdateJobDto());
         editJob = null;
 
     }
@@ -113,8 +114,8 @@ public partial class Tasks
             return;
         }
 
-        await JobItemRepository.DeleteJobItem(editJob.id);
-        jobItems.Remove(editJob);
+        await ApiClient.DeleteJobItem(editJob.id);
+        jobItems!.Remove(editJob);
         editJob = null;
 
 
@@ -127,7 +128,7 @@ public partial class Tasks
         {
             return;
         }
-        await EmployeerRepository.DeleteEmployeer(EmployeerFilter);
+        await ApiClient.DeleteEmployeer(EmployeerFilter);
 
         employeerMap.Remove(EmployeerFilter);
 

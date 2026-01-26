@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
@@ -6,7 +8,7 @@ using TodoListApp.Core.Repositories.Interfaces;
 namespace TodoListApp.API.Controllers;
 
 [ApiController]
-public class EmployeersController(IEmployeerRepository repo) : ControllerBase
+public class EmployeersController(IEmployeerRepository repo, IValidator<CreateEmployeerDto> empValidator) : ControllerBase
 {
     [HttpGet("api/employeers")]
     public async Task<ActionResult<IEnumerable<EmployeerEntity>>> GetAll()
@@ -31,7 +33,7 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
             return NotFound();
         }
         await repo.DeleteEmployeer(id);
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("api/employeers/{employeer_id}/payments")]
@@ -58,21 +60,17 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
         return Ok();
     }
 
-    [HttpPost("api/employeers/add")]
-    public async Task<ActionResult<int>> AddEmployeer([FromBody] EmployeerEntity payload)
+    [HttpPost("api/employeers")]
+    public async Task<IActionResult> AddEmployeer([FromBody] CreateEmployeerDto employeer)
     {
-        if (payload is null || string.IsNullOrWhiteSpace(payload?.name))
-        {
-            return BadRequest();
-        }
-        var allEmployeers = await repo.GetAllEmployeer();
+        var isValid = await empValidator.ValidateAsync(employeer);
 
-        if (allEmployeers.Any(e => e.name.Equals(payload.name, StringComparison.OrdinalIgnoreCase)))
+        if (!isValid.IsValid)
         {
-            return Conflict("Employeer with the same name already exists.");
+            return BadRequest(isValid.Errors);
         }
 
-        var empId = await repo.AddEmployeer(payload);
-        return empId;
+        var empId = await repo.AddEmployeer(employeer.ToEntity());
+        return CreatedAtAction(nameof(GetById), new { id = empId }, null);
     }
 }

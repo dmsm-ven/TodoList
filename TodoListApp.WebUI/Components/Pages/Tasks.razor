@@ -1,10 +1,10 @@
 ﻿@page "/tasks"
 @rendermode InteractiveServer
-@inject IJobItemRepository JobItemRepository
-@inject IEmployeerRepository EmployeerRepository
+@inject TodoListAppApiClient ApiClient
 @attribute [Authorize]
 
 @using Humanizer
+@using TodoListApp.ApiClient
 @using TodoListApp.WebUI.Components.Controls
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
