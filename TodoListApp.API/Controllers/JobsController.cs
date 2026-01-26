@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
 
@@ -8,15 +10,30 @@ namespace TodoListApp.API.Controllers;
 public class JobsController : ControllerBase
 {
     private readonly IJobItemRepository repo;
+    private readonly IEmployeerRepository empRepo;
+    private readonly IValidator<CreateJobDto> createJobValidator;
+    private readonly IValidator<UpdateJobDto> updateJobValidator;
 
-    public JobsController(IJobItemRepository repo)
+    public JobsController(IJobItemRepository repo,
+        IEmployeerRepository empRepo,
+        IValidator<CreateJobDto> createJobValidator,
+        IValidator<UpdateJobDto> updateJobValidator)
     {
+        this.empRepo = empRepo;
         this.repo = repo;
+        this.createJobValidator = createJobValidator;
+        this.updateJobValidator = updateJobValidator;
+
     }
     [HttpGet("api/jobs")]
     public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer(
         [FromQuery] int employeer_id)
     {
+        var empExists = await empRepo.GetEmployeer(employeer_id);
+        if (empExists is null)
+        {
+            return NotFound();
+        }
         var jobs = await repo.GetAllJobItems(employeer_id);
         return jobs != null ? Ok(jobs) : NoContent();
     }
@@ -31,6 +48,11 @@ public class JobsController : ControllerBase
     [HttpDelete("api/jobs/{id}")]
     public async Task<IActionResult> DeleteJobById([FromRoute] int id)
     {
+        var item = await repo.GetJobItem(id);
+        if (item is null)
+        {
+            return NotFound();
+        }
         await repo.DeleteJobItem(id);
         return NoContent();
     }
@@ -52,15 +74,36 @@ public class JobsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut("api/jobs/{JobItemId}/updated")]
-    public async Task<IActionResult> JobUpdated([FromRoute] int JobItemId, [FromBody] JobItemEntity item)
+    [HttpPut("api/jobs/{id}")]
+    public async Task<IActionResult> UpdateJob([FromRoute] int id, [FromBody] UpdateJobDto item)
     {
-        if (repo.GetJobItem(JobItemId) is null)
+        var validationResult = await updateJobValidator.ValidateAsync(item);
+
+        if (!validationResult.IsValid)
         {
-            return NotFound();
+            return BadRequest(validationResult.Errors);
         }
 
-        var id = await repo.AddOrUpdateJobItem(item);
-        return Ok(id);
+        await repo.AddOrUpdateJobItem(item.ToEntity());
+
+        return Ok();
+    }
+
+    [HttpPost("api/jobs")]
+    public async Task<IActionResult> CreateJob(CreateJobDto item)
+    {
+        var validationResult = await createJobValidator.ValidateAsync(item);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        var newJobItemId = await repo.AddOrUpdateJobItem(item.ToEntity());
+
+        return CreatedAtRoute(
+            nameof(GetJobById),
+            new { id = newJobItemId },
+            null);
     }
 }

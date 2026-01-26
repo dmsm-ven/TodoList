@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Threading.RateLimiting;
 using TodoListApp.API.Model;
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
-
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureMyDatabaseRepositories(builder.Configuration);
 builder.Services.Configure<ApiKeyConfiguration>(builder.Configuration.GetSection(nameof(ApiKeyConfiguration)));
