@@ -123,13 +123,9 @@ public partial class TodoListViewModel : ObservableRecipient,
 
     public async void Receive(EmployeerCreatedMessage message)
     {
-        var emp = new EmployeerEntity() { name = message.newEmployeerName };
-        var id = await apiClient.AddEmployeer(emp);
-        emp.id = id;
-
+        var emp = await apiClient.AddEmployeer(new Core.Dtos.CreateEmployeerDto() { Name = message.newEmployeerName });
         var newTab = todoListTabFactory(emp);
         Tabs.Add(newTab);
         SelectedTab = newTab;
-
     }
 }

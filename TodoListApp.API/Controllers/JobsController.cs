@@ -101,7 +101,7 @@ public class JobsController : ControllerBase
 
         var newJobItemId = await repo.AddOrUpdateJobItem(item.ToEntity());
 
-        return CreatedAtRoute(
+        return CreatedAtAction(
             nameof(GetJobById),
             new { id = newJobItemId },
             null);

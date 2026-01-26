@@ -15,25 +15,25 @@ public class TodoListAppApiClient(HttpClient client)
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
     }
-    public async Task<int> AddJobItem(CreateJobDto payload)
+    public async Task<JobItemEntity> AddJobItem(CreateJobDto payload)
     {
         var result = await client.PostAsJsonAsync("api/jobs", payload);
         if (!result.IsSuccessStatusCode)
         {
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
-        var id = await result.Content.ReadFromJsonAsync<int>();
-        return id;
+        var item = await result.Content.ReadFromJsonAsync<JobItemEntity>();
+        return item!;
     }
-    public async Task<int> AddEmployeer(CreateEmployeerDto employeer)
+    public async Task<EmployeerEntity> AddEmployeer(CreateEmployeerDto employeer)
     {
         var result = await client.PostAsJsonAsync($"api/employeers", employeer);
-        if (result.IsSuccessStatusCode == false)
+        if (!result.IsSuccessStatusCode)
         {
             throw new Exception($"Error calling API: {result.StatusCode}");
         }
-        var id = await result.Content.ReadFromJsonAsync<int>();
-        return id;
+        var emp = await result.Content.ReadFromJsonAsync<EmployeerEntity>();
+        return emp!;
     }
     public async Task AddPayment(EmployeerPaymentPayload payment)
     {

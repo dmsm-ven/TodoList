@@ -182,16 +182,18 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [RelayCommand]
     public async Task AddJobItem()
     {
-        var item = new JobItemViewModel()
+        var vmItem = new JobItemViewModel()
         {
             StartDate = DateTime.UtcNow,
             Title = "Новая задача",
             EmployeerId = Employeer.Id
         };
-        item.Id = await apiClient.AddJobItem(item.ToCreateJobItem());
-        Employeer.TodoItems.Add(item);
-        item.Initialize();
+        Employeer.TodoItems.Add(vmItem);
 
+        var newJob = await apiClient.AddJobItem(vmItem.ToCreateJobItem());
+
+        vmItem.Id = newJob.id;
+        vmItem.Initialize();
 
         var firstPill = MonthPills.FirstOrDefault();
         var isRefreshNeeded = (firstPill == null || (firstPill != null && firstPill.MonthNumber != DateTime.Now.Month));
