@@ -50,13 +50,13 @@
                 d:Text="1 000 руб."
                 Style="{StaticResource EmployeerPaymentStatisticsSum}"
                 Text="{Binding Month1Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-            <TextBlock
+            <!--<TextBlock
                 Grid.Row="1"
                 Grid.Column="2"
                 d:Text="+25%"
                 Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
                 Text="{Binding Month1Change, TargetNullValue='', StringFormat={}{0:P0}}"
-                Visibility="Collapsed" />
+                Visibility="Collapsed" />-->
 
             <Label
                 Grid.Row="2"
@@ -68,13 +68,13 @@
                 d:Text="5 000 руб."
                 Style="{StaticResource EmployeerPaymentStatisticsSum}"
                 Text="{Binding Month3Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-            <TextBlock
+            <!--<TextBlock
                 Grid.Row="2"
                 Grid.Column="2"
                 d:Text="+25%"
                 Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
                 Text="{Binding Month3Change, TargetNullValue='', StringFormat={}{0:P0}}"
-                Visibility="Collapsed" />
+                Visibility="Collapsed" />-->
 
             <Label
                 Grid.Row="3"
@@ -86,13 +86,13 @@
                 d:Text="25 000 руб."
                 Style="{StaticResource EmployeerPaymentStatisticsSum}"
                 Text="{Binding Month6Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-            <TextBlock
+            <!--<TextBlock
                 Grid.Row="3"
                 Grid.Column="2"
                 d:Text="+25%"
                 Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
                 Text="{Binding Month6Change, TargetNullValue='', StringFormat={}{0:P0}}"
-                Visibility="Collapsed" />
+                Visibility="Collapsed" />-->
 
             <Label
                 Grid.Row="4"
@@ -104,13 +104,13 @@
                 d:Text="50 000 руб."
                 Style="{StaticResource EmployeerPaymentStatisticsSum}"
                 Text="{Binding Month12Sum, TargetNullValue='-', StringFormat={}{0:C0}, ConverterCulture=ru-RU}" />
-            <TextBlock
+            <!--<TextBlock
                 Grid.Row="4"
                 Grid.Column="2"
                 d:Text="+25%"
                 Style="{StaticResource EmployeerPaymentStatisticsPercentChange}"
                 Text="{Binding Month12Change, TargetNullValue='', StringFormat={}{0:P0}}"
-                Visibility="Collapsed" />
+                Visibility="Collapsed" />-->
         </Grid>
     </Border>
 </UserControl>

@@ -7,7 +7,7 @@ namespace TodoListApp.Desktop.ViewModels.Windows;
 public partial class MainWindowViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string title;
+    private string title = "";
 
     [ObservableProperty]
     private TodoListViewModel todoListViewModel;

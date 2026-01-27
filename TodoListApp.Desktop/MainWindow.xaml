@@ -10,7 +10,6 @@
     xmlns:v="clr-namespace:TodoListApp.Desktop.Views"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     xmlns:vmw="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
-    x:Name="window"
     Title="{Binding Title}"
     Width="1600"
     Height="800"
@@ -20,12 +19,6 @@
     d:Width="1000"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <beh:Interaction.Triggers>
-        <beh:EventTrigger EventName="Loaded">
-            <beh:InvokeCommandAction Command="{Binding LoadedCommand}" />
-        </beh:EventTrigger>
-    </beh:Interaction.Triggers>
-
     <Grid Background="{StaticResource MainGridImageBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
