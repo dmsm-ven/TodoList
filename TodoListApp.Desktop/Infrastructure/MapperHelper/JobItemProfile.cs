@@ -46,6 +46,7 @@ public static class JobItemMapperHelper
         return new UpdateJobDto
         {
             Id = jobItem.Id,
+            EmployeerId = jobItem.EmployeerId,
             Title = jobItem.Title,
             Description = jobItem.Description,
             IsCompleted = jobItem.IsCompleted,

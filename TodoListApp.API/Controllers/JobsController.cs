@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
@@ -13,17 +14,19 @@ public class JobsController : ControllerBase
     private readonly IEmployeerRepository empRepo;
     private readonly IValidator<CreateJobDto> createJobValidator;
     private readonly IValidator<UpdateJobDto> updateJobValidator;
+    private readonly ILogger<JobsController> logger;
 
     public JobsController(IJobItemRepository repo,
         IEmployeerRepository empRepo,
         IValidator<CreateJobDto> createJobValidator,
-        IValidator<UpdateJobDto> updateJobValidator)
+        IValidator<UpdateJobDto> updateJobValidator,
+        ILogger<JobsController> logger)
     {
         this.empRepo = empRepo;
         this.repo = repo;
         this.createJobValidator = createJobValidator;
         this.updateJobValidator = updateJobValidator;
-
+        this.logger = logger;
     }
     [HttpGet("api/jobs")]
     public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer(
@@ -81,6 +84,7 @@ public class JobsController : ControllerBase
 
         if (!validationResult.IsValid)
         {
+            logger.LogWarning("Ошибка обновления задачи с id {id}. Данные [{data}]. Ошибки: {errors}", id, JsonSerializer.Serialize(item), validationResult.Errors);
             return BadRequest(validationResult.Errors);
         }
 
@@ -101,9 +105,13 @@ public class JobsController : ControllerBase
 
         var newJobItemId = await repo.AddOrUpdateJobItem(item.ToEntity());
 
+        var createdItem = await repo.GetJobItem(newJobItemId);
+
+        logger.LogInformation("Создано задание с ID {id}. Data[{data}]", newJobItemId, JsonSerializer.Serialize(createdItem));
+
         return CreatedAtAction(
             nameof(GetJobById),
             new { id = newJobItemId },
-            null);
+            createdItem);
     }
 }

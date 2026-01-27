@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
@@ -8,7 +9,8 @@ using TodoListApp.Core.Repositories.Interfaces;
 namespace TodoListApp.API.Controllers;
 
 [ApiController]
-public class EmployeersController(IEmployeerRepository repo, IValidator<CreateEmployeerDto> empValidator) : ControllerBase
+public class EmployeersController(IEmployeerRepository repo, IValidator<CreateEmployeerDto> empValidator, ILogger<EmployeersController> logger)
+    : ControllerBase
 {
     [HttpGet("api/employeers")]
     public async Task<ActionResult<IEnumerable<EmployeerEntity>>> GetAll()
@@ -71,6 +73,10 @@ public class EmployeersController(IEmployeerRepository repo, IValidator<CreateEm
         }
 
         var empId = await repo.AddEmployeer(employeer.ToEntity());
-        return CreatedAtAction(nameof(GetById), new { id = empId }, null);
+        var createdEmp = await repo.GetEmployeer(empId);
+
+        logger.LogInformation("Создан заказчик с ID {id}. Data[{data}]", empId, JsonSerializer.Serialize(createdEmp));
+
+        return CreatedAtAction(nameof(GetById), new { id = empId }, createdEmp);
     }
 }
