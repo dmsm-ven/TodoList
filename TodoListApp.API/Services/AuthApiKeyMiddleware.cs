@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using PainvenNotificator;
 using TodoListApp.API.Model;
 using TodoListApp.Core.Repositories.Interfaces;
 
@@ -8,14 +9,17 @@ internal class AuthApiKeyMiddleware : IMiddleware
     private readonly string apiKey;
     private readonly ILogger<AuthApiKeyMiddleware> logger;
     private readonly IAppLogger appLogger;
+    private readonly IApiEventNotificator notifier;
 
     public AuthApiKeyMiddleware(IOptions<ApiKeyConfiguration> options,
         ILogger<AuthApiKeyMiddleware> logger,
-        IAppLogger appLogger)
+        IAppLogger appLogger,
+        IApiEventNotificator notifier)
     {
         this.apiKey = options.Value.ApiKey;
         this.logger = logger;
         this.appLogger = appLogger;
+        this.notifier = notifier;
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -26,6 +30,8 @@ internal class AuthApiKeyMiddleware : IMiddleware
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsync("400 Bad Request");
             logger.LogWarning("Attempt access to api without API KEY c IP {clientIp}", clientIp);
+            _ = notifier.Notify($"Попытка доступа к API без API KEY c IP {clientIp}");
+
             return;
         }
 
@@ -34,11 +40,13 @@ internal class AuthApiKeyMiddleware : IMiddleware
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("401 Unauthorized");
             logger.LogWarning("Attempt access to api with invalid API KEY c IP {clientIp}", clientIp);
+
+            _ = notifier.Notify($"Попытка доступа к API с неверным API KEY c IP {clientIp}");
             return;
         }
 
         logger.LogInformation("[{clientIp}] Обращение к API {patch}", clientIp, context.Request.Path);
-        appLogger.WriteLog(clientIp, context.Request.Path, "Обращение к API");
+        _ = appLogger.WriteLog(clientIp, context.Request.Path, "Обращение к API");
 
         await next(context);
     }

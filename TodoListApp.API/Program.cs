@@ -1,10 +1,12 @@
-using FluentValidation;
+п»їusing FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
+using PainvenNotificator;
 using System.Threading.RateLimiting;
 using TodoListApp.API.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddTelegramNotificationsWithGeodata(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
@@ -24,8 +26,8 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: "global",
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 60, // максимум 60 запросов
-                Window = TimeSpan.FromMinutes(3), // за 3 мин.
+                PermitLimit = 60, // РјР°РєСЃРёРјСѓРј 60 Р·Р°РїСЂРѕСЃРѕРІ
+                Window = TimeSpan.FromMinutes(3), // Р·Р° 3 РјРёРЅ.
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                 QueueLimit = 0
             }));
@@ -42,5 +44,14 @@ app.UseMiddleware<AuthApiKeyMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    _ = Task.Run(async () =>
+    {
+        var notificator = app.Services.GetRequiredService<IApiEventNotificator>();
+        await notificator.Notify("API TODO Р·Р°РїСѓС‰РµРЅ");
+    });
+});
 
 app.Run();
