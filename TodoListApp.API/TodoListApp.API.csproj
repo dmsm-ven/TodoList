@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>806c87b5-e791-4389-a390-7dc59b2d43f0</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<ContainerRepository>painven/todo_api</ContainerRepository>
+	<ContainerImageName>painven/todo_api</ContainerImageName>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
