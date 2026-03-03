@@ -14,7 +14,7 @@ public partial class TodoListTabStatusBarViewModel : ObservableRecipient,
     private IEnumerable<JobItemViewModel> sourceItems = new List<JobItemViewModel>();
 
     public int ActiveOrNotPayedTasks =>
-        sourceItems?.Count(t => !t.IsCompleted && !t.IsPayed) ?? 0;
+        sourceItems?.Count(t => !t.IsCompleted || !t.IsPayed) ?? 0;
 
     public int ActiveTasks => sourceItems?.Count(t => !t.IsCompleted) ?? 0;
 

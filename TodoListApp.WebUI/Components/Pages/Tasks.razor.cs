@@ -80,10 +80,10 @@ public partial class Tasks
     {
         if (!string.IsNullOrWhiteSpace(newEmployeer?.name) && newEmployeer.name != "Название/компания")
         {
-            var newEmpId = await ApiClient.AddEmployeer(newEmployeer);
-            newEmployeer.id = newEmpId;
-            employeerMap[newEmpId] = newEmployeer;
-            EmployeerFilter = newEmpId;
+            var newEmpId = await ApiClient.AddEmployeer(newEmployeer.ToCreateEmployeerDto());
+            newEmployeer.id = newEmpId.id;
+            employeerMap[newEmpId.id] = newEmployeer;
+            EmployeerFilter = newEmpId.id;
             newEmployeer = new();
             await RefreshSource();
         }

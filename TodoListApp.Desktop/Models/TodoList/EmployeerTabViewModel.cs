@@ -67,6 +67,10 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
     }
+    public int ActiveTasksCount
+    {
+        get => Employeer.TodoItems?.Count(t => !t.IsCompleted || !t.IsPayed) ?? 0;
+    }
 
     public IEnumerable<string> UniqueWebsites
     {
@@ -88,7 +92,6 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         this.apiClient = apiClient;
         WeakReferenceMessenger.Default.RegisterAll(this);
-
     }
 
     public void SetEmployeer(EmployeerViewModel emp)
@@ -246,6 +249,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     public void Receive(JobItemFieldUpdatedMessage message)
     {
         OnPropertyChanged(nameof(HasActiveTasks));
+        OnPropertyChanged(nameof(ActiveTasksCount));
     }
 
     public void Receive(MonthPillSelectionChangedMessage message)

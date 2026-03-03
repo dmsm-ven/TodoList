@@ -86,7 +86,7 @@
                                 d:Text="99"
                                 FontSize="14"
                                 Foreground="White"
-                                Text="{Binding StatusBarData.ActiveOrNotPayedTasks}" />
+                                Text="{Binding ActiveTasksCount}" />
                         </Grid>
 
                         <TextBlock

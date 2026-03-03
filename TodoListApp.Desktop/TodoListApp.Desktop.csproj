@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UserSecretsId>61ea3258-ff2f-47bc-98ac-f0e942e0f6e4</UserSecretsId>
   </PropertyGroup>
@@ -29,14 +28,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Humanizer.Core.ru" Version="2.14.1" />
-    <PackageReference Include="LoadingSpinner.WPF" Version="1.0.0" />
-    <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" Version="6.2.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Humanizer.Core.ru" />
+    <PackageReference Include="LoadingSpinner.WPF" />
+    <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
   
   </ItemGroup>
 
