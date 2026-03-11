@@ -5,7 +5,7 @@ services:
     image: painven/todo_api:latest
     container_name: todo_api
     restart: unless-stopped
-    env_file: ".env.api"
+    env_file: "api.env"
     ports:
       - "8090:80"
     environment:
@@ -17,7 +17,7 @@ services:
     image: postgres:18
     container_name: todo_database
     restart: always
-    env_file: ".env.db"
+    env_file: "db.env"
     volumes:
       - pgdata:/var/lib/postgresql
     networks:
@@ -27,7 +27,7 @@ services:
     image: painven/todo_web:latest
     container_name: todo_web
     restart: unless-stopped
-    env_file: ".env.web"
+    env_file: "web.env"
     ports:
       - "8070:80"
     networks:
