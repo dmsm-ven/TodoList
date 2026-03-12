@@ -10,6 +10,7 @@
     <Project Path="TodoListApp.Core/TodoListApp.Core.csproj" />
     <Project Path="TodoListApp.Desktop/TodoListApp.Desktop.csproj" />
   </Folder>
+  <Folder Name="/src/TodoListApp.Frontend/" />
   <Project Path="docker-compose.dcproj">
     <Build Solution="Release|*" />
   </Project>
