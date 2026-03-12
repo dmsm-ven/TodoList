@@ -23,15 +23,15 @@ services:
     networks:
       - todo_network
 
-  webui:
+  todo_web:
     image: painven/todo_web:latest
     container_name: todo_web
     restart: unless-stopped
-    env_file: "web.env"
     ports:
       - "8070:80"
     networks:
     - todo_network
+    - nginx_proxy_network
     environment:
       ASPNETCORE_URLS: http://+:80
       ApiConfiguration__Host: "http://api:80"
@@ -41,6 +41,9 @@ services:
 networks:  
   todo_network:
     name: todo_network
+  nginx_proxy_network:
+    name: nginx_proxy_network
+    external: true
 
 volumes:
   pgdata:
