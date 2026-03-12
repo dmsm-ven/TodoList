@@ -1,0 +1,43 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.Extensions.Options
+@using System.Security.Claims
+@using TodoListApp.WebUI.Models
+@inject IOptions<AppUserLoginConfiguration> serverTokenOptions
+@inject NavigationManager nav
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var tokens = Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext);
+}
+
+<div>
+    <input name="__RequestVerificationToken" type="hidden" value="@tokens.RequestToken" />
+    <input name="UserToken" placeholder="UserToken" @bind="@loginModel.UserToken" />
+    <br />
+    <button type="button" class="btn btn-primary mx-2" onclick="@LoginAsync">Login</button>
+</div>
+
+@code {
+
+    private LoginModel loginModel { get; set; } = new LoginModel() { UserToken = 
+"insert token here"
+    };
+
+    private async Task LoginAsync()
+    {
+        string validToken = serverTokenOptions.Value.Token;
+
+        await Task.Delay(Random.Shared.Next(500, 1000));
+
+        if (!loginModel.UserToken.Equals(validToken))
+        {
+            return;
+        }
+
+        var payload = new Dictionary<string, string> { { "UserToken", loginModel.UserToken } };
+        await JS.InvokeVoidAsync("blazorSubmitForm", "/todoweb/login-check", payload);
+    }
+
+}

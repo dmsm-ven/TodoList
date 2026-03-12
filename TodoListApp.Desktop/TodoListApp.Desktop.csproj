@@ -54,8 +54,4 @@
     <Resource Include="Assets\Images\TodoList\geometric-seamless-pattern_97458.jpg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Frontend\" />
-  </ItemGroup>
-
 </Project>

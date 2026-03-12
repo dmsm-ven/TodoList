@@ -1,0 +1,158 @@
+﻿@page "/tasks"
+@rendermode InteractiveServer
+@inject TodoListAppApiClient ApiClient
+@attribute [Authorize]
+
+@using Humanizer
+@using TodoListApp.ApiClient
+@using TodoListApp.WebUI.Components.Controls
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using TodoListApp.Core.Entities
+@using TodoListApp.Core.Repositories.Interfaces
+
+<PageTitle>Todolist</PageTitle>
+
+<div class="employeer-filter-box">
+    <button class="btn btn-sm@((EmployeerFilter == 0) ? " btn-danger" : " btn-primary")"
+            id="emp-filter-0"
+            @onclick="() => RefreshFilter(0)">
+        Все
+    </button>
+    @foreach (var item in employeerMap)
+    {
+        <button class="btn btn-sm@((item.Key == EmployeerFilter) ? " btn-danger" : " btn-primary")"
+                id="emp-filter-@item.Key"
+                @onclick="() => RefreshFilter(item.Key)">
+            @item.Value.name
+        </button>
+    }
+    <button class="btn btn-secondary"
+            id="btn-emp-new"
+            onclick="@AddNewEmployeer">
+        Добавить заказчика
+    </button>
+    @if (this.EmployeerFilter != 0)
+    {
+        <button class="btn btn-secondary"
+        id="btn-emp-new"
+                @onclick="(() => isDeleteEmployeerDialogVisible = true)">
+            Удалить заказчика
+        </button>
+    }
+    @if (!string.IsNullOrWhiteSpace(newEmployeer?.name))
+    {
+        <input type="text" class="form-control" placeholder="Новый заказчик" @bind="newEmployeer.name" />
+    }
+</div>
+
+@if (jobItems == null)
+{
+    <p><em>Загрузка списка</em></p>
+}
+else if (jobItems != null && jobItems.Count == 0)
+{
+    <p><em>Нет записей</em></p>
+}
+
+@if (EmployeerFilter != 0)
+{
+    <p>
+        Новая задача <span style="font-size: 32px;">➕</span>
+    </p>
+    <div class="new-job-box">
+        <label for="newjob-title">Заголовок</label>
+        <input type="text" id="newjob-title" class="form-control" placeholder="Новая задача" @bind="newJob.title" />
+
+        <label for="newjob-website">Вебсайт</label>
+        <input type="text" id="newjob-website" class="form-control" placeholder="https://" @bind="newJob.website" />
+
+        <label for="newjob-price">Цена</label>
+        <input type="number" id="newjob-price" class="form-control" placeholder="Цена" @bind="newJob.price" />
+
+        <label for="newjob-startdate">Дата создания</label>
+        <input type="date" id="newjob-startdate" class="form-control" @bind="newJob.start_date" />
+
+        <label for="newjob-payed">Оплачено</label>
+        <input type="checkbox" id="newjob-payed" class="form-check" @bind="newJob.is_payed" />
+
+        <label for="newjob-completed">Выполнено</label>
+        <input type="checkbox" id="newjob-completed" class="form-check" @bind="newJob.is_completed" />
+
+        <button class="btn btn-sm btn-success" onclick="@AddNewJob" disabled="@inProgress">
+            Добавить
+        </button>
+    </div>
+   
+    <div class="table-responsive work-table-container">
+        <table class="work-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Дата создания</th>
+                    <th></th>
+                    <th>Заказчик</th>
+                    <th>Заголовок</th>
+                    <th>Цена</th>
+                    <th>Оплачено</th>
+                    <th>Выполнено</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in jobItems)
+                {
+                    if (editJob == null || (editJob?.id ?? 0) != item.id)
+                    {
+                    <tr>
+                        <td>
+                            <button class="btn btn-sm btn-secondary-outline" @onclick="(() => ChangeEditJob(item))">✏️</button>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>@item.start_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.start_date.ToLocalTime().Humanize()</td>
+                        <td>@employeerMap[item.employeer_id].name</td>
+                        <td>@item.title</td>
+                        <td>@item.price</td>
+                        <td>@BoolToStatusSymbol(item.is_payed)</td>
+                        <td>@BoolToStatusSymbol(item.is_completed)</td>
+                    </tr>
+                    }
+                    else if ((editJob?.id ?? 0) == item.id)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-success w-100" title="Сохранить изменение" onclick="@SaveEditJob">✅</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary w-100" title="Отменить изменение" @onclick="(() => editJob = null)">❌</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger w-100" title="Удалить эту задачу" onclick="DeleteEditJob">🗑️</button>
+                            </td>
+                            <td>
+                                <input type="date" id="edit-job-date-@editJob!.id" @bind="editJob.start_date" class="form-control" />
+                            </td>
+                            <td>@item.start_date.ToLocalTime().Humanize()</td>
+                            <td>@employeerMap[editJob.employeer_id].name</td>
+                            <td><input type="text" id="edit-job-title-@editJob.id" @bind="editJob.title" class="form-control" /> </td>
+                            <td><input type="number" id="edit-job-price-@editJob.id" @bind="editJob.price" class="form-control" /> </td>
+                            <td><input type="checkbox" id="edit-job-payed-@editJob.id" @bind="editJob.is_payed" class="form-check" /> </td>
+                            <td><input type="checkbox" id="edit-job-completed-@editJob.id" @bind="editJob.is_completed" class="form-check" /> </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+                            
+<ConfirmDialog Show="@isDeleteEmployeerDialogVisible"
+              Title="Удалить заказчика ?"
+              OnClose="HandleDeleteEmployeerDialog">
+    Удалить заказчика @(EmployeerFilter != 0 ? employeerMap[EmployeerFilter].name : "<Не выбрано>") ?
+</ConfirmDialog>

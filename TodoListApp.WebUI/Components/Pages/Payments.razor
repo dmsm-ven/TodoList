@@ -1,0 +1,75 @@
+﻿@page "/payments"
+@rendermode InteractiveServer
+@inject IEmployeerRepository EmployeerRepository
+
+@attribute [Authorize]
+
+@using Humanizer
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using TodoListApp.Core.Entities
+@using TodoListApp.Core.Repositories.Interfaces
+
+<PageTitle>Оплаты</PageTitle>
+
+<div class="employeer-filter-box">
+    <button class="btn btn-sm@((EmployeerFilter == 0) ? " btn-danger" : " btn-primary")"
+            id="emp-filter-0"
+            @onclick="() => RefreshFilter(0)">
+        Все
+    </button>
+    @foreach (var item in employeerMap)
+    {
+        <button class="btn btn-sm@((item.Key == EmployeerFilter) ? " btn-danger" : " btn-primary")"
+                id="emp-filter-@item.Key"
+                @onclick="() => RefreshFilter(item.Key)">
+            @item.Value.name
+        </button>
+    }
+</div>
+
+@if (payments == null)
+{
+    <p><em>Загрузка списка</em></p>
+}
+else if (payments != null && payments.Count == 0)
+{
+    <p><em>Нет записей</em></p>
+}
+else
+{
+    <div class="table-responsive work-table-container">
+        <table class="work-table">
+            <thead>
+                <tr>
+                    <th>Дата оплаты</th>
+                    <th>Дата оплаты</th>
+                    @if (EmployeerFilter == 0)
+                    {
+                        <th>Заказчик</th>
+                    }
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in payments)
+                {
+                    <tr>
+                        <td>@item.transfer_arrival_date.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.transfer_arrival_date.ToLocalTime().Humanize()</td>
+                        @if(EmployeerFilter == 0)
+                        {
+                          <td>@employeerMap[item.employeer_id].name</td>
+                        }
+                        <td>@string.Format("{0:# ### ###}", item.amount)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+
+
