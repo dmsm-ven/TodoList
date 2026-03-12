@@ -32,9 +32,6 @@ services:
     networks:
     - todo_network
     - nginx_proxy_network
-    environment:
-      ASPNETCORE_URLS: http://+:80
-      ApiConfiguration__Host: "http://api:80"
     depends_on:
       - api
 
