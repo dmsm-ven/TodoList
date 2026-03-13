@@ -6,7 +6,10 @@ using TodoListApp.API.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
-builder.Services.AddTelegramNotificationsWithGeodata(builder.Configuration);
+builder.Services.AddTelegramNotificationsWithGeodata(builder.Configuration, options =>
+{
+    options.AppPrefix = "Todo";
+});
 
 // Add services to the container.
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
@@ -50,7 +53,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
     _ = Task.Run(async () =>
     {
         var notificator = app.Services.GetRequiredService<IApiEventNotificator>();
-        await notificator.Notify("API TODO запущен");
+        await notificator.Notify("API запущен");
     });
 });
 
