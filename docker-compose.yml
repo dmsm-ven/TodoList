@@ -23,24 +23,10 @@ services:
     networks:
       - todo_network
 
-  todo_web:
-    image: painven/todo_web:latest
-    container_name: todo_web
-    restart: unless-stopped
-    ports:
-      - "8070:80"
-    networks:
-    - todo_network
-    - nginx_proxy_network
-    depends_on:
-      - api
 
 networks:  
   todo_network:
     name: todo_network
-  nginx_proxy_network:
-    name: nginx_proxy_network
-    external: true
 
 volumes:
   pgdata:
