@@ -38,9 +38,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsync("400 Bad Request");
             logger.LogWarning("Attempt access to api without API KEY c IP {clientIp}", clientIp);
-
-            _ = notifier.Notify("Попытка доступа к API без API KEY", clientIp);
-
+            await notifier.Notify("Попытка доступа к API без API KEY", clientIp);
             return;
         }
 
@@ -49,9 +47,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("401 Unauthorized");
             logger.LogWarning("Attempt access to api with invalid API KEY c IP {clientIp}", clientIp);
-
-            _ = notifier.Notify("Попытка доступа к API с неверным API KEY", clientIp);
-
+            await notifier.Notify("Попытка доступа к API с неверным API KEY", clientIp);
             return;
         }
 
