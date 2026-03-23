@@ -26,7 +26,7 @@ internal class AuthApiKeyMiddleware : IMiddleware
     {
         string clientIp = context.Request.Headers.ContainsKey("X-Real-IP") ? context.Request.Headers["X-Real-IP"].ToString() : "";
 
-        if (!IPAddress.TryParse(clientIp, out _))
+        if (string.IsNullOrWhiteSpace(clientIp) || !IPAddress.TryParse(clientIp, out var ip) || IPAddress.IsLoopback(ip))
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
             await context.Response.WriteAsync("400 Bad Request");
