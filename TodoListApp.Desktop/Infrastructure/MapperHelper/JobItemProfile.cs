@@ -1,5 +1,4 @@
-﻿using System;
-using TodoListApp.Core.Dtos;
+﻿using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Desktop.ViewModels;
@@ -19,7 +18,7 @@ public static class JobItemMapperHelper
             Description = jobItem.description ?? string.Empty,
             IsCompleted = jobItem.is_completed,
             IsPayed = jobItem.is_payed,
-            StartDate = jobItem.start_date.DateTime,
+            StartDate = jobItem.start_date.LocalDateTime,
             EndDate = jobItem.end_date,
             EmployeerId = jobItem.employeer_id,
         };
@@ -51,7 +50,7 @@ public static class JobItemMapperHelper
             Description = jobItem.Description,
             IsCompleted = jobItem.IsCompleted,
             IsPayed = jobItem.IsPayed,
-            StartDate = jobItem.StartDate.Value,
+            StartDate = new DateTimeOffset(DateTime.SpecifyKind(jobItem.StartDate.Value, DateTimeKind.Local)),
             EndDate = jobItem.EndDate != null ? DateOnly.FromDateTime(jobItem.EndDate.Value.UtcDateTime) : null,
             Price = jobItem.Price,
             Website = jobItem.Website

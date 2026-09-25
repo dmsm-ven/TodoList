@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using PainvenNotificator;
-using System.Net;
 using TodoListApp.API.Model;
 using TodoListApp.Core.Repositories.Interfaces;
 
@@ -26,12 +25,12 @@ internal class AuthApiKeyMiddleware : IMiddleware
     {
         string clientIp = context.Request.Headers.ContainsKey("X-Real-IP") ? context.Request.Headers["X-Real-IP"].ToString() : "";
 
-        if (string.IsNullOrWhiteSpace(clientIp) || !IPAddress.TryParse(clientIp, out var ip) || IPAddress.IsLoopback(ip))
-        {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsync("400 Bad Request");
-            return;
-        }
+        //if (string.IsNullOrWhiteSpace(clientIp) || !IPAddress.TryParse(clientIp, out var ip) || IPAddress.IsLoopback(ip))
+        //{
+        //    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        //    await context.Response.WriteAsync("400 Bad Request");
+        //    return;
+        //}
 
         if (!context.Request.Headers.TryGetValue(API_KEY_HEADER_NAME, out var extractedApiKey))
         {
