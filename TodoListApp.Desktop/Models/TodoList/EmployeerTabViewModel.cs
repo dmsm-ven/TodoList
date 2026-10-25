@@ -27,7 +27,25 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     public EmployeerViewModel Employeer { get; private set; }
 
+    private const int InitialMonthPillsCount = 6;
+
     public ObservableCollection<MonthPillViewModel> MonthPills { get; init; } = new();
+
+    // Все месяцы, в которых есть задачи; в MonthPills показываются только последние InitialMonthPillsCount, пока не нажато "Показать еще"
+    private List<MonthPillViewModel> allMonthPills = new();
+
+    [ObservableProperty]
+    private bool hasHiddenMonthPills;
+
+    [RelayCommand]
+    private void ShowMoreMonthPills()
+    {
+        foreach (var pill in allMonthPills.Skip(MonthPills.Count))
+        {
+            MonthPills.Add(pill);
+        }
+        HasHiddenMonthPills = false;
+    }
 
     [ObservableProperty]
     private bool isShowPaymentField;
@@ -106,7 +124,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         Employeer = emp;
         this.NewPayment = new EmployeerPaymentViewModel() { EmployeerId = emp.Id, EmployeerName = emp.Name };
-        Employeer.TodoItems.CollectionChanged += (o, e) => RefreshSource();
+        Employeer.TodoItems.CollectionChanged += (o, e) =>
+        {
+            RefreshSource();
+            NotifyActiveTasksChanged();
+        };
     }
 
     [RelayCommand]
@@ -160,6 +182,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
             RefreshSource();
 
+            NotifyActiveTasksChanged();
+
             WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
         }
         catch (Exception ex)
@@ -204,6 +228,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     private void LoadMonthPills()
     {
         MonthPills.Clear();
+        allMonthPills.Clear();
 
         var pillsData = Employeer.TodoItems
             .Where(i => i.StartDate.HasValue)
@@ -217,8 +242,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         foreach (var kvp in pillsData)
         {
             var pill = new MonthPillViewModel(this) { MonthNumber = kvp.Month, Year = kvp.Year };
+            allMonthPills.Add(pill);
+        }
+
+        foreach (var pill in allMonthPills.Take(InitialMonthPillsCount))
+        {
             MonthPills.Add(pill);
         }
+        HasHiddenMonthPills = allMonthPills.Count > MonthPills.Count;
 
         SelectedMonthPill = MonthPills?.FirstOrDefault();
     }
@@ -321,10 +352,15 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         return text != null && text.Contains(query, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public void Receive(JobItemFieldUpdatedMessage message)
+    private void NotifyActiveTasksChanged()
     {
         OnPropertyChanged(nameof(HasActiveTasks));
         OnPropertyChanged(nameof(ActiveTasksCount));
+    }
+
+    public void Receive(JobItemFieldUpdatedMessage message)
+    {
+        NotifyActiveTasksChanged();
     }
 
     public void Receive(MonthPillSelectionChangedMessage message)

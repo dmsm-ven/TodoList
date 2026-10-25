@@ -122,6 +122,9 @@ public partial class TodoListViewModel : ObservableRecipient,
             {
                 SelectedTab = Tabs.FirstOrDefault();
             }
+
+            // Остальные вкладки подгружаем в фоне, чтобы счетчик активных задач в заголовках был верным сразу
+            _ = PreloadTabsAsync(Tabs.Where(t => t != SelectedTab).ToList());
         }
         catch (Exception ex)
         {
@@ -130,6 +133,15 @@ public partial class TodoListViewModel : ObservableRecipient,
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private static async Task PreloadTabsAsync(System.Collections.Generic.List<EmployeerTabViewModel> tabsToLoad)
+    {
+        foreach (var tab in tabsToLoad)
+        {
+            // Ошибки показываются внутри LoadedCommand, при неудаче вкладка догрузится при выборе
+            await tab.LoadedCommand.ExecuteAsync(null);
         }
     }
 
