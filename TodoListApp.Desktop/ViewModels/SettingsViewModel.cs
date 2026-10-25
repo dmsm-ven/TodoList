@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.Desktop.Infrastructure;
 
 namespace TodoListApp.Desktop.ViewModels;
 
@@ -14,6 +16,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoaded = false;
 
+    /// <summary>"Поверх всех окон" - применяется к главному окну (см. MainWindow.xaml)</summary>
     [ObservableProperty]
     private bool isTopmost = false;
 
@@ -28,12 +31,24 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task Loaded()
     {
-        var items = await appLogger.GetLastRows(100);
-
-        foreach (var item in items.OrderByDescending(i => i.id).Select(i => LogEntryModel.FromEntity(i)))
+        try
         {
-            LogEntries.Add(item);
+            var items = await appLogger.GetLastRows(100);
+
+            // VM - синглтон, окно журнала открывается многократно: без Clear строки дублировались бы
+            LogEntries.Clear();
+            foreach (var item in items.OrderByDescending(i => i.id).Select(i => LogEntryModel.FromEntity(i)))
+            {
+                LogEntries.Add(item);
+            }
         }
-        IsLoaded = true;
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось загрузить журнал");
+        }
+        finally
+        {
+            IsLoaded = true;
+        }
     }
 }

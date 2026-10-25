@@ -7,6 +7,8 @@ namespace TodoListApp.API.DataAccess;
 
 public class CachedEmployeerRepository : IEmployeerRepository
 {
+    private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(5);
+
     private readonly IEmployeerRepository decorator;
     private readonly IMemoryCache cache;
 
@@ -16,31 +18,53 @@ public class CachedEmployeerRepository : IEmployeerRepository
         this.cache = cache;
     }
 
-    public Task<int> AddEmployeer(EmployeerEntity entity)
+    // Кэш сбрасывается ПОСЛЕ записи в БД (в finally), иначе параллельный GET успевает закэшировать старые данные
+    public async Task<int> AddEmployeer(EmployeerEntity entity)
     {
-        ((MemoryCache)cache).Clear();
-        return decorator.AddEmployeer(entity);
+        try
+        {
+            return await decorator.AddEmployeer(entity);
+        }
+        finally
+        {
+            ClearCache();
+        }
     }
 
-    public Task AddPayment(EmployeerPaymentPayload payment)
+    public async Task AddPayment(EmployeerPaymentPayload payment)
     {
-        ((MemoryCache)cache).Clear();
-        return decorator.AddPayment(payment);
+        try
+        {
+            await decorator.AddPayment(payment);
+        }
+        finally
+        {
+            ClearCache();
+        }
     }
 
-    public Task DeleteEmployeer(int id)
+    public async Task DeleteEmployeer(int id)
     {
-        ((MemoryCache)cache).Clear();
-        return decorator.DeleteEmployeer(id);
+        try
+        {
+            await decorator.DeleteEmployeer(id);
+        }
+        finally
+        {
+            ClearCache();
+        }
     }
 
     public async Task<List<EmployeerEntity>> GetAllEmployeer()
     {
         var cacheKey = "emp-all";
-        if (!cache.TryGetValue<List<EmployeerEntity>>(cacheKey, out var list))
+        if (!cache.TryGetValue<List<EmployeerEntity>>(cacheKey, out var list) || list is null)
         {
             list = await decorator.GetAllEmployeer();
-            cache.Set(cacheKey, list);
+            if (list is not null)
+            {
+                cache.Set(cacheKey, list, CacheLifetime);
+            }
         }
         return list ?? new();
     }
@@ -48,10 +72,13 @@ public class CachedEmployeerRepository : IEmployeerRepository
     public async Task<List<EmployeerPaymentEntity>> GetAllPaymentsForEmployeer(int employeer_id)
     {
         var cacheKey = $"emp-payments-{employeer_id}";
-        if (!cache.TryGetValue<List<EmployeerPaymentEntity>>(cacheKey, out var payments))
+        if (!cache.TryGetValue<List<EmployeerPaymentEntity>>(cacheKey, out var payments) || payments is null)
         {
             payments = await decorator.GetAllPaymentsForEmployeer(employeer_id);
-            cache.Set(cacheKey, payments);
+            if (payments is not null)
+            {
+                cache.Set(cacheKey, payments, CacheLifetime);
+            }
         }
         return payments ?? new();
     }
@@ -59,11 +86,24 @@ public class CachedEmployeerRepository : IEmployeerRepository
     public async Task<EmployeerEntity> GetEmployeer(int id)
     {
         var cacheKey = $"emp-{id}";
-        if (!cache.TryGetValue<EmployeerEntity>(cacheKey, out var emp))
+        if (!cache.TryGetValue<EmployeerEntity>(cacheKey, out var emp) || emp is null)
         {
             emp = await decorator.GetEmployeer(id);
-            cache.Set(cacheKey, emp);
+
+            // null не кэшируем: иначе после создания работодателя он еще какое-то время "не существует"
+            if (emp is not null)
+            {
+                cache.Set(cacheKey, emp, CacheLifetime);
+            }
         }
-        return emp;
+        return emp!;
+    }
+
+    private void ClearCache()
+    {
+        if (cache is MemoryCache memoryCache)
+        {
+            memoryCache.Clear();
+        }
     }
 }

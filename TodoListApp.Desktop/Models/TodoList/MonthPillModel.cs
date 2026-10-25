@@ -22,7 +22,7 @@ public partial class MonthPillViewModel : ObservableObject
     {
         get
         {
-            if (Year == DateTimeOffset.UtcNow.Year)
+            if (Year == DateTime.Now.Year)
             {
                 return MonthName;
             }

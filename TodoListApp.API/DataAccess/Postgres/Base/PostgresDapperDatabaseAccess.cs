@@ -32,6 +32,23 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         await connection.ExecuteAsync(sql, parameters);
     }
 
+    public async Task ExecuteInTransactionAsync(IEnumerable<SqlStatement> statements)
+    {
+        await using var connection = new NpgsqlConnection(connectionString);
+
+        await connection.OpenAsync();
+
+        // Если до Commit произойдет исключение - Dispose транзакции откатит все изменения
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        foreach (var statement in statements)
+        {
+            await connection.ExecuteAsync(statement.Sql, statement.Parameters, transaction);
+        }
+
+        await transaction.CommitAsync();
+    }
+
     public List<T> GetList<T>(string sql, object parameters = null)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);

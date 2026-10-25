@@ -52,15 +52,33 @@ public class JobsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut("api/jobs/{JobItemId}/updated")]
-    public async Task<IActionResult> JobUpdated([FromRoute] int JobItemId, [FromBody] JobItemEntity item)
+    /// <summary>Создание новой задачи. Возвращает id созданной задачи.</summary>
+    [HttpPost("api/jobs")]
+    public async Task<ActionResult<int>> CreateJob([FromBody] JobItemEntity item)
     {
-        if (repo.GetJobItem(JobItemId) is null)
+        // id всегда назначается сервером
+        item.id = 0;
+
+        var id = await repo.AddOrUpdateJobItem(item);
+        return Ok(id);
+    }
+
+    /// <summary>Обновление существующей задачи. Для несуществующей задачи возвращает 404.</summary>
+    [HttpPut("api/jobs/{id}/updated")]
+    public async Task<IActionResult> JobUpdated([FromRoute] int id, [FromBody] JobItemEntity item)
+    {
+        if (item.id != 0 && item.id != id)
+        {
+            return BadRequest("id в теле запроса не совпадает с id в маршруте.");
+        }
+
+        if (await repo.GetJobItem(id) is null)
         {
             return NotFound();
         }
 
-        var id = await repo.AddOrUpdateJobItem(item);
-        return Ok(id);
+        item.id = id;
+        var updatedId = await repo.AddOrUpdateJobItem(item);
+        return Ok(updatedId);
     }
 }

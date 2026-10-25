@@ -84,7 +84,7 @@
             </Grid>
 
             <Border Grid.Row="1" Style="{StaticResource ColumnBorderStyle}">
-                <ItemsControl ItemsSource="{Binding Employeer.SortedPaymenets}">
+                <ItemsControl ItemsSource="{Binding Employeer.SortedPayments}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>

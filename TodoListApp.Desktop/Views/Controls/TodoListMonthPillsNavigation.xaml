@@ -17,7 +17,7 @@
         <ScrollViewer
             MinHeight="30"
             BorderThickness="0"
-            HorizontalScrollBarVisibility="Hidden"
+            HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Hidden">
             <ItemsControl ItemsSource="{Binding MonthPills}">
                 <ItemsControl.ItemsPanel>

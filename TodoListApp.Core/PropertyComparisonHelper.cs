@@ -2,15 +2,15 @@
 
 namespace TodoListApp.Core;
 
-public static class PropertyComprasionHelper
+public static class PropertyComparisonHelper
 {
     public static IReadOnlyDictionary<string, string> GetDifferentProperties<T>(T a, T b)
     {
-        return PropertyComprasionHelperForType<T>.GetDifferentProperties(a, b);
+        return PropertyComparisonHelperForType<T>.GetDifferentProperties(a, b);
     }
 }
 
-public static class PropertyComprasionHelperForType<T>
+public static class PropertyComparisonHelperForType<T>
 {
     private static readonly PropertyInfo[] typeProps = typeof(T).GetProperties();
 

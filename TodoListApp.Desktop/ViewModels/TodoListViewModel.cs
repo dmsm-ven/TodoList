@@ -4,10 +4,12 @@ using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.Desktop.Infrastructure;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.Models.TodoList;
@@ -26,6 +28,12 @@ public partial class TodoListViewModel : ObservableRecipient,
     private readonly IJobItemRepository jobItemRepository;
     private readonly SettingsViewModel settingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
+
+    // Сохранения задач выполняются строго по очереди: иначе параллельные запросы могут записать
+    // устаревшие данные поверх новых и задвоить строки истории изменений
+    private readonly SemaphoreSlim saveLock = new(1, 1);
+
+    private bool isMessagesRegistered = false;
 
     [ObservableProperty]
     private bool isLoading = true;
@@ -58,6 +66,7 @@ public partial class TodoListViewModel : ObservableRecipient,
     private void AddNewEmployeerTab()
     {
         var window = new AddEmployeerWindow();
+        window.Owner = Application.Current.MainWindow;
         window.DataContext = new AddEmployeerWindowViewModel();
         window.ShowDialog();
     }
@@ -66,74 +75,131 @@ public partial class TodoListViewModel : ObservableRecipient,
     private void ShowLogsWindow()
     {
         var window = new SettingsView();
+        window.Owner = Application.Current.MainWindow;
         window.DataContext = settingsViewModel;
         window.ShowDialog();
     }
 
     [RelayCommand]
-    private void RemoveEmployeerTab()
+    private async Task RemoveEmployeerTab()
     {
-        var result = MessageBox.Show($"Удалить вкладку '{SelectedTab.Employeer.Name}' ?", "Внимание", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-        if (result == MessageBoxResult.Yes)
+        var tab = SelectedTab;
+        if (tab == null) { return; }
+
+        var result = MessageBox.Show($"Удалить вкладку '{tab.Employeer.Name}' ?", "Внимание", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes) { return; }
+
+        try
         {
-            employeerRepository.DeleteEmployeer(SelectedTab.Employeer.Id);
-            Tabs.Remove(SelectedTab);
+            await employeerRepository.DeleteEmployeer(tab.Employeer.Id);
+            Tabs.Remove(tab);
+        }
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, $"Не удалось удалить вкладку '{tab.Employeer.Name}'");
         }
     }
 
     [RelayCommand]
     private async Task Loaded()
     {
-        this.Tabs.Clear();
-
-        var employeers = await employeerRepository.GetAllEmployeer();
-
-        foreach (var emp in employeers)
+        // Loaded у UserControl может сработать повторно, а повторная регистрация получателя бросает исключение
+        if (!isMessagesRegistered)
         {
-            var newTab = todoListTabFactory(emp);
-            Tabs.Add(newTab);
+            WeakReferenceMessenger.Default.RegisterAll(this);
+            isMessagesRegistered = true;
         }
 
-        if (Tabs.Any())
+        try
         {
-            SelectedTab = Tabs.FirstOrDefault();
+            this.Tabs.Clear();
+
+            var employeers = await employeerRepository.GetAllEmployeer();
+
+            foreach (var emp in employeers)
+            {
+                var newTab = todoListTabFactory(emp);
+                Tabs.Add(newTab);
+            }
+
+            if (Tabs.Any())
+            {
+                SelectedTab = Tabs.FirstOrDefault();
+            }
         }
-
-        WeakReferenceMessenger.Default.RegisterAll(this);
-
-        IsLoading = false;
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось загрузить список работодателей");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     public void Receive(JobItemFieldUpdatedMessage message)
     {
-        jobItemRepository.AddOrUpdateJobItem(message.Value.ToEntity());
+        _ = SaveJobItemAsync(message.Value);
+    }
+
+    private async Task SaveJobItemAsync(JobItemViewModel item)
+    {
+        await saveLock.WaitAsync();
+        try
+        {
+            // Сущность собирается уже внутри очереди, чтобы уйти на сервер с самыми свежими значениями
+            await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
+        }
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, $"Не удалось сохранить задачу '{item.Title}'");
+        }
+        finally
+        {
+            saveLock.Release();
+        }
     }
 
     public async void Receive(JobItemHistoryDisplayMessage message)
     {
-        var window = new JobItemChangesHistoryWindow();
-        var windowViewModel = new JobItemChangesHistoryWindowViewModel();
-
-        var historyItems = await jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
-        foreach (var item in historyItems.Select(i => i.ToModel()))
+        try
         {
-            windowViewModel.HistoryItems.Add(item);
+            var window = new JobItemChangesHistoryWindow();
+            window.Owner = Application.Current.MainWindow;
+            var windowViewModel = new JobItemChangesHistoryWindowViewModel();
+
+            var historyItems = await jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
+            foreach (var item in historyItems.Select(i => i.ToModel()))
+            {
+                windowViewModel.HistoryItems.Add(item);
+            }
+
+            window.DataContext = windowViewModel;
+
+            window.ShowDialog();
         }
-
-        window.DataContext = windowViewModel;
-
-        window.ShowDialog();
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось загрузить историю изменений");
+        }
     }
 
     public async void Receive(EmployeerCreatedMessage message)
     {
-        var emp = new EmployeerEntity() { name = message.newEmployeerName };
-        var id = await employeerRepository.AddEmployeer(emp);
-        emp.id = id;
+        try
+        {
+            var emp = new EmployeerEntity() { name = message.newEmployeerName.Trim() };
+            var id = await employeerRepository.AddEmployeer(emp);
+            emp.id = id;
 
-        var newTab = todoListTabFactory(emp);
-        Tabs.Add(newTab);
-        SelectedTab = newTab;
-
+            var newTab = todoListTabFactory(emp);
+            Tabs.Add(newTab);
+            SelectedTab = newTab;
+        }
+        catch (Exception ex)
+        {
+            // Например, 409 - работодатель с таким именем уже существует
+            UiErrors.Show(ex, "Не удалось создать вкладку");
+        }
     }
 }

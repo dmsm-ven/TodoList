@@ -23,7 +23,7 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
     }
 
     [HttpDelete("api/employeers/{id}")]
-    public async Task<IActionResult> DeleteEmployeerById([FromQuery] int id)
+    public async Task<IActionResult> DeleteEmployeerById([FromRoute] int id)
     {
         var item = await repo.GetEmployeer(id);
         if (item is null)
@@ -44,17 +44,32 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
     [HttpPost("api/employeers/{employeer_id}/payments")]
     public async Task<IActionResult> AddPaymentFromEmployeer([FromRoute] int employeer_id, [FromBody] EmployeerPaymentPayload payment)
     {
-        if (payment is null || (payment?.amount ?? 0) <= 0 || employeer_id == 0)
+        if (payment is null || payment.amount <= 0 || employeer_id <= 0)
         {
-            return BadRequest();
+            return BadRequest("Сумма оплаты должна быть больше нуля.");
         }
+
+        // employeer_id в теле не обязателен, но если указан - должен совпадать с маршрутом
+        if (payment.employeer_id != 0 && payment.employeer_id != employeer_id)
+        {
+            return BadRequest("employeer_id в теле запроса не совпадает с employeer_id в маршруте.");
+        }
+
         var emp = await repo.GetEmployeer(employeer_id);
         if (emp is null)
         {
             return NotFound();
         }
 
-        await repo.AddPayment(payment!);
+        // Источник правды - маршрут, а не тело запроса
+        payment.employeer_id = employeer_id;
+
+        // Postgres (timestamptz) принимает только DateTimeOffset со смещением 0
+        payment.transfer_arrival_date = payment.transfer_arrival_date == default
+            ? DateTimeOffset.UtcNow
+            : payment.transfer_arrival_date.ToUniversalTime();
+
+        await repo.AddPayment(payment);
         return Ok();
     }
 

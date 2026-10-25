@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.Desktop.Infrastructure;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
 using TodoListApp.Desktop.ViewModels;
@@ -18,9 +19,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
     IRecipient<MonthPillSelectionChangedMessage>
 {
-    public const int MAX_PILLS_COUNT = 12;
-
     private bool isLoaded = false;
+
+    // true во время начальной загрузки: не пересчитываем список после каждого добавленного элемента
+    private bool isBulkLoading = false;
+
     private readonly IJobItemRepository jobItemRepository;
     private readonly IEmployeerRepository paymentRepository;
 
@@ -38,7 +41,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [ObservableProperty]
     private MonthPillViewModel selectedMonthPill;
 
-    async partial void OnSelectedMonthPillChanged(MonthPillViewModel value)
+    partial void OnSelectedMonthPillChanged(MonthPillViewModel value)
     {
         if (value == null) { return; }
         foreach (var item in MonthPills)
@@ -46,7 +49,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
             item.IsSelected = false;
         }
         value.IsSelected = true;
-        await RefreshSource();
+        RefreshSource();
     }
 
     [ObservableProperty]
@@ -61,6 +64,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
     private string searchText;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        RefreshSource();
+    }
 
     [ObservableProperty]
     private TodoListTabStatusBarViewModel statusBarData = new();
@@ -99,7 +107,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         Employeer = emp;
         this.NewPayment = new EmployeerPaymentViewModel() { EmployeerId = emp.Id, EmployeerName = emp.Name };
-        Employeer.TodoItems.CollectionChanged += async (o, e) => await RefreshSource();
+        Employeer.TodoItems.CollectionChanged += (o, e) => RefreshSource();
     }
 
     [RelayCommand]
@@ -121,43 +129,75 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         IsLoading = true;
 
-        var jobsTaskThisMonth = jobItemRepository.GetAllJobItems(Employeer.Id);
-        var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
+        try
+        {
+            var jobsTask = jobItemRepository.GetAllJobItems(Employeer.Id);
+            var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
 
-        await Task.WhenAll(jobsTaskThisMonth, paymentsTask);
+            await Task.WhenAll(jobsTask, paymentsTask);
 
-        jobsTaskThisMonth.Result
-            .Select(i => i.ToViewModel())
-            .ToList()
-            .ForEach(i =>
+            isBulkLoading = true;
+            try
             {
-                Employeer.TodoItems.Add(i);
-                i.Initialize();
-            });
+                foreach (var job in (await jobsTask).Select(i => i.ToViewModel()))
+                {
+                    Employeer.TodoItems.Add(job);
+                    job.Initialize();
+                }
+            }
+            finally
+            {
+                isBulkLoading = false;
+            }
 
-        paymentsTask.Result
-            .Select(i => i.ToViewModel())
-            .ToList()
-            .ForEach(i => Employeer.Payments.Add(i));
+            foreach (var payment in (await paymentsTask).Select(i => i.ToViewModel()))
+            {
+                Employeer.Payments.Add(payment);
+            }
 
-        Employeer.Initialize();
+            Employeer.Initialize();
 
-        await App.Current.Dispatcher.InvokeAsync(() => LoadMonthPills());
+            LoadMonthPills();
 
-        await RefreshSource();
+            RefreshSource();
 
-        StatusBarData.SetSourceItems(FilteredTodoItems);
-
-        WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
-
-        IsLoading = false;
+            WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
+        }
+        catch (Exception ex)
+        {
+            // Позволяем повторить загрузку при следующем выборе вкладки
+            isLoaded = false;
+            UiErrors.Show(ex, $"Не удалось загрузить данные для '{Employeer.Name}'");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     [RelayCommand]
-    private void AddEmployeerPayment()
+    private async Task AddEmployeerPayment()
     {
-        paymentRepository.AddPayment(NewPayment.ToPayload());
-        Employeer.Payments.Insert(0, NewPayment);
+        if (NewPayment.Amount <= 0)
+        {
+            MessageBox.Show("Укажите сумму оплаты больше нуля.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var payment = NewPayment;
+
+        try
+        {
+            await paymentRepository.AddPayment(payment.ToPayload());
+        }
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось сохранить оплату");
+            return;
+        }
+
+        // В список попадает только то, что реально сохранено на сервере
+        Employeer.Payments.Insert(0, payment);
         IsShowPaymentField = false;
         NewPayment = new EmployeerPaymentViewModel() { EmployeerId = Employeer.Id, EmployeerName = Employeer.Name };
     }
@@ -166,13 +206,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         MonthPills.Clear();
 
-        var pillsData = Employeer.TodoItems.Select(i => i.StartDate)
-            .Select(date => new { date.Value.Year, date.Value.Month })
+        var pillsData = Employeer.TodoItems
+            .Where(i => i.StartDate.HasValue)
+            .Select(i => i.StartDate!.Value)
+            .Select(date => new { date.Year, date.Month })
             .GroupBy(i => $"{i.Year}-{i.Month}")
             .Select(i => i.First())
             .OrderByDescending(i => i.Year)
-            .ThenByDescending(i => i.Month)
-            .Take(MAX_PILLS_COUNT);
+            .ThenByDescending(i => i.Month);
 
         foreach (var kvp in pillsData)
         {
@@ -186,63 +227,96 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     [RelayCommand]
     public async Task AddJobItem()
     {
-        var item = new JobItemViewModel()
+        try
         {
-            StartDate = DateTime.UtcNow,
-            Title = "Новая задача",
-            EmployeerId = Employeer.Id
-        };
-        item.Id = await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
-        Employeer.TodoItems.Add(item);
-        item.Initialize();
+            var item = new JobItemViewModel()
+            {
+                StartDate = DateTime.Now,
+                Title = "Новая задача",
+                EmployeerId = Employeer.Id
+            };
+            item.Id = await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
 
+            // Чтобы новая задача была видна: сбрасываем поиск и переходим на самый свежий месяц
+            SearchText = string.Empty;
 
-        var firstPill = MonthPills.FirstOrDefault();
-        var isRefreshNeeded = (firstPill == null || (firstPill != null && firstPill.MonthNumber != DateTime.Now.Month));
-        if (isRefreshNeeded)
-        {
+            Employeer.TodoItems.Add(item);
+            item.Initialize();
+
             LoadMonthPills();
+        }
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось добавить задачу");
         }
     }
 
     [RelayCommand]
-    private void DeleteSelectedJobItem(JobItemViewModel item)
+    private async Task DeleteSelectedJobItem(JobItemViewModel item)
     {
         if (item == null) { return; }
 
-        var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{item.Title}' от [{item.StartDate}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        var answer = MessageBox.Show($"Удалить выделенное задание ?\r\n'{item.Title}' от [{item.StartDate:dd.MM.yyyy}]", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) { return; }
 
-        jobItemRepository.DeleteJobItem(item.Id);
+        try
+        {
+            await jobItemRepository.DeleteJobItem(item.Id);
+        }
+        catch (Exception ex)
+        {
+            UiErrors.Show(ex, "Не удалось удалить задачу");
+            return;
+        }
+
         Employeer.TodoItems.Remove(item);
 
         SelectedJobItem = null;
     }
 
-    private async Task RefreshSource()
+    /// <summary>
+    /// Пересчитывает список задач: при непустом поиске - по всем загруженным задачам, иначе - задачи выбранного месяца.
+    /// Заодно обновляет статус-бар, чтобы итоги всегда считались по тому, что показано в таблице.
+    /// </summary>
+    private void RefreshSource()
     {
-        var source = Enumerable.Empty<JobItemViewModel>().ToList();
+        if (isBulkLoading || Employeer == null) { return; }
+
+        IEnumerable<JobItemViewModel> source;
 
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
-            throw new NotImplementedException();
+            var query = SearchText.Trim();
+
+            source = Employeer.TodoItems
+                .Where(i => Contains(i.Title, query) || Contains(i.Description, query) || Contains(i.Website, query))
+                .OrderByDescending(i => i.StartDate);
         }
         else
         {
-            var activePill = SelectedMonthPill ?? MonthPills.FirstOrDefault() ?? null;
+            var activePill = SelectedMonthPill ?? MonthPills.FirstOrDefault();
             if (activePill != null)
             {
-                var data = Employeer.TodoItems
-                .Where(i => i.StartDate.Value.Month == activePill.MonthNumber && i.StartDate.Value.Year == activePill.Year)
-                .OrderByDescending(i => i.IsCompleted ? 0 : 1)
-                .ThenByDescending(i => i.StartDate)
-                .ToList();
-
-                source = data;
+                source = Employeer.TodoItems
+                    .Where(i => i.StartDate.HasValue &&
+                                i.StartDate.Value.Month == activePill.MonthNumber &&
+                                i.StartDate.Value.Year == activePill.Year)
+                    .OrderByDescending(i => i.IsCompleted ? 0 : 1)
+                    .ThenByDescending(i => i.StartDate);
+            }
+            else
+            {
+                source = Enumerable.Empty<JobItemViewModel>();
             }
         }
 
-        FilteredTodoItems = source;
+        FilteredTodoItems = source.ToList();
+        StatusBarData.SetSourceItems(FilteredTodoItems);
+    }
+
+    private static bool Contains(string? text, string query)
+    {
+        return text != null && text.Contains(query, StringComparison.CurrentCultureIgnoreCase);
     }
 
     public void Receive(JobItemFieldUpdatedMessage message)
@@ -252,11 +326,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     public void Receive(MonthPillSelectionChangedMessage message)
     {
-        if (message.Value.ParentEmployee == this)
+        if (message.Value.ParentEmployee != this) { return; }
+
+        // Клик по месяцу выходит из режима поиска
+        if (!string.IsNullOrEmpty(SearchText))
         {
-            SelectedMonthPill = message.Value;
+            SearchText = string.Empty;
         }
 
-        StatusBarData.SetSourceItems(FilteredTodoItems);
+        SelectedMonthPill = message.Value;
     }
 }

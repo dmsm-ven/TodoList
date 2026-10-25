@@ -12,6 +12,7 @@
     xmlns:vmw="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     x:Name="window"
     Title="Список дел"
+    Topmost="{Binding Settings.IsTopmost}"
     Width="1600"
     Height="800"
     d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel,
