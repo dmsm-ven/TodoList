@@ -51,7 +51,20 @@ internal class AuthApiKeyMiddleware : IMiddleware
         }
 
         logger.LogInformation("[{clientIp}] Обращение к API {patch}", clientIp, context.Request.Path);
-        _ = appLogger.WriteLog(clientIp, context.Request.Path, "Обращение к API");
+
+        // Чтение самого журнала в журнал не пишем, иначе каждое открытие окна журнала раздувает его
+        if (!context.Request.Path.StartsWithSegments("/api/logs"))
+        {
+            try
+            {
+                await appLogger.WriteLog(clientIp, context.Request.Path.Value ?? string.Empty, "Обращение к API");
+            }
+            catch (Exception ex)
+            {
+                // Сбой записи журнала не должен ломать запрос
+                logger.LogError(ex, "Не удалось записать запись в журнал");
+            }
+        }
 
         await next(context);
     }

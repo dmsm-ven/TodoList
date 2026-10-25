@@ -26,7 +26,7 @@ public partial class EmployeerViewModel : ObservableRecipient,
     [ObservableProperty]
     private ObservableCollection<EmployeerPaymentViewModel> payments = new();
 
-    public IEnumerable<EmployeerPaymentViewModel> SortedPaymenets =>
+    public IEnumerable<EmployeerPaymentViewModel> SortedPayments =>
         Payments
         .OrderByDescending(x => x.TransferArrivalDate)
         .Take(10)
@@ -40,7 +40,7 @@ public partial class EmployeerViewModel : ObservableRecipient,
 
     private void Payments_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        OnPropertyChanged(nameof(SortedPaymenets));
+        OnPropertyChanged(nameof(SortedPayments));
         PaymentsStatistic.SetSource(Payments);
     }
 
@@ -56,7 +56,7 @@ public partial class EmployeerViewModel : ObservableRecipient,
         Payments.CollectionChanged += Payments_CollectionChanged;
         WeakReferenceMessenger.Default.RegisterAll(this);
 
-        OnPropertyChanged(nameof(SortedPaymenets));
+        OnPropertyChanged(nameof(SortedPayments));
         PaymentsStatistic.SetSource(Payments);
     }
 

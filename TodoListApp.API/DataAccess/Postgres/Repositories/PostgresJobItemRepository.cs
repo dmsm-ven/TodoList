@@ -15,22 +15,19 @@ public class PostgresJobItemRepository : IJobItemRepository
         this.logger = logger;
     }
 
-    private async Task AddHistoryChangesFor(JobItemEntity newItem, JobItemEntity oldItem)
+    private IEnumerable<SqlStatement> BuildHistoryStatements(JobItemEntity newItem, JobItemEntity oldItem)
     {
-        var diffProps = PropertyComprasionHelper.GetDifferentProperties(newItem, oldItem);
+        const string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
+                                                           (@JobItemId, @PropertyName, @NewValue)";
+
+        var diffProps = PropertyComparisonHelper.GetDifferentProperties(newItem, oldItem);
         foreach (var (propName, newPropValue) in diffProps)
         {
             logger.LogTrace("Изменение задачи {jobTitle}: {propName} -> {newPropValue}", newItem.title, propName, newPropValue);
-            await AddHistoryChanges(new JobItemHistoryChangeRequest(newItem.id, propName, newPropValue));
+            yield return new SqlStatement(sql, new JobItemHistoryChangeRequest(newItem.id, propName, newPropValue));
         }
+    }
 
-    }
-    private async Task AddHistoryChanges(JobItemHistoryChangeRequest data)
-    {
-        string sql = @"INSERT INTO job_item_history (job_item_id, property_name, new_value) VALUES
-                                                    (@JobItemId, @PropertyName, @NewValue)";
-        database.Execute(sql, data);
-    }
     public async Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
         //Преобразовать в UTC время т.к. postgres не дает загрузить с поясами
@@ -40,11 +37,15 @@ public class PostgresJobItemRepository : IJobItemRepository
             entity.end_date = entity.end_date.Value.ToUniversalTime();
         }
 
-        //Загружаем изменение по каждому свойству для отображения в истории
+        //Изменения по каждому свойству для отображения в истории (считаем до обновления)
+        var historyStatements = new List<SqlStatement>();
         if (entity.id > 0)
         {
             var oldItem = await GetJobItem(entity.id);
-            await AddHistoryChangesFor(newItem: entity, oldItem);
+            if (oldItem != null)
+            {
+                historyStatements.AddRange(BuildHistoryStatements(newItem: entity, oldItem));
+            }
         }
 
         int max_id = entity.id != 0 ?
@@ -55,9 +56,9 @@ public class PostgresJobItemRepository : IJobItemRepository
             entity.id = max_id;
         }
 
-        string sql = @"INSERT INTO job_item (id, employeer_id, title, description, website, is_completed, is_payed, price, start_date, end_date) 
-                        VALUES(@id, @employeer_id, @title, @description, @website, @is_completed, @is_payed, @price, @start_date,  @end_date) 
-                        ON CONFLICT (id) DO UPDATE 
+        string sql = @"INSERT INTO job_item (id, employeer_id, title, description, website, is_completed, is_payed, price, start_date, end_date)
+                        VALUES(@id, @employeer_id, @title, @description, @website, @is_completed, @is_payed, @price, @start_date,  @end_date)
+                        ON CONFLICT (id) DO UPDATE
                             SET title = @title,
                                 employeer_id = @employeer_id,
                                 description = @description,
@@ -68,7 +69,12 @@ public class PostgresJobItemRepository : IJobItemRepository
                                 start_date = @start_date,
                                 end_date = @end_date";
 
-        await database.ExecuteAsync(sql, entity);
+        // Сначала сама задача, затем история - в одной транзакции:
+        // история не появится, если обновление не удалось, и наоборот
+        var statements = new List<SqlStatement> { new(sql, entity) };
+        statements.AddRange(historyStatements);
+
+        await database.ExecuteInTransactionAsync(statements);
 
         return max_id;
     }
@@ -79,8 +85,8 @@ public class PostgresJobItemRepository : IJobItemRepository
     public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
     {
         //Берутся только задачи этого года или прошлого, более старые не попадают
-        string sql = @"SELECT * 
-                       FROM job_item 
+        string sql = @"SELECT *
+                       FROM job_item
                        WHERE employeer_id = @employeer_id AND date_part('year', start_date) > (date_part('year', CURRENT_DATE) - 2)";
 
         var items = await database.GetListAsync<JobItemEntity>(sql, new { employeer_id });
@@ -88,8 +94,8 @@ public class PostgresJobItemRepository : IJobItemRepository
     }
     public async Task<List<JobItemHistoryEntity>> GetHistoryChangesForJobItem(int job_item_id)
     {
-        string sql = @"SELECT * 
-                        FROM job_item_history 
+        string sql = @"SELECT *
+                        FROM job_item_history
                         WHERE job_item_id = @job_item_id
                         ORDER BY date_time DESC";
         var items = await database.GetListAsync<JobItemHistoryEntity>(sql, new { job_item_id });

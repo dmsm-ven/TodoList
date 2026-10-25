@@ -31,7 +31,8 @@ public static class EmployeerMapperHelper
             Id = x.id,
             Amount = x.amount,
             EmployeerId = x.employeer_id,
-            TransferArrivalDate = x.transfer_arrival_date.DateTime
+            // API отдает UTC, берем локальное время (иначе дата оплаты уезжает на день назад)
+            TransferArrivalDate = x.transfer_arrival_date.LocalDateTime
         };
     }
 

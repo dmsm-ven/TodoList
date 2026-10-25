@@ -26,7 +26,8 @@ public class PostgresAppLogger : IAppLogger
             client_ip = clientIp,
             path,
             message,
-            dt = DateTime.Now,
+            // UTC, не зависит от часового пояса контейнера. Kind=Unspecified, т.к. Npgsql не пишет Kind=Utc в "timestamp without time zone"
+            dt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified),
         });
     }
 }

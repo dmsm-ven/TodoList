@@ -14,9 +14,13 @@ public partial class MainWindowViewModel : ObservableObject
 
     Stopwatch loadingTime;
 
-    public MainWindowViewModel(TodoListViewModel todoListViewModel)
+    /// <summary>Настройки окна (в т.ч. "Поверх всех окон"), привязаны к Topmost главного окна</summary>
+    public SettingsViewModel Settings { get; }
+
+    public MainWindowViewModel(TodoListViewModel todoListViewModel, SettingsViewModel settings)
     {
         loadingTime = Stopwatch.StartNew();
+        Settings = settings;
         TodoListViewModel = todoListViewModel;
         TodoListViewModel.PropertyChanged += TodoListViewModel_PropertyChanged;
     }

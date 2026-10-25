@@ -80,12 +80,23 @@ public class JobsController : ControllerBase
     [HttpPut("api/jobs/{id}")]
     public async Task<IActionResult> UpdateJob([FromRoute] int id, [FromBody] UpdateJobDto item)
     {
+        if (item.Id != id)
+        {
+            return BadRequest("Id в теле запроса не совпадает с id в маршруте.");
+        }
+
         var validationResult = await updateJobValidator.ValidateAsync(item);
 
         if (!validationResult.IsValid)
         {
             logger.LogWarning("Ошибка обновления задачи с id {id}. Данные [{data}]. Ошибки: {errors}", id, JsonSerializer.Serialize(item), validationResult.Errors);
             return BadRequest(validationResult.Errors);
+        }
+
+        // Без этой проверки PUT для несуществующего id молча создал бы задачу (INSERT ... ON CONFLICT DO UPDATE)
+        if (await repo.GetJobItem(id) is null)
+        {
+            return NotFound();
         }
 
         await repo.AddOrUpdateJobItem(item.ToEntity());

@@ -11,6 +11,7 @@
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     xmlns:vmw="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     Title="{Binding Title}"
+    Topmost="{Binding Settings.IsTopmost}"
     Width="1600"
     Height="800"
     d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel,
