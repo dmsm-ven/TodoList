@@ -10,7 +10,10 @@
     d:DesignHeight="40"
     d:DesignWidth="600"
     mc:Ignorable="d">
-    <StatusBar Margin="0,2,0,0">
+    <StatusBar
+        Margin="0,2,0,0"
+        Background="Transparent"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}">
         <StatusBarItem Content="{Binding ActiveTasksMessage}" />
         <Separator />
 

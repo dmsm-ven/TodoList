@@ -1,21 +1,13 @@
-﻿using System.Windows;
+﻿using Wpf.Ui.Controls;
 
 namespace TodoListApp.Desktop;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow : FluentWindow
 {
     public MainWindow()
     {
         InitializeComponent();
-    }
-
-    private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-        {
-            this.DragMove();
-        }
     }
 }

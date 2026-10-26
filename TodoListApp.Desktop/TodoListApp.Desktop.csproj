@@ -31,11 +31,11 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Humanizer.Core.ru" />
     <PackageReference Include="LoadingSpinner.WPF" />
-    <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="WPF-UI" />
   
   </ItemGroup>
 

@@ -25,6 +25,7 @@ public partial class TodoListViewModel : ObservableRecipient,
 {
     private readonly TodoListAppApiClient apiClient;
     private readonly SettingsViewModel settingsViewModel;
+    private readonly AppSettingsViewModel appSettingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
 
     // Сохранения задач выполняются строго по очереди: иначе параллельные запросы могут записать
@@ -51,10 +52,12 @@ public partial class TodoListViewModel : ObservableRecipient,
 
     public TodoListViewModel(TodoListAppApiClient apiClient,
         SettingsViewModel settingsViewModel,
+        AppSettingsViewModel appSettingsViewModel,
         Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
         this.apiClient = apiClient;
         this.settingsViewModel = settingsViewModel;
+        this.appSettingsViewModel = appSettingsViewModel;
         this.todoListTabFactory = todoListTabFactory;
     }
 
@@ -73,6 +76,15 @@ public partial class TodoListViewModel : ObservableRecipient,
         var window = new SettingsView();
         window.Owner = Application.Current.MainWindow;
         window.DataContext = settingsViewModel;
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void ShowAppSettingsWindow()
+    {
+        var window = new AppSettingsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = appSettingsViewModel;
         window.ShowDialog();
     }
 

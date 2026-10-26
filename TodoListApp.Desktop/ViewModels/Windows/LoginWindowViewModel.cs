@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MahApps.Metro.IconPacks;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using SymbolRegular = Wpf.Ui.Controls.SymbolRegular;
 
 namespace TodoListApp.Desktop.ViewModels.Windows;
 
@@ -24,9 +24,9 @@ public partial class LoginWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool isSavePassword = true;
 
-    public PackIconFontAwesomeKind SavePasswordIconState
+    public SymbolRegular SavePasswordIconState
     {
-        get => IsSavePassword ? PackIconFontAwesomeKind.CheckSolid : PackIconFontAwesomeKind.StopSolid;
+        get => IsSavePassword ? SymbolRegular.CheckboxChecked24 : SymbolRegular.CheckboxUnchecked24;
     }
     [RelayCommand]
     private async Task Login(PasswordBox pb)

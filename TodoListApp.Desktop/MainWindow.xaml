@@ -1,41 +1,37 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="TodoListApp.Desktop.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:v="clr-namespace:TodoListApp.Desktop.Views"
-    xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     xmlns:vmw="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     Title="{Binding Title}"
-    Topmost="{Binding Settings.IsTopmost}"
     Width="1600"
     Height="800"
     d:DataContext="{d:DesignInstance Type=vmw:MainWindowViewModel,
                                      IsDesignTimeCreatable=False}"
     d:Height="250"
     d:Width="1000"
+    ExtendsContentIntoTitleBar="True"
+    Topmost="{Binding Settings.IsTopmost}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid Background="{StaticResource MainGridImageBrush}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <ui:TitleBar Grid.Row="0" Title="{Binding Title}" />
+
         <Border
             Grid.Row="1"
-            Padding="20"
+            Padding="12,4,12,12"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="{StaticResource MainContentBackground}"
-            BorderBrush="{StaticResource ToolPanelBackground}"
-            BorderThickness="1">
+            VerticalAlignment="Stretch">
             <v:TodoListView DataContext="{Binding TodoListViewModel}" />
         </Border>
     </Grid>
-
-</Window>
+</ui:FluentWindow>

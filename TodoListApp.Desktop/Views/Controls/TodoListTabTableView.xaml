@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     d:DataContext="{d:DesignInstance Type=vm:EmployeerTabViewModel,
@@ -31,7 +31,7 @@
             CanUserSortColumns="False"
             FontSize="15"
             HeadersVisibility="Column"
-            HorizontalGridLinesBrush="LightGray"
+            HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
             ItemsSource="{Binding FilteredTodoItems}"
             RowBackground="Transparent"
             RowDetailsVisibilityMode="VisibleWhenSelected"
@@ -39,20 +39,8 @@
             SelectedValue="{Binding SelectedJobItem}"
             SelectionMode="Single"
             VerticalGridLinesBrush="Transparent">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridCell}">
-                    <Setter Property="Foreground" Value="Black" />
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#2AF19F5C" />
-                            <Setter Property="BorderBrush" Value="#2AF19F5C" />
-
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.Resources>
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
+                <Style BasedOn="{StaticResource DefaultDataGridRowStyle}" TargetType="DataGridRow">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsCompleted}" Value="false">
                             <Setter Property="FontWeight" Value="SemiBold" />
@@ -70,9 +58,7 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <DatePicker
-                                Background="Transparent"
                                 BorderThickness="0"
-                                Foreground="Blue"
                                 SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
@@ -80,12 +66,12 @@
                 <DataGridTextColumn
                     Width="30"
                     Binding="{Binding DaysAgo, Mode=OneWay}"
-                    Foreground="Gray"
                     Header="дн."
                     IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
@@ -97,20 +83,18 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button
+                                <ui:Button
+                                    Padding="4"
+                                    Appearance="Transparent"
                                     Command="{Binding OpenWebsiteInBrowserCommand}"
-                                    Foreground="RoyalBlue"
-                                    Style="{StaticResource ToolButtonStyle}">
-                                    <icons:PackIconFontAwesome
-                                        Width="16"
-                                        Height="16"
-                                        Kind="LinkSolid" />
-                                </Button>
+                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                    Icon="{ui:SymbolIcon Symbol=Link24,
+                                                         FontSize=16}" />
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     FontSize="10"
-                                    Foreground="RoyalBlue"
+                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                     Text="{Binding Website}"
                                     TextDecorations="Underline" />
                             </StackPanel>
@@ -134,11 +118,12 @@
                 <DataGridTemplateColumn Header="Оплачено">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <icons:PackIconFontAwesome
+                            <ui:SymbolIcon
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                FontSize="16"
                                 Foreground="{Binding IsPayed, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#7cfc00;#ff2400'}"
-                                Kind="{Binding IsPayed, Converter={StaticResource BoolToIconKindConverter}}" />
+                                Symbol="{Binding IsPayed, Converter={StaticResource BoolToIconKindConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
@@ -153,11 +138,12 @@
                 <DataGridTemplateColumn Header="Выполнено">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <icons:PackIconFontAwesome
+                            <ui:SymbolIcon
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                FontSize="16"
                                 Foreground="{Binding IsCompleted, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#7cfc00;#ff2400'}"
-                                Kind="{Binding IsCompleted, Converter={StaticResource BoolToIconKindConverter}}" />
+                                Symbol="{Binding IsCompleted, Converter={StaticResource BoolToIconKindConverter}}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
@@ -172,37 +158,31 @@
                 <DataGridTemplateColumn Header="del">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button
-                                Padding="2"
+                            <ui:Button
+                                Padding="4"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                CommandParameter="{Binding}"
+                                Appearance="Transparent"
                                 Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSelectedJobItemCommand}"
-                                Style="{StaticResource ToolButtonStyle}">
-                                <icons:PackIconFontAwesome
-                                    Width="16"
-                                    Height="16"
-                                    Foreground="LightGray"
-                                    Kind="TrashSolid" />
-                            </Button>
+                                CommandParameter="{Binding}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Icon="{ui:SymbolIcon Symbol=Delete24,
+                                                     FontSize=16}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="his">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button
-                                Padding="2"
+                            <ui:Button
+                                Padding="4"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                Appearance="Transparent"
                                 Command="{Binding ShowChangeHistoryCommand}"
-                                Style="{StaticResource ToolButtonStyle}">
-                                <icons:PackIconFontAwesome
-                                    Width="16"
-                                    Height="16"
-                                    Foreground="#6D5B51"
-                                    Kind="ListSolid" />
-                            </Button>
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Icon="{ui:SymbolIcon Symbol=History24,
+                                                     FontSize=16}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -219,14 +199,12 @@
                 Grid.Row="0"
                 Margin="8,4,4,4"
                 FontSize="14"
-                Foreground="#AAAAAA"
+                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                 Text="Примечание: " />
             <TextBox
                 Grid.Row="1"
                 Margin="4"
                 Padding="4"
-                BorderBrush="#7373D4"
-                BorderThickness="0,0,0,1"
                 Text="{Binding SelectedJobItem.Description, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
         </Grid>
     </Grid>

@@ -5,17 +5,14 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:TodoListApp.Desktop.Views.Controls"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mod="clr-namespace:TodoListApp.Desktop.Models.TodoList"
     d:DataContext="{d:DesignInstance Type={x:Type mod:EmployeerTabViewModel},
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Background="White"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </UserControl.Resources>
     <Border Style="{StaticResource ColumnBorderStyle}">
         <ScrollViewer
             MinHeight="30"
@@ -36,13 +33,14 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button
+            <ui:Button
                 Margin="2,2,8,2"
-                Padding="10,2"
                 VerticalAlignment="Center"
+                Appearance="Secondary"
                 Command="{Binding ShowMoreMonthPillsCommand}"
                 Content="Показать еще"
-                Visibility="{Binding HasHiddenMonthPills, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Icon="{ui:SymbolIcon Add24}"
+                Visibility="{Binding HasHiddenMonthPills, Converter={StaticResource BoolToVisibilityConverter}}" />
             </StackPanel>
         </ScrollViewer>
     </Border>

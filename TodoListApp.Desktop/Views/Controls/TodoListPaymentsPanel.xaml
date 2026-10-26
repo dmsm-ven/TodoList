@@ -4,13 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.Models.TodoList"
     VerticalAlignment="Stretch"
     VerticalContentAlignment="Stretch"
-    d:Background="White"
     d:DataContext="{d:DesignInstance Type={x:Type vm:EmployeerTabViewModel},
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="300"
@@ -45,18 +44,19 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <icons:PackIconFontAwesome
+                    <ui:SymbolIcon
+                        Margin="10,5"
+                        VerticalAlignment="Center"
+                        FontSize="30"
                         Foreground="{StaticResource MoneyGreenBrush}"
-                        Kind="MoneyCheckSolid"
-                        Style="{StaticResource TitleIconStyle}" />
+                        Symbol="Money24" />
                     <TextBlock Style="{StaticResource ColumnTitleTextBlock}" Text="Оплаты" />
-                    <Button Command="{Binding ShowPaymentFieldCommand}" Style="{StaticResource ToolButtonStyle}">
-                        <icons:PackIconFontAwesome
-                            Width="24"
-                            Height="24"
-                            Foreground="{StaticResource MoneyGreenBrush}"
-                            Kind="PlusSolid" />
-                    </Button>
+                    <ui:Button
+                        Appearance="Transparent"
+                        Command="{Binding ShowPaymentFieldCommand}"
+                        Foreground="{StaticResource MoneyGreenBrush}"
+                        Icon="{ui:SymbolIcon Symbol=Add24,
+                                             FontSize=24}" />
                 </StackPanel>
                 <StackPanel
                     Grid.Row="1"
@@ -71,15 +71,13 @@
                         BorderThickness="0,0,0,2"
                         FontSize="18"
                         FontWeight="Bold"
-                        Foreground="Red"
                         Text="{Binding NewPayment.Amount, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Command="{Binding AddEmployeerPaymentCommand}" Style="{StaticResource ToolButtonStyle}">
-                        <icons:PackIconFontAwesome
-                            Width="24"
-                            Height="24"
-                            Foreground="{StaticResource MoneyGreenBrush}"
-                            Kind="DownloadSolid" />
-                    </Button>
+                    <ui:Button
+                        Appearance="Transparent"
+                        Command="{Binding AddEmployeerPaymentCommand}"
+                        Foreground="{StaticResource MoneyGreenBrush}"
+                        Icon="{ui:SymbolIcon Symbol=ArrowDownload24,
+                                             FontSize=24}" />
                 </StackPanel>
             </Grid>
 
@@ -98,7 +96,7 @@
                                     Margin="6,6,20,6"
                                     VerticalAlignment="Center"
                                     FontSize="14"
-                                    Foreground="Blue"
+                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                     Text="{Binding TransferArrivalDate, StringFormat='dd.MM.yyyy'}" />
 
                                 <TextBlock

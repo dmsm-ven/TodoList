@@ -1,10 +1,10 @@
-﻿using System.Windows;
+﻿using Wpf.Ui.Controls;
 
 namespace TodoListApp.Desktop.Views;
 /// <summary>
 /// Interaction logic for LoginWindow.xaml
 /// </summary>
-public partial class LoginWindow : Window
+public partial class LoginWindow : FluentWindow
 {
     public LoginWindow()
     {
