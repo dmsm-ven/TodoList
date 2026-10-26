@@ -6,9 +6,9 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:converters="clr-namespace:TodoListApp.Desktop.Infrastructure.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel,
                                      IsDesignTimeCreatable=False}"
@@ -45,32 +45,31 @@
                 Icon="{ui:SymbolIcon Symbol=Money24,
                                      FontSize=20}"
                 ToolTip="Оплаты" />
-            <ui:Button
-                Appearance="Transparent"
-                Command="{Binding ShowLogsWindowCommand}"
-                Icon="{ui:SymbolIcon Symbol=TextBulletListLtr24,
-                                     FontSize=20}"
-                ToolTip="Открыть лог-журнал" />
-            <ui:Button
-                Appearance="Transparent"
-                Command="{Binding RemoveEmployeerTabCommand}"
-                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-                Icon="{ui:SymbolIcon Symbol=PersonDelete24,
-                                     FontSize=20}"
-                ToolTip="Удалить текущую вкладку с работами" />
-            <ui:Button
-                Appearance="Transparent"
-                Command="{Binding AddNewEmployeerTabCommand}"
-                Foreground="{DynamicResource SystemFillColorSuccessBrush}"
-                Icon="{ui:SymbolIcon Symbol=PersonAdd24,
-                                     FontSize=20}"
-                ToolTip="Создать новую вкладку с работами" />
         </StackPanel>
 
         <TabControl
             BorderThickness="0"
             ItemsSource="{Binding Tabs}"
             SelectedValue="{Binding SelectedTab}">
+            <TabControl.Resources>
+                <!--  Контекстное меню на общей панели заголовков вкладок  -->
+                <Style TargetType="TabPanel">
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <ui:MenuItem
+                                    Command="{Binding PlacementTarget.DataContext.AddNewEmployeerTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                    Header="Добавить работодателя"
+                                    Icon="{ui:SymbolIcon PersonAdd24}" />
+                                <ui:MenuItem
+                                    Command="{Binding PlacementTarget.DataContext.RemoveEmployeerTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                    Header="Удалить текущего работодателя"
+                                    Icon="{ui:SymbolIcon PersonDelete24}" />
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <con:TodoListTabContent DataContext="{Binding}" />
