@@ -23,7 +23,7 @@ public partial class AddEmployeerWindowViewModel() : ObservableObject
     [RelayCommand(CanExecute = nameof(CanCreate))]
     private void Create(Window window)
     {
-        WeakReferenceMessenger.Default.Send(new EmployeerCreatedMessage(newEmployeerName));
+        WeakReferenceMessenger.Default.Send(new EmployeerCreatedMessage(NewEmployeerName));
 
         window.DialogResult = true;
     }

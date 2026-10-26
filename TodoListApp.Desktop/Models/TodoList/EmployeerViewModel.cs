@@ -19,7 +19,7 @@ public partial class EmployeerViewModel : ObservableRecipient,
     public int Id { get; init; }
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     public int ActiveTasksCount => TodoItems.Count(t => !t.IsCompleted);
 

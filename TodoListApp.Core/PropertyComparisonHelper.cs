@@ -44,7 +44,7 @@ public static class PropertyComparisonHelperForType<T>
         return dic;
     }
 
-    private static bool TryToDateTimeOffset(object value, out DateTimeOffset dto)
+    private static bool TryToDateTimeOffset(object? value, out DateTimeOffset dto)
     {
 
         if (value is DateTimeOffset direct) { dto = direct; return true; }

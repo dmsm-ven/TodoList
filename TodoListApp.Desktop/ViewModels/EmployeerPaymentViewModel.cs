@@ -7,7 +7,7 @@ public partial class EmployeerPaymentViewModel : ObservableObject
 {
     public int Id { get; init; }
     public int EmployeerId { get; init; }
-    public string EmployeerName { get; init; }
+    public string EmployeerName { get; init; } = string.Empty;
 
     [ObservableProperty]
     private DateTime transferArrivalDate = DateTime.Now;

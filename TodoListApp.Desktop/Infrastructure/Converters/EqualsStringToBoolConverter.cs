@@ -8,7 +8,7 @@ public class EqualsStringToBoolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value != null && parameter != null && value.ToString().Equals(parameter.ToString()))
+        if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString()))
         {
             return true;
         }

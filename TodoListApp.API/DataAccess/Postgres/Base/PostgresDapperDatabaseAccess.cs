@@ -14,7 +14,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         this.connectionString = connectionString;
     }
 
-    public void Execute(string sql, object parameters = null)
+    public void Execute(string sql, object? parameters = null)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
 
@@ -23,7 +23,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         connection.Execute(sql, parameters);
     }
 
-    public async Task ExecuteAsync(string sql, object parameters = null)
+    public async Task ExecuteAsync(string sql, object? parameters = null)
     {
         using var connection = new NpgsqlConnection(connectionString);
 
@@ -49,7 +49,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         await transaction.CommitAsync();
     }
 
-    public List<T> GetList<T>(string sql, object parameters = null)
+    public List<T> GetList<T>(string sql, object? parameters = null)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
 
@@ -60,7 +60,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         return list;
     }
 
-    public async Task<List<T>> GetListAsync<T>(string sql, object parameters = null)
+    public async Task<List<T>> GetListAsync<T>(string sql, object? parameters = null)
     {
         using var connection = new NpgsqlConnection(connectionString);
 
@@ -71,7 +71,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         return list;
     }
 
-    public T GetSingle<T>(string sql, object parameters = null)
+    public T GetSingle<T>(string sql, object? parameters = null)
     {
         using IDbConnection connection = new NpgsqlConnection(connectionString);
 
@@ -82,7 +82,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
         return item;
     }
 
-    public async Task<T> GetSingleAsync<T>(string sql, object parameters = null)
+    public async Task<T> GetSingleAsync<T>(string sql, object? parameters = null)
     {
         using var connection = new NpgsqlConnection(connectionString);
 

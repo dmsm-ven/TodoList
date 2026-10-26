@@ -25,7 +25,7 @@ public static class DependencyInjectionHelper
             (x) => new Func<EmployeerEntity, EmployeerTabViewModel>(
                 (empEntity) =>
                 {
-                    var tabVm = App.AppHost.Services.GetService<EmployeerTabViewModel>();
+                    var tabVm = App.AppHost.Services.GetRequiredService<EmployeerTabViewModel>();
                     tabVm.SetEmployeer(empEntity.ToViewModel());
                     return tabVm;
                 }));

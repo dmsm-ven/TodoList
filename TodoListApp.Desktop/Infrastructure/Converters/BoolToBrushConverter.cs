@@ -9,9 +9,10 @@ public class BoolToBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (!string.IsNullOrWhiteSpace(parameter.ToString()))
+        var parameterText = parameter?.ToString();
+        if (!string.IsNullOrWhiteSpace(parameterText))
         {
-            string[] colors = parameter.ToString().Split(';');
+            string[] colors = parameterText.Split(';');
             if (colors.Length == 2)
             {
                 Color colorTrue = (Color)ColorConverter.ConvertFromString(colors[0]);

@@ -18,7 +18,7 @@ namespace TodoListApp.Desktop;
 /// </summary>
 public partial class App : Application
 {
-    public static IHost AppHost { get; private set; }
+    public static IHost AppHost { get; private set; } = null!;
 
     public App()
     {
@@ -37,7 +37,7 @@ public partial class App : Application
 
         Assembly assembly = this.GetType().Assembly;
 
-        Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location));
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(assembly.Location) ?? AppContext.BaseDirectory);
 
         AppHost = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>

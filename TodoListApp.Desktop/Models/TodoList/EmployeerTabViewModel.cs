@@ -25,7 +25,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     // true во время начальной загрузки: не пересчитываем список после каждого добавленного элемента
     private bool isBulkLoading = false;
 
-    public EmployeerViewModel Employeer { get; private set; }
+    public EmployeerViewModel Employeer { get; private set; } = null!;
 
     private const int InitialMonthPillsCount = 6;
 
@@ -55,9 +55,9 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
-    private MonthPillViewModel selectedMonthPill;
+    private MonthPillViewModel? selectedMonthPill;
 
-    partial void OnSelectedMonthPillChanged(MonthPillViewModel value)
+    partial void OnSelectedMonthPillChanged(MonthPillViewModel? value)
     {
         if (value == null) { return; }
         foreach (var item in MonthPills)
@@ -69,17 +69,17 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     }
 
     [ObservableProperty]
-    private JobItemViewModel selectedJobItem;
+    private JobItemViewModel? selectedJobItem;
 
     [ObservableProperty]
-    private EmployeerPaymentViewModel newPayment;
+    private EmployeerPaymentViewModel newPayment = null!;
 
     [ObservableProperty]
-    private IEnumerable<JobItemViewModel> filteredTodoItems;
+    private IEnumerable<JobItemViewModel> filteredTodoItems = Enumerable.Empty<JobItemViewModel>();
 
     [NotifyPropertyChangedFor(nameof(FilteredTodoItems))]
     [ObservableProperty]
-    private string searchText;
+    private string searchText = string.Empty;
 
     partial void OnSearchTextChanged(string value)
     {

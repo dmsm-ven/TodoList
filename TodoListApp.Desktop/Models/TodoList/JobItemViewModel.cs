@@ -70,12 +70,12 @@ public partial class JobItemViewModel : ObservableObject
 
     [ObservableProperty] private bool isCompleted;
 
-    partial void OnIsCompletedChanged(bool newValue)
+    partial void OnIsCompletedChanged(bool value)
     {
         isSyncingEndDate = true;
         try
         {
-            EndDate = newValue ? DateTimeOffset.UtcNow : null;
+            EndDate = value ? DateTimeOffset.UtcNow : null;
         }
         finally
         {

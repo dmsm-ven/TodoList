@@ -9,7 +9,7 @@ public class NullToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        bool inverse = (parameter?.ToString().Contains("inverse")) ?? false;
+        bool inverse = (parameter?.ToString()?.Contains("inverse")) ?? false;
 
         Visibility visibility = Visibility.Hidden;
 

@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using SymbolRegular = Wpf.Ui.Controls.SymbolRegular;
@@ -9,8 +8,6 @@ namespace TodoListApp.Desktop.ViewModels.Windows;
 
 public partial class LoginWindowViewModel : ObservableObject
 {
-    public event Action OnUserEnter;
-
     [ObservableProperty]
     private bool hasErrors = false;
 
