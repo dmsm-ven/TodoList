@@ -129,6 +129,112 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
+                <!--  Динамика по месяцам  -->
+                <TextBlock
+                    Margin="0,24,0,8"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="Динамика за 12 месяцев" />
+                <DataGrid
+                    MaxHeight="360"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Dynamics}"
+                    VerticalGridLinesBrush="Transparent">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="150"
+                            Binding="{Binding Month}"
+                            Header="Месяц" />
+                        <DataGridTextColumn
+                            Width="70"
+                            Binding="{Binding CompletedCount}"
+                            Header="Задач" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Binding="{Binding Total, StringFormat={}{0:C0}}"
+                            Header="Сумма" />
+                        <DataGridTemplateColumn Width="*" Header="">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ProgressBar
+                                        Height="10"
+                                        Margin="4,0"
+                                        VerticalAlignment="Center"
+                                        Maximum="{Binding BarMax, Mode=OneWay}"
+                                        Value="{Binding BarValue, Mode=OneWay}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
+                            Width="100"
+                            Binding="{Binding ChangeToPrevious}"
+                            Header="К пред. мес." />
+                        <DataGridTextColumn
+                            Width="100"
+                            Binding="{Binding ChangeToLastYear}"
+                            Header="К прошл. году" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!--  Сравнение работодателей  -->
+                <TextBlock
+                    Margin="0,24,0,8"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="Сравнение работодателей" />
+                <DataGrid
+                    MaxHeight="300"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding Comparison}"
+                    VerticalGridLinesBrush="Transparent">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Name}"
+                            Header="Работодатель" />
+                        <DataGridTextColumn
+                            Width="70"
+                            Binding="{Binding CompletedCount}"
+                            Header="Задач" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Binding="{Binding Total, StringFormat={}{0:C0}}"
+                            Header="Сумма" />
+                        <DataGridTemplateColumn Width="170" Header="Доля дохода">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="4,0">
+                                        <ProgressBar
+                                            Height="14"
+                                            VerticalAlignment="Center"
+                                            Maximum="100"
+                                            Value="{Binding SharePercent, Mode=OneWay}" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="11"
+                                            Text="{Binding SharePercent, StringFormat={}{0:F0}%}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
+                            Width="110"
+                            Binding="{Binding AveragePrice, StringFormat={}{0:C0}}"
+                            Header="Ср. цена" />
+                        <DataGridTextColumn
+                            Width="110"
+                            Binding="{Binding AverageDays}"
+                            Header="Ср. срок" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
                 <!--  Оплаты (то же, что на панели "Оплаты" главного окна)  -->
                 <TextBlock
                     Margin="0,24,0,8"
