@@ -34,6 +34,12 @@
                 ToolTip="Настройки" />
             <ui:Button
                 Appearance="Transparent"
+                Command="{Binding ShowStatisticsWindowCommand}"
+                Icon="{ui:SymbolIcon Symbol=DataBarVertical24,
+                                     FontSize=20}"
+                ToolTip="Статистика" />
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding ShowLogsWindowCommand}"
                 Icon="{ui:SymbolIcon Symbol=TextBulletListLtr24,
                                      FontSize=20}"

@@ -8,7 +8,7 @@
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     Title="Настройки"
     Width="420"
-    Height="240"
+    Height="280"
     d:DataContext="{d:DesignInstance Type=vm:AppSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
     ExtendsContentIntoTitleBar="True"
@@ -33,6 +33,11 @@
                 DisplayMemberPath="Title"
                 ItemsSource="{Binding Themes}"
                 SelectedItem="{Binding SelectedTheme}" />
+
+            <CheckBox
+                Margin="0,16,0,0"
+                Content="Поверх всех окон"
+                IsChecked="{Binding IsTopmost, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
     </Grid>
 </ui:FluentWindow>

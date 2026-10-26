@@ -17,6 +17,10 @@ public partial class AppSettingsViewModel : ObservableObject
         new ThemeOption(AppTheme.Dark, "Тёмная"),
     };
 
+    /// <summary>"Поверх всех окон" - применяется к главному окну (см. MainWindow.xaml)</summary>
+    [ObservableProperty]
+    private bool isTopmost = false;
+
     [ObservableProperty]
     private ThemeOption selectedTheme;
 

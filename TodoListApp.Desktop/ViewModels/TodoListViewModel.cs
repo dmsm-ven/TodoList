@@ -80,6 +80,15 @@ public partial class TodoListViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
+    private void ShowStatisticsWindow()
+    {
+        var window = new StatisticsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = new StatisticsViewModel(Tabs, SelectedTab);
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
     private void ShowAppSettingsWindow()
     {
         var window = new AppSettingsWindow();

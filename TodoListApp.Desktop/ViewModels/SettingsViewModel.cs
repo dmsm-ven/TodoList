@@ -16,10 +16,6 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoaded = false;
 
-    /// <summary>"Поверх всех окон" - применяется к главному окну (см. MainWindow.xaml)</summary>
-    [ObservableProperty]
-    private bool isTopmost = false;
-
     [ObservableProperty]
     private ObservableCollection<LogEntryModel> logEntries = new();
 
