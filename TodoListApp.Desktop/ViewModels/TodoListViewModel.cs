@@ -89,6 +89,17 @@ public partial class TodoListViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
+    private void ShowPaymentsWindow()
+    {
+        if (SelectedTab == null) { return; }
+
+        var window = new PaymentsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = SelectedTab;
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
     private void ShowAppSettingsWindow()
     {
         var window = new AppSettingsWindow();

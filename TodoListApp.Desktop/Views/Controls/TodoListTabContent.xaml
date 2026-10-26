@@ -16,10 +16,6 @@
     Background="Transparent"
     mc:Ignorable="d">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -31,7 +27,6 @@
         <!--  Панель поиска, заголовка и добавления задачи  -->
         <DockPanel
             Grid.Row="0"
-            Grid.Column="0"
             LastChildFill="True">
             <ui:Button
                 Appearance="Transparent"
@@ -64,37 +59,26 @@
         <!--  ГЛАВНАЯ панель с задачами  -->
         <Border
             Grid.Row="1"
-            Grid.Column="0"
             Style="{StaticResource ColumnBorderStyle}">
 
             <con:TodoListTabTableView DataContext="{Binding}" />
 
         </Border>
 
-        <!--  Статистика по оплатам  -->
-        <con:TodoListPaymentsPanel
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            Grid.Column="1"
-            DataContext="{Binding}" />
-
         <!--  Кнопки навигации по месяцам  -->
         <con:TodoListMonthPillsNavigation
             Grid.Row="2"
-            Grid.Column="0"
             DataContext="{Binding}" />
 
         <!--  Статус бар  -->
         <con:TodoListTabStatusBar
             Grid.Row="3"
-            Grid.ColumnSpan="2"
             MinHeight="20"
             DataContext="{Binding StatusBarData}" />
 
         <!--  индикатор загрузки вкладки  -->
         <ss:LoadingSpinner
             Grid.Row="1"
-            Grid.Column="0"
             Width="200"
             Height="200"
             HorizontalAlignment="Stretch"

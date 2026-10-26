@@ -40,6 +40,13 @@
                 ToolTip="Статистика" />
             <ui:Button
                 Appearance="Transparent"
+                Command="{Binding ShowPaymentsWindowCommand}"
+                Foreground="{StaticResource MoneyGreenBrush}"
+                Icon="{ui:SymbolIcon Symbol=Money24,
+                                     FontSize=20}"
+                ToolTip="Оплаты" />
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding ShowLogsWindowCommand}"
                 Icon="{ui:SymbolIcon Symbol=TextBulletListLtr24,
                                      FontSize=20}"
