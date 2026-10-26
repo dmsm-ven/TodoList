@@ -13,7 +13,6 @@
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="100"
     d:DesignWidth="200"
-    Background="RoyalBlue"
     mc:Ignorable="d">
 
     <beh:Interaction.Triggers>
@@ -27,9 +26,9 @@
             <Border
                 x:Name="border"
                 Padding="6"
-                Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
                 CornerRadius="4">
 
                 <TextBlock
@@ -38,17 +37,17 @@
                     VerticalAlignment="Center"
                     d:Text="Январь"
                     FontSize="16"
-                    Foreground="White"
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                     Text="{Binding DisplayName}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="border" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
-                    <Setter TargetName="txtTitle" Property="Foreground" Value="Yellow" />
+                    <Setter TargetName="border" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
                 </Trigger>
                 <Trigger Property="local:TodoListMonthPillItem.IsSelectedPill" Value="True">
-                    <Setter TargetName="border" Property="Background" Value="Navy" />
-                    <Setter TargetName="txtTitle" Property="Foreground" Value="Yellow" />
+                    <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                    <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                    <Setter TargetName="txtTitle" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                     <Setter TargetName="txtTitle" Property="FontWeight" Value="Bold" />
                 </Trigger>
             </ControlTemplate.Triggers>

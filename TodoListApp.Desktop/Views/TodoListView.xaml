@@ -52,6 +52,9 @@
             ItemsSource="{Binding Tabs}"
             SelectedValue="{Binding SelectedTab}">
             <TabControl.Resources>
+                <!--  Более заметное выделение выбранной вкладки (полупрозрачный акцент виден в обеих темах)  -->
+                <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="#664169E1" />
+                <SolidColorBrush x:Key="TabViewSelectedItemBorderBrush" Color="#4169E1" />
                 <!--  Контекстное меню на общей панели заголовков вкладок  -->
                 <Style TargetType="TabPanel">
                     <Setter Property="ContextMenu">

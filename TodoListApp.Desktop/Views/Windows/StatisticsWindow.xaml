@@ -93,159 +93,161 @@
                     </ui:Card>
                 </UniformGrid>
 
-                <TextBlock
-                    Margin="0,20,0,8"
-                    FontSize="16"
-                    FontWeight="SemiBold"
-                    Text="По месяцам" />
-                <DataGrid
-                    MaxHeight="260"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding Months}"
-                    VerticalGridLinesBrush="Transparent">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Month}"
-                            Header="Месяц" />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding CompletedCount}"
-                            Header="Задач" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Total, StringFormat={}{0:C0}}"
-                            Header="Сумма" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Paid, StringFormat={}{0:C0}}"
-                            Header="Оплачено" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding NotPaid, StringFormat={}{0:C0}}"
-                            Header="Не оплачено" />
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <!--  Динамика по месяцам  -->
-                <TextBlock
-                    Margin="0,24,0,8"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Text="Динамика за 12 месяцев" />
-                <sp:WpfPlot x:Name="DynamicsPlot" Height="260" />
-                <DataGrid
-                    MaxHeight="360"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding Dynamics}"
-                    VerticalGridLinesBrush="Transparent">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="150"
-                            Binding="{Binding Month}"
-                            Header="Месяц" />
-                        <DataGridTextColumn
-                            Width="70"
-                            Binding="{Binding CompletedCount}"
-                            Header="Задач" />
-                        <DataGridTextColumn
-                            Width="110"
-                            Binding="{Binding Total, StringFormat={}{0:C0}}"
-                            Header="Сумма" />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding ChangeToPrevious}"
-                            Header="К пред. мес." />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding ChangeToLastYear}"
-                            Header="К прошл. году" />
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <!--  Сравнение работодателей  -->
-                <TextBlock
-                    Margin="0,24,0,8"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Text="Сравнение работодателей" />
-                <sp:WpfPlot x:Name="ComparisonPlot" Height="260" />
-                <DataGrid
-                    MaxHeight="300"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding Comparison}"
-                    VerticalGridLinesBrush="Transparent">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Name}"
-                            Header="Работодатель" />
-                        <DataGridTextColumn
-                            Width="70"
-                            Binding="{Binding CompletedCount}"
-                            Header="Задач" />
-                        <DataGridTextColumn
-                            Width="110"
-                            Binding="{Binding Total, StringFormat={}{0:C0}}"
-                            Header="Сумма" />
-                        <DataGridTextColumn
-                            Width="90"
-                            Binding="{Binding SharePercent, StringFormat={}{0:F0}%}"
-                            Header="Доля" />
-                        <DataGridTextColumn
-                            Width="110"
-                            Binding="{Binding AveragePrice, StringFormat={}{0:C0}}"
-                            Header="Ср. цена" />
-                        <DataGridTextColumn
-                            Width="110"
-                            Binding="{Binding AverageDays}"
-                            Header="Ср. срок" />
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <!--  Оплаты (то же, что на панели "Оплаты" главного окна)  -->
-                <TextBlock
-                    Margin="0,24,0,8"
-                    FontSize="18"
-                    FontWeight="Bold"
-                    Text="Оплаты" />
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <Expander
+                    Margin="0,12,0,0"
+                    Header="По месяцам"
+                    IsExpanded="False">
+                    <StackPanel Margin="0,8,0,0">
                     <DataGrid
-                        Grid.Column="0"
                         MaxHeight="260"
-                        Margin="0,0,16,0"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
                         HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                         IsReadOnly="True"
-                        ItemsSource="{Binding Payments}"
+                        ItemsSource="{Binding Months}"
                         VerticalGridLinesBrush="Transparent">
                         <DataGrid.Columns>
                             <DataGridTextColumn
                                 Width="*"
-                                Binding="{Binding TransferArrivalDate, StringFormat='dd.MM.yyyy'}"
-                                Header="Дата" />
+                                Binding="{Binding Month}"
+                                Header="Месяц" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding CompletedCount}"
+                                Header="Задач" />
                             <DataGridTextColumn
                                 Width="*"
-                                Binding="{Binding Amount, StringFormat={}{0:C0}}"
+                                Binding="{Binding Total, StringFormat={}{0:C0}}"
                                 Header="Сумма" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Paid, StringFormat={}{0:C0}}"
+                                Header="Оплачено" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding NotPaid, StringFormat={}{0:C0}}"
+                                Header="Не оплачено" />
                         </DataGrid.Columns>
                     </DataGrid>
-                    <con:TodoListTabEmployeerPaymentStatistics Grid.Column="1" DataContext="{Binding PaymentsStatistic}" />
-                </Grid>
+                    </StackPanel>
+                </Expander>
+                <Expander
+                    Margin="0,12,0,0"
+                    Header="Динамика за 12 месяцев"
+                    IsExpanded="False">
+                    <StackPanel Margin="0,8,0,0">
+                    <sp:WpfPlot x:Name="DynamicsPlot" Height="260" />
+                    <DataGrid
+                        MaxHeight="360"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Dynamics}"
+                        VerticalGridLinesBrush="Transparent">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding Month}"
+                                Header="Месяц" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding CompletedCount}"
+                                Header="Задач" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding Total, StringFormat={}{0:C0}}"
+                                Header="Сумма" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding ChangeToPrevious}"
+                                Header="К пред. мес." />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding ChangeToLastYear}"
+                                Header="К прошл. году" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    </StackPanel>
+                </Expander>
+                <Expander
+                    Margin="0,12,0,0"
+                    Header="Сравнение работодателей"
+                    IsExpanded="False">
+                    <StackPanel Margin="0,8,0,0">
+                    <sp:WpfPlot x:Name="ComparisonPlot" Height="260" />
+                    <DataGrid
+                        MaxHeight="300"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding Comparison}"
+                        VerticalGridLinesBrush="Transparent">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Name}"
+                                Header="Работодатель" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding CompletedCount}"
+                                Header="Задач" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding Total, StringFormat={}{0:C0}}"
+                                Header="Сумма" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding SharePercent, StringFormat={}{0:F0}%}"
+                                Header="Доля" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding AveragePrice, StringFormat={}{0:C0}}"
+                                Header="Ср. цена" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding AverageDays}"
+                                Header="Ср. срок" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    </StackPanel>
+                </Expander>
+                <Expander
+                    Margin="0,12,0,0"
+                    Header="Оплаты"
+                    IsExpanded="False">
+                    <StackPanel Margin="0,8,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid
+                            Grid.Column="0"
+                            MaxHeight="260"
+                            Margin="0,0,16,0"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                            IsReadOnly="True"
+                            ItemsSource="{Binding Payments}"
+                            VerticalGridLinesBrush="Transparent">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="*"
+                                    Binding="{Binding TransferArrivalDate, StringFormat='dd.MM.yyyy'}"
+                                    Header="Дата" />
+                                <DataGridTextColumn
+                                    Width="*"
+                                    Binding="{Binding Amount, StringFormat={}{0:C0}}"
+                                    Header="Сумма" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <con:TodoListTabEmployeerPaymentStatistics Grid.Column="1" DataContext="{Binding PaymentsStatistic}" />
+                    </Grid>
+                    </StackPanel>
+                </Expander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

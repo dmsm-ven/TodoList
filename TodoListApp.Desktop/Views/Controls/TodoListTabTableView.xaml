@@ -29,13 +29,13 @@
             CanUserReorderColumns="False"
             CanUserResizeRows="False"
             CanUserSortColumns="False"
-            FontSize="15"
+            FontSize="13"
             HeadersVisibility="Column"
             HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
             ItemsSource="{Binding FilteredTodoItems}"
             RowBackground="Transparent"
             RowDetailsVisibilityMode="VisibleWhenSelected"
-            RowHeight="28"
+            RowHeight="32"
             SelectedValue="{Binding SelectedJobItem}"
             SelectionMode="Single"
             VerticalGridLinesBrush="Transparent">
@@ -83,12 +83,14 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <ui:Button
-                                    Padding="4"
+                                    Width="26"
+                                    Height="26"
+                                    Padding="0"
                                     Appearance="Transparent"
                                     Command="{Binding OpenWebsiteInBrowserCommand}"
                                     Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                     Icon="{ui:SymbolIcon Symbol=Link24,
-                                                         FontSize=16}" />
+                                                         FontSize=14}" />
                                 <TextBlock
                                     Margin="4,2,2,2"
                                     HorizontalAlignment="Left"
@@ -121,7 +123,7 @@
                             <ui:SymbolIcon
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontSize="16"
+                                FontSize="14"
                                 Foreground="{Binding IsPayed, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#7cfc00;#ff2400'}"
                                 Symbol="{Binding IsPayed, Converter={StaticResource BoolToIconKindConverter}}" />
                         </DataTemplate>
@@ -141,7 +143,7 @@
                             <ui:SymbolIcon
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontSize="16"
+                                FontSize="14"
                                 Foreground="{Binding IsCompleted, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='#7cfc00;#ff2400'}"
                                 Symbol="{Binding IsCompleted, Converter={StaticResource BoolToIconKindConverter}}" />
                         </DataTemplate>
@@ -159,7 +161,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ui:Button
-                                Padding="4"
+                                Width="26"
+                                Height="26"
+                                Padding="0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Appearance="Transparent"
@@ -167,7 +171,7 @@
                                 CommandParameter="{Binding}"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Icon="{ui:SymbolIcon Symbol=Delete24,
-                                                     FontSize=16}" />
+                                                     FontSize=14}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -175,14 +179,16 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ui:Button
-                                Padding="4"
+                                Width="26"
+                                Height="26"
+                                Padding="0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Appearance="Transparent"
                                 Command="{Binding ShowChangeHistoryCommand}"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Icon="{ui:SymbolIcon Symbol=History24,
-                                                     FontSize=16}" />
+                                                     FontSize=14}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
