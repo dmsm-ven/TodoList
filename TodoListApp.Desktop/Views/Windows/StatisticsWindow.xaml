@@ -5,6 +5,7 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sp="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     Title="Статистика"
@@ -135,6 +136,7 @@
                     FontSize="18"
                     FontWeight="Bold"
                     Text="Динамика за 12 месяцев" />
+                <sp:WpfPlot x:Name="DynamicsPlot" Height="260" />
                 <DataGrid
                     MaxHeight="360"
                     AutoGenerateColumns="False"
@@ -156,18 +158,6 @@
                             Width="110"
                             Binding="{Binding Total, StringFormat={}{0:C0}}"
                             Header="Сумма" />
-                        <DataGridTemplateColumn Width="*" Header="">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ProgressBar
-                                        Height="10"
-                                        Margin="4,0"
-                                        VerticalAlignment="Center"
-                                        Maximum="{Binding BarMax, Mode=OneWay}"
-                                        Value="{Binding BarValue, Mode=OneWay}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
                         <DataGridTextColumn
                             Width="100"
                             Binding="{Binding ChangeToPrevious}"
@@ -185,6 +175,7 @@
                     FontSize="18"
                     FontWeight="Bold"
                     Text="Сравнение работодателей" />
+                <sp:WpfPlot x:Name="ComparisonPlot" Height="260" />
                 <DataGrid
                     MaxHeight="300"
                     AutoGenerateColumns="False"
@@ -206,24 +197,10 @@
                             Width="110"
                             Binding="{Binding Total, StringFormat={}{0:C0}}"
                             Header="Сумма" />
-                        <DataGridTemplateColumn Width="170" Header="Доля дохода">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="4,0">
-                                        <ProgressBar
-                                            Height="14"
-                                            VerticalAlignment="Center"
-                                            Maximum="100"
-                                            Value="{Binding SharePercent, Mode=OneWay}" />
-                                        <TextBlock
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            FontSize="11"
-                                            Text="{Binding SharePercent, StringFormat={}{0:F0}%}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
+                            Width="90"
+                            Binding="{Binding SharePercent, StringFormat={}{0:F0}%}"
+                            Header="Доля" />
                         <DataGridTextColumn
                             Width="110"
                             Binding="{Binding AveragePrice, StringFormat={}{0:C0}}"

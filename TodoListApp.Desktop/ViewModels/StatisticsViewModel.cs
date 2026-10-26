@@ -12,7 +12,7 @@ namespace TodoListApp.Desktop.ViewModels;
 public record MonthStatisticsRow(string Month, int CompletedCount, decimal Total, decimal Paid, decimal NotPaid);
 
 /// <summary>Строка динамики: сумма выполненных задач за месяц и изменение к прошлому месяцу / тому же месяцу прошлого года.</summary>
-public record MonthDynamicsRow(string Month, int CompletedCount, decimal Total, string ChangeToPrevious, string ChangeToLastYear, double BarMax, double BarValue);
+public record MonthDynamicsRow(string Month, int CompletedCount, decimal Total, string ChangeToPrevious, string ChangeToLastYear, string ShortMonth);
 
 /// <summary>Строка сравнения работодателей.</summary>
 public record EmployeerComparisonRow(string Name, int CompletedCount, decimal Total, double SharePercent, decimal AveragePrice, string AverageDays);
@@ -132,7 +132,6 @@ public partial class StatisticsViewModel : ObservableObject
 
         var first = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         var months = Enumerable.Range(0, 12).Select(i => first.AddMonths(-i)).ToList();
-        var max = (double)months.Max(m => Get(m).Total);
 
         foreach (var month in months)
         {
@@ -143,8 +142,7 @@ public partial class StatisticsViewModel : ObservableObject
                 current.Total,
                 FormatChange(current.Total, Get(month.AddMonths(-1)).Total),
                 FormatChange(current.Total, Get(month.AddYears(-1)).Total),
-                max > 0 ? max : 1,
-                (double)current.Total));
+                month.ToString("MMM yy")));
         }
     }
 

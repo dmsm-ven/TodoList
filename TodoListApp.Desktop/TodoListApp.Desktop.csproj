@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+    <PackageReference Include="ScottPlot.WPF" />
     <PackageReference Include="WPF-UI" />
   
   </ItemGroup>
