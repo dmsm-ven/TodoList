@@ -41,6 +41,20 @@
             VerticalGridLinesBrush="Transparent">
             <DataGrid.RowStyle>
                 <Style BasedOn="{StaticResource DefaultDataGridRowStyle}" TargetType="DataGridRow">
+                    <!--  Через Tag пробрасываем DataContext таблицы (EmployeerTabViewModel) в контекстное меню строки  -->
+                    <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <ui:MenuItem
+                                    Command="{Binding PlacementTarget.Tag.DeleteSelectedJobItemCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                    Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                    Header="Удалить задачу"
+                                    Icon="{ui:SymbolIcon Delete24}" />
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsCompleted}" Value="false">
                             <Setter Property="FontWeight" Value="SemiBold" />
@@ -156,24 +170,6 @@
                                 IsChecked="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="del">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <ui:Button
-                                Width="26"
-                                Height="26"
-                                Padding="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Appearance="Transparent"
-                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.DeleteSelectedJobItemCommand}"
-                                CommandParameter="{Binding}"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Icon="{ui:SymbolIcon Symbol=Delete24,
-                                                     FontSize=14}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="his">
                     <DataGridTemplateColumn.CellTemplate>
