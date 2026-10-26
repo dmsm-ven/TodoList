@@ -15,17 +15,19 @@ public class PostgresEmployeerRepository : IEmployeerRepository
 
     public async Task<int> AddEmployeer(EmployeerEntity entity)
     {
+        int maxId = database.GetSingle<int>("SELECT MAX(id) FROM employeer");
+        if (entity.id == 0)
+        {
+            entity.id = maxId + 1;
+        }
+
         string sql = @"INSERT INTO employeer (id, name) VALUES(@id, @name) 
                        ON CONFLICT(id) DO UPDATE 
                        SET name = @name";
 
         await database.ExecuteAsync(sql, entity);
 
-        int id = entity.id != 0 ?
-            entity.id :
-            database.GetSingle<int>("SELECT MAX(id) FROM employeer");
-
-        return id;
+        return entity.id;
     }
 
     public async Task DeleteEmployeer(int id)

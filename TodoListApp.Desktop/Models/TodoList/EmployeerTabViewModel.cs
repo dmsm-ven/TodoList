@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using TodoListApp.Core.Repositories.Interfaces;
+using TodoListApp.ApiClient;
 using TodoListApp.Desktop.Infrastructure;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
@@ -19,17 +19,33 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     IRecipient<JobItemFieldUpdatedMessage>,
     IRecipient<MonthPillSelectionChangedMessage>
 {
+    private readonly TodoListAppApiClient apiClient;
     private bool isLoaded = false;
 
     // true во время начальной загрузки: не пересчитываем список после каждого добавленного элемента
     private bool isBulkLoading = false;
 
-    private readonly IJobItemRepository jobItemRepository;
-    private readonly IEmployeerRepository paymentRepository;
-
     public EmployeerViewModel Employeer { get; private set; }
 
+    private const int InitialMonthPillsCount = 6;
+
     public ObservableCollection<MonthPillViewModel> MonthPills { get; init; } = new();
+
+    // Все месяцы, в которых есть задачи; в MonthPills показываются только последние InitialMonthPillsCount, пока не нажато "Показать еще"
+    private List<MonthPillViewModel> allMonthPills = new();
+
+    [ObservableProperty]
+    private bool hasHiddenMonthPills;
+
+    [RelayCommand]
+    private void ShowMoreMonthPills()
+    {
+        foreach (var pill in allMonthPills.Skip(MonthPills.Count))
+        {
+            MonthPills.Add(pill);
+        }
+        HasHiddenMonthPills = false;
+    }
 
     [ObservableProperty]
     private bool isShowPaymentField;
@@ -77,6 +93,10 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         get => Employeer.TodoItems?.Any(t => t.IsCompleted == false) ?? false;
     }
+    public int ActiveTasksCount
+    {
+        get => Employeer.TodoItems?.Count(t => !t.IsCompleted || !t.IsPayed) ?? 0;
+    }
 
     public IEnumerable<string> UniqueWebsites
     {
@@ -94,12 +114,9 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         }
     }
 
-    public EmployeerTabViewModel(IJobItemRepository jobItemRepository,
-        IEmployeerRepository paymentRepository)
+    public EmployeerTabViewModel(TodoListAppApiClient apiClient)
     {
-        this.jobItemRepository = jobItemRepository;
-        this.paymentRepository = paymentRepository;
-
+        this.apiClient = apiClient;
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
@@ -107,7 +124,11 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         Employeer = emp;
         this.NewPayment = new EmployeerPaymentViewModel() { EmployeerId = emp.Id, EmployeerName = emp.Name };
-        Employeer.TodoItems.CollectionChanged += (o, e) => RefreshSource();
+        Employeer.TodoItems.CollectionChanged += (o, e) =>
+        {
+            RefreshSource();
+            NotifyActiveTasksChanged();
+        };
     }
 
     [RelayCommand]
@@ -131,8 +152,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         try
         {
-            var jobsTask = jobItemRepository.GetAllJobItems(Employeer.Id);
-            var paymentsTask = paymentRepository.GetAllPaymentsForEmployeer(Employeer.Id);
+            var jobsTask = apiClient.GetAllJobItems(Employeer.Id);
+            var paymentsTask = apiClient.GetAllPaymentsForEmployeer(Employeer.Id);
 
             await Task.WhenAll(jobsTask, paymentsTask);
 
@@ -161,6 +182,8 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
             RefreshSource();
 
+            NotifyActiveTasksChanged();
+
             WeakReferenceMessenger.Default.Send(new EmployeeTabLoadedMessage(this));
         }
         catch (Exception ex)
@@ -188,7 +211,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         try
         {
-            await paymentRepository.AddPayment(payment.ToPayload());
+            await apiClient.AddPayment(payment.ToPayload());
         }
         catch (Exception ex)
         {
@@ -205,6 +228,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     private void LoadMonthPills()
     {
         MonthPills.Clear();
+        allMonthPills.Clear();
 
         var pillsData = Employeer.TodoItems
             .Where(i => i.StartDate.HasValue)
@@ -218,8 +242,14 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         foreach (var kvp in pillsData)
         {
             var pill = new MonthPillViewModel(this) { MonthNumber = kvp.Month, Year = kvp.Year };
+            allMonthPills.Add(pill);
+        }
+
+        foreach (var pill in allMonthPills.Take(InitialMonthPillsCount))
+        {
             MonthPills.Add(pill);
         }
+        HasHiddenMonthPills = allMonthPills.Count > MonthPills.Count;
 
         SelectedMonthPill = MonthPills?.FirstOrDefault();
     }
@@ -229,19 +259,22 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
     {
         try
         {
-            var item = new JobItemViewModel()
+            var vmItem = new JobItemViewModel()
             {
                 StartDate = DateTime.Now,
                 Title = "Новая задача",
                 EmployeerId = Employeer.Id
             };
-            item.Id = await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
+
+            // Сначала сохраняем на сервере: при ошибке в таблице не остается "призрачной" задачи без Id
+            var newJob = await apiClient.AddJobItem(vmItem.ToCreateJobItem());
+            vmItem.Id = newJob.id;
 
             // Чтобы новая задача была видна: сбрасываем поиск и переходим на самый свежий месяц
             SearchText = string.Empty;
 
-            Employeer.TodoItems.Add(item);
-            item.Initialize();
+            Employeer.TodoItems.Add(vmItem);
+            vmItem.Initialize();
 
             LoadMonthPills();
         }
@@ -261,7 +294,7 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
 
         try
         {
-            await jobItemRepository.DeleteJobItem(item.Id);
+            await apiClient.DeleteJobItem(item.Id);
         }
         catch (Exception ex)
         {
@@ -319,9 +352,15 @@ public partial class EmployeerTabViewModel : ObservableRecipient,
         return text != null && text.Contains(query, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public void Receive(JobItemFieldUpdatedMessage message)
+    private void NotifyActiveTasksChanged()
     {
         OnPropertyChanged(nameof(HasActiveTasks));
+        OnPropertyChanged(nameof(ActiveTasksCount));
+    }
+
+    public void Receive(JobItemFieldUpdatedMessage message)
+    {
+        NotifyActiveTasksChanged();
     }
 
     public void Receive(MonthPillSelectionChangedMessage message)

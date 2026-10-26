@@ -5,11 +5,10 @@
     xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.Models.TodoList"
-    d:Background="White"
     d:DataContext="{d:DesignInstance Type=vm:EmployeerTabViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="400"
@@ -17,10 +16,6 @@
     Background="Transparent"
     mc:Ignorable="d">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -30,90 +25,51 @@
         <Grid.Resources />
 
         <!--  Панель поиска, заголовка и добавления задачи  -->
-        <DockPanel
-            Grid.Row="0"
-            Grid.Column="0"
-            LastChildFill="True">
-            <Button
+        <DockPanel Grid.Row="0" LastChildFill="True">
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding AddJobItemCommand}"
                 DockPanel.Dock="Left"
-                Style="{StaticResource ToolButtonStyle}">
-                <icons:PackIconFontAwesome
-                    Width="24"
-                    Height="24"
-                    Foreground="{StaticResource ToolPanelBackground}"
-                    Kind="PlusSolid" />
-            </Button>
+                Margin="2"
+                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                Icon="{ui:SymbolIcon Symbol=Add24,
+                                     FontSize=24}"
+                ToolTip="Добавить задачу" />
 
-            <TextBlock
-                DockPanel.Dock="Left"
-                Style="{StaticResource ColumnTitleTextBlock}"
-                Text="Добавить задачу" />
-
-            <Grid
-                Width="200"
-                Height="26"
+            <ui:TextBox
+                Width="240"
                 MinWidth="200"
-                HorizontalAlignment="Right">
-                <TextBox
-                    Padding="2"
-                    HorizontalContentAlignment="Right"
-                    VerticalContentAlignment="Center"
-                    d:Text="Поисковый запрос"
-                    FontFamily="Consolas"
-                    FontSize="16"
-                    FontWeight="SemiBold"
-                    Foreground="#E71421"
-                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                <TextBlock
-                    Margin="2,2,8,2"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Panel.ZIndex="99"
-                    FontSize="13"
-                    Foreground="LightGray"
-                    Text="Поиск ..."
-                    Visibility="{Binding SearchText, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='inverse'}" />
-            </Grid>
+                Margin="0,0,8,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                d:Text="Поисковый запрос"
+                ClearButtonEnabled="True"
+                PlaceholderText="Поиск ..."
+                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
 
         </DockPanel>
 
         <!--  Список оплат от работодателя  -->
 
         <!--  ГЛАВНАЯ панель с задачами  -->
-        <Border
-            Grid.Row="1"
-            Grid.Column="0"
-            Style="{StaticResource ColumnBorderStyle}">
+        <Border Grid.Row="1" Style="{StaticResource ColumnBorderStyle}">
 
             <con:TodoListTabTableView DataContext="{Binding}" />
 
         </Border>
 
-        <!--  Статистика по оплатам  -->
-        <con:TodoListPaymentsPanel
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            Grid.Column="1"
-            DataContext="{Binding}" />
-
         <!--  Кнопки навигации по месяцам  -->
-        <con:TodoListMonthPillsNavigation
-            Grid.Row="2"
-            Grid.Column="0"
-            DataContext="{Binding}" />
+        <con:TodoListMonthPillsNavigation Grid.Row="2" DataContext="{Binding}" />
 
         <!--  Статус бар  -->
         <con:TodoListTabStatusBar
             Grid.Row="3"
-            Grid.ColumnSpan="2"
             MinHeight="20"
             DataContext="{Binding StatusBarData}" />
 
         <!--  индикатор загрузки вкладки  -->
         <ss:LoadingSpinner
             Grid.Row="1"
-            Grid.Column="0"
             Width="200"
             Height="200"
             HorizontalAlignment="Stretch"

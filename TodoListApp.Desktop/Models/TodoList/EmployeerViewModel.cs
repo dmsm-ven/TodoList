@@ -26,11 +26,30 @@ public partial class EmployeerViewModel : ObservableRecipient,
     [ObservableProperty]
     private ObservableCollection<EmployeerPaymentViewModel> payments = new();
 
-    public IEnumerable<EmployeerPaymentViewModel> SortedPayments =>
-        Payments
-        .OrderByDescending(x => x.TransferArrivalDate)
-        .Take(10)
-        .ToArray();
+    private const int InitialPaymentsCount = 10;
+
+    /// <summary>true после нажатия "Показать еще" - в списке оплат выводятся все записи, а не последние 10</summary>
+    [NotifyPropertyChangedFor(nameof(SortedPayments))]
+    [NotifyPropertyChangedFor(nameof(HasHiddenPayments))]
+    [ObservableProperty]
+    private bool showAllPayments;
+
+    public IEnumerable<EmployeerPaymentViewModel> SortedPayments
+    {
+        get
+        {
+            var ordered = Payments.OrderByDescending(x => x.TransferArrivalDate);
+            return (ShowAllPayments ? ordered : ordered.Take(InitialPaymentsCount)).ToArray();
+        }
+    }
+
+    public bool HasHiddenPayments => !ShowAllPayments && Payments.Count > InitialPaymentsCount;
+
+    [CommunityToolkit.Mvvm.Input.RelayCommand]
+    private void ShowMorePayments()
+    {
+        ShowAllPayments = true;
+    }
 
     [ObservableProperty]
     private ObservableCollection<JobItemViewModel> todoItems = new();
@@ -41,6 +60,7 @@ public partial class EmployeerViewModel : ObservableRecipient,
     private void Payments_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(SortedPayments));
+        OnPropertyChanged(nameof(HasHiddenPayments));
         PaymentsStatistic.SetSource(Payments);
     }
 

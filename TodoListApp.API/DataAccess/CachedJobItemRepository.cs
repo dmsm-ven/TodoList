@@ -6,7 +6,7 @@ namespace TodoListApp.API.DataAccess;
 
 public class CachedJobItemRepository : IJobItemRepository
 {
-    // Страховка на случай, если кэш по какой-то причине не был сброшен (например, смена года для фильтра "последние 2 года")
+    // Страховка на случай, если запись по какой-то причине не была сброшена (например, смена года для фильтра "последние 2 года")
     private static readonly TimeSpan CacheLifetime = TimeSpan.FromMinutes(5);
 
     private readonly IJobItemRepository decorator;
@@ -18,34 +18,46 @@ public class CachedJobItemRepository : IJobItemRepository
         this.cache = cache;
     }
 
+    private static string JobsOfEmployeerKey(int employeer_id) => $"jobs-emp-{employeer_id}";
+    private static string JobKey(int id) => $"job-id{id}";
+
     // Кэш сбрасывается ПОСЛЕ записи в БД (в finally), иначе параллельный GET успевает закэшировать старые данные
     public async Task<int> AddOrUpdateJobItem(JobItemEntity entity)
     {
         try
         {
-            return await decorator.AddOrUpdateJobItem(entity);
+            var id = await decorator.AddOrUpdateJobItem(entity);
+            cache.Remove(JobKey(id));
+            return id;
         }
         finally
         {
-            ClearCache();
+            cache.Remove(JobsOfEmployeerKey(entity.employeer_id));
+            cache.Remove(JobKey(entity.id));
         }
     }
 
     public async Task DeleteJobItem(int id)
     {
+        // Работодатель нужен, чтобы сбросить его список задач
+        var job = await decorator.GetJobItem(id);
         try
         {
             await decorator.DeleteJobItem(id);
         }
         finally
         {
-            ClearCache();
+            cache.Remove(JobKey(id));
+            if (job is not null)
+            {
+                cache.Remove(JobsOfEmployeerKey(job.employeer_id));
+            }
         }
     }
 
     public async Task<List<JobItemEntity>> GetAllJobItems(int employeer_id)
     {
-        var cacheKey = $"jobs-emp-{employeer_id}";
+        var cacheKey = JobsOfEmployeerKey(employeer_id);
 
         if (!cache.TryGetValue<List<JobItemEntity>>(cacheKey, out var items) || items is null)
         {
@@ -66,7 +78,7 @@ public class CachedJobItemRepository : IJobItemRepository
 
     public async Task<JobItemEntity> GetJobItem(int id)
     {
-        var cacheKey = $"job-id{id}";
+        var cacheKey = JobKey(id);
         if (!cache.TryGetValue<JobItemEntity>(cacheKey, out var entity) || entity is null)
         {
             entity = await decorator.GetJobItem(id);
@@ -78,13 +90,5 @@ public class CachedJobItemRepository : IJobItemRepository
             }
         }
         return entity!;
-    }
-
-    private void ClearCache()
-    {
-        if (cache is MemoryCache memoryCache)
-        {
-            memoryCache.Clear();
-        }
     }
 }

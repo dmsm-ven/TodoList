@@ -1,4 +1,7 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Repositories.Interfaces;
 
@@ -8,15 +11,32 @@ namespace TodoListApp.API.Controllers;
 public class JobsController : ControllerBase
 {
     private readonly IJobItemRepository repo;
+    private readonly IEmployeerRepository empRepo;
+    private readonly IValidator<CreateJobDto> createJobValidator;
+    private readonly IValidator<UpdateJobDto> updateJobValidator;
+    private readonly ILogger<JobsController> logger;
 
-    public JobsController(IJobItemRepository repo)
+    public JobsController(IJobItemRepository repo,
+        IEmployeerRepository empRepo,
+        IValidator<CreateJobDto> createJobValidator,
+        IValidator<UpdateJobDto> updateJobValidator,
+        ILogger<JobsController> logger)
     {
+        this.empRepo = empRepo;
         this.repo = repo;
+        this.createJobValidator = createJobValidator;
+        this.updateJobValidator = updateJobValidator;
+        this.logger = logger;
     }
     [HttpGet("api/jobs")]
     public async Task<ActionResult<IEnumerable<JobItemEntity>>> GetJobsForEmployeer(
         [FromQuery] int employeer_id)
     {
+        var empExists = await empRepo.GetEmployeer(employeer_id);
+        if (empExists is null)
+        {
+            return NotFound();
+        }
         var jobs = await repo.GetAllJobItems(employeer_id);
         return jobs != null ? Ok(jobs) : NoContent();
     }
@@ -31,6 +51,11 @@ public class JobsController : ControllerBase
     [HttpDelete("api/jobs/{id}")]
     public async Task<IActionResult> DeleteJobById([FromRoute] int id)
     {
+        var item = await repo.GetJobItem(id);
+        if (item is null)
+        {
+            return NotFound();
+        }
         await repo.DeleteJobItem(id);
         return NoContent();
     }
@@ -52,33 +77,52 @@ public class JobsController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕР№ Р·Р°РґР°С‡Рё. Р’РѕР·РІСЂР°С‰Р°РµС‚ id СЃРѕР·РґР°РЅРЅРѕР№ Р·Р°РґР°С‡Рё.</summary>
-    [HttpPost("api/jobs")]
-    public async Task<ActionResult<int>> CreateJob([FromBody] JobItemEntity item)
+    [HttpPut("api/jobs/{id}")]
+    public async Task<IActionResult> UpdateJob([FromRoute] int id, [FromBody] UpdateJobDto item)
     {
-        // id РІСЃРµРіРґР° РЅР°Р·РЅР°С‡Р°РµС‚СЃСЏ СЃРµСЂРІРµСЂРѕРј
-        item.id = 0;
-
-        var id = await repo.AddOrUpdateJobItem(item);
-        return Ok(id);
-    }
-
-    /// <summary>РћР±РЅРѕРІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№ Р·Р°РґР°С‡Рё. Р”Р»СЏ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РµР№ Р·Р°РґР°С‡Рё РІРѕР·РІСЂР°С‰Р°РµС‚ 404.</summary>
-    [HttpPut("api/jobs/{id}/updated")]
-    public async Task<IActionResult> JobUpdated([FromRoute] int id, [FromBody] JobItemEntity item)
-    {
-        if (item.id != 0 && item.id != id)
+        if (item.Id != id)
         {
-            return BadRequest("id РІ С‚РµР»Рµ Р·Р°РїСЂРѕСЃР° РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ id РІ РјР°СЂС€СЂСѓС‚Рµ.");
+            return BadRequest("Id в теле запроса не совпадает с id в маршруте.");
         }
 
+        var validationResult = await updateJobValidator.ValidateAsync(item);
+
+        if (!validationResult.IsValid)
+        {
+            logger.LogWarning("Ошибка обновления задачи с id {id}. Данные [{data}]. Ошибки: {errors}", id, JsonSerializer.Serialize(item), validationResult.Errors);
+            return BadRequest(validationResult.Errors);
+        }
+
+        // Без этой проверки PUT для несуществующего id молча создал бы задачу (INSERT ... ON CONFLICT DO UPDATE)
         if (await repo.GetJobItem(id) is null)
         {
             return NotFound();
         }
 
-        item.id = id;
-        var updatedId = await repo.AddOrUpdateJobItem(item);
-        return Ok(updatedId);
+        await repo.AddOrUpdateJobItem(item.ToEntity());
+
+        return Ok();
+    }
+
+    [HttpPost("api/jobs")]
+    public async Task<IActionResult> CreateJob(CreateJobDto item)
+    {
+        var validationResult = await createJobValidator.ValidateAsync(item);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
+        var newJobItemId = await repo.AddOrUpdateJobItem(item.ToEntity());
+
+        var createdItem = await repo.GetJobItem(newJobItemId);
+
+        logger.LogInformation("Создано задание с ID {id}. Data[{data}]", newJobItemId, JsonSerializer.Serialize(createdItem));
+
+        return CreatedAtAction(
+            nameof(GetJobById),
+            new { id = newJobItemId },
+            createdItem);
     }
 }

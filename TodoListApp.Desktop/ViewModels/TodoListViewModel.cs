@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using TodoListApp.ApiClient;
 using TodoListApp.Core.Entities;
-using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.Infrastructure;
 using TodoListApp.Desktop.Infrastructure.MapperHelper;
 using TodoListApp.Desktop.Models.Messages;
@@ -23,10 +23,9 @@ public partial class TodoListViewModel : ObservableRecipient,
     IRecipient<JobItemHistoryDisplayMessage>,
     IRecipient<EmployeerCreatedMessage>
 {
-
-    private readonly IEmployeerRepository employeerRepository;
-    private readonly IJobItemRepository jobItemRepository;
+    private readonly TodoListAppApiClient apiClient;
     private readonly SettingsViewModel settingsViewModel;
+    private readonly AppSettingsViewModel appSettingsViewModel;
     private readonly Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory;
 
     // Сохранения задач выполняются строго по очереди: иначе параллельные запросы могут записать
@@ -51,14 +50,14 @@ public partial class TodoListViewModel : ObservableRecipient,
         }
     }
 
-    public TodoListViewModel(IEmployeerRepository employeerRepository,
-        IJobItemRepository jobItemRepository,
+    public TodoListViewModel(TodoListAppApiClient apiClient,
         SettingsViewModel settingsViewModel,
+        AppSettingsViewModel appSettingsViewModel,
         Func<EmployeerEntity, EmployeerTabViewModel> todoListTabFactory)
     {
-        this.employeerRepository = employeerRepository;
-        this.jobItemRepository = jobItemRepository;
+        this.apiClient = apiClient;
         this.settingsViewModel = settingsViewModel;
+        this.appSettingsViewModel = appSettingsViewModel;
         this.todoListTabFactory = todoListTabFactory;
     }
 
@@ -81,6 +80,35 @@ public partial class TodoListViewModel : ObservableRecipient,
     }
 
     [RelayCommand]
+    private void ShowStatisticsWindow()
+    {
+        var window = new StatisticsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = new StatisticsViewModel(Tabs, SelectedTab);
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void ShowPaymentsWindow()
+    {
+        if (SelectedTab == null) { return; }
+
+        var window = new PaymentsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = SelectedTab;
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
+    private void ShowAppSettingsWindow()
+    {
+        var window = new AppSettingsWindow();
+        window.Owner = Application.Current.MainWindow;
+        window.DataContext = appSettingsViewModel;
+        window.ShowDialog();
+    }
+
+    [RelayCommand]
     private async Task RemoveEmployeerTab()
     {
         var tab = SelectedTab;
@@ -91,7 +119,7 @@ public partial class TodoListViewModel : ObservableRecipient,
 
         try
         {
-            await employeerRepository.DeleteEmployeer(tab.Employeer.Id);
+            await apiClient.DeleteEmployeer(tab.Employeer.Id);
             Tabs.Remove(tab);
         }
         catch (Exception ex)
@@ -114,7 +142,7 @@ public partial class TodoListViewModel : ObservableRecipient,
         {
             this.Tabs.Clear();
 
-            var employeers = await employeerRepository.GetAllEmployeer();
+            var employeers = await apiClient.GetAllEmployeer();
 
             foreach (var emp in employeers)
             {
@@ -126,6 +154,9 @@ public partial class TodoListViewModel : ObservableRecipient,
             {
                 SelectedTab = Tabs.FirstOrDefault();
             }
+
+            // Остальные вкладки подгружаем в фоне, чтобы счетчик активных задач в заголовках был верным сразу
+            _ = PreloadTabsAsync(Tabs.Where(t => t != SelectedTab).ToList());
         }
         catch (Exception ex)
         {
@@ -134,6 +165,15 @@ public partial class TodoListViewModel : ObservableRecipient,
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private static async Task PreloadTabsAsync(System.Collections.Generic.List<EmployeerTabViewModel> tabsToLoad)
+    {
+        foreach (var tab in tabsToLoad)
+        {
+            // Ошибки показываются внутри LoadedCommand, при неудаче вкладка догрузится при выборе
+            await tab.LoadedCommand.ExecuteAsync(null);
         }
     }
 
@@ -147,8 +187,8 @@ public partial class TodoListViewModel : ObservableRecipient,
         await saveLock.WaitAsync();
         try
         {
-            // Сущность собирается уже внутри очереди, чтобы уйти на сервер с самыми свежими значениями
-            await jobItemRepository.AddOrUpdateJobItem(item.ToEntity());
+            // DTO собирается уже внутри очереди, чтобы уйти на сервер с самыми свежими значениями
+            await apiClient.UpdateJobItem(item.ToUpdateJobItem());
         }
         catch (Exception ex)
         {
@@ -168,7 +208,7 @@ public partial class TodoListViewModel : ObservableRecipient,
             window.Owner = Application.Current.MainWindow;
             var windowViewModel = new JobItemChangesHistoryWindowViewModel();
 
-            var historyItems = await jobItemRepository.GetHistoryChangesForJobItem(message.Value.Id);
+            var historyItems = await apiClient.GetHistoryChangesForJobItem(message.Value.Id);
             foreach (var item in historyItems.Select(i => i.ToModel()))
             {
                 windowViewModel.HistoryItems.Add(item);
@@ -188,17 +228,14 @@ public partial class TodoListViewModel : ObservableRecipient,
     {
         try
         {
-            var emp = new EmployeerEntity() { name = message.newEmployeerName.Trim() };
-            var id = await employeerRepository.AddEmployeer(emp);
-            emp.id = id;
-
+            var emp = await apiClient.AddEmployeer(new Core.Dtos.CreateEmployeerDto() { Name = message.newEmployeerName.Trim() });
             var newTab = todoListTabFactory(emp);
             Tabs.Add(newTab);
             SelectedTab = newTab;
         }
         catch (Exception ex)
         {
-            // Например, 409 - работодатель с таким именем уже существует
+            // Например, ошибка валидации или дубликат имени
             UiErrors.Show(ex, "Не удалось создать вкладку");
         }
     }

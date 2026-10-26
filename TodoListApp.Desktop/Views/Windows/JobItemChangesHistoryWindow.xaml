@@ -1,16 +1,19 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="TodoListApp.Desktop.Views.JobItemChangesHistoryWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:beh="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     Title="Журнал изменений задачи"
     Width="593"
     Height="450"
     d:DataContext="{d:DesignInstance Type=vm:JobItemChangesHistoryWindowViewModel,
                                      IsDesignTimeCreatable=False}"
+    ExtendsContentIntoTitleBar="True"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
     <beh:Interaction.Triggers>
         <beh:EventTrigger EventName="Loaded">
@@ -18,21 +21,23 @@
         </beh:EventTrigger>
     </beh:Interaction.Triggers>
     <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="/Assets/Images/TodoList/geometric-seamless-pattern_97458.jpg" Stretch="UniformToFill" />
-        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Журнал изменений задачи" ShowMaximize="False" ShowMinimize="False" />
+
         <DataGrid
-            AlternatingRowBackground="#8EE5EDF1"
+            Grid.Row="1"
+            Margin="8,0,8,8"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
-            HorizontalGridLinesBrush="LightGray"
+            HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+            IsReadOnly="True"
             ItemsSource="{Binding HistoryItems}"
-            RowBackground="#8Effffff"
             VerticalGridLinesBrush="Transparent">
-            <DataGrid.Background>
-                <SolidColorBrush Opacity="0.7" Color="White" />
-            </DataGrid.Background>
             <DataGrid.Columns>
                 <DataGridTextColumn
                     Width="*"
@@ -53,4 +58,4 @@
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
-</Window>
+</ui:FluentWindow>

@@ -7,7 +7,7 @@ namespace TodoListApp.Desktop.Models.TodoList;
 
 public class EmployeerPaymentsStatisticModel : ObservableObject
 {
-    private IEnumerable<EmployeerPaymentViewModel>? data = null;
+    private IEnumerable<EmployeerPaymentViewModel>? data = new List<EmployeerPaymentViewModel>();
 
     public decimal? Month1Sum => GetStatisticForPeriod(1);
     public decimal? Month3Sum => GetStatisticForPeriod(3);

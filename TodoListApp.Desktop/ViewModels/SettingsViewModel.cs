@@ -4,26 +4,22 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using TodoListApp.ApiClient;
 using TodoListApp.Core.Models;
-using TodoListApp.Core.Repositories.Interfaces;
 using TodoListApp.Desktop.Infrastructure;
 
 namespace TodoListApp.Desktop.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-    private readonly IAppLogger appLogger;
+    private readonly TodoListAppApiClient appLogger;
     [ObservableProperty]
     private bool isLoaded = false;
-
-    /// <summary>"Поверх всех окон" - применяется к главному окну (см. MainWindow.xaml)</summary>
-    [ObservableProperty]
-    private bool isTopmost = false;
 
     [ObservableProperty]
     private ObservableCollection<LogEntryModel> logEntries = new();
 
-    public SettingsViewModel(IAppLogger appLogger)
+    public SettingsViewModel(TodoListAppApiClient appLogger)
     {
         this.appLogger = appLogger;
     }

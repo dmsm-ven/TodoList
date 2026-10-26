@@ -18,16 +18,23 @@ public class CachedEmployeerRepository : IEmployeerRepository
         this.cache = cache;
     }
 
+    private const string AllKey = "emp-all";
+    private static string EmployeerKey(int id) => $"emp-{id}";
+    private static string PaymentsKey(int employeer_id) => $"emp-payments-{employeer_id}";
+
     // Кэш сбрасывается ПОСЛЕ записи в БД (в finally), иначе параллельный GET успевает закэшировать старые данные
     public async Task<int> AddEmployeer(EmployeerEntity entity)
     {
         try
         {
-            return await decorator.AddEmployeer(entity);
+            var id = await decorator.AddEmployeer(entity);
+            cache.Remove(EmployeerKey(id));
+            return id;
         }
         finally
         {
-            ClearCache();
+            cache.Remove(AllKey);
+            cache.Remove(EmployeerKey(entity.id));
         }
     }
 
@@ -39,7 +46,7 @@ public class CachedEmployeerRepository : IEmployeerRepository
         }
         finally
         {
-            ClearCache();
+            cache.Remove(PaymentsKey(payment.employeer_id));
         }
     }
 
@@ -51,19 +58,22 @@ public class CachedEmployeerRepository : IEmployeerRepository
         }
         finally
         {
-            ClearCache();
+            cache.Remove(AllKey);
+            cache.Remove(EmployeerKey(id));
+            cache.Remove(PaymentsKey(id));
+            // Список задач работодателя кэшируется в CachedJobItemRepository (ключ jobs-emp-{id}), задачи удаляются вместе с ним
+            cache.Remove($"jobs-emp-{id}");
         }
     }
 
     public async Task<List<EmployeerEntity>> GetAllEmployeer()
     {
-        var cacheKey = "emp-all";
-        if (!cache.TryGetValue<List<EmployeerEntity>>(cacheKey, out var list) || list is null)
+        if (!cache.TryGetValue<List<EmployeerEntity>>(AllKey, out var list) || list is null)
         {
             list = await decorator.GetAllEmployeer();
             if (list is not null)
             {
-                cache.Set(cacheKey, list, CacheLifetime);
+                cache.Set(AllKey, list, CacheLifetime);
             }
         }
         return list ?? new();
@@ -71,7 +81,7 @@ public class CachedEmployeerRepository : IEmployeerRepository
 
     public async Task<List<EmployeerPaymentEntity>> GetAllPaymentsForEmployeer(int employeer_id)
     {
-        var cacheKey = $"emp-payments-{employeer_id}";
+        var cacheKey = PaymentsKey(employeer_id);
         if (!cache.TryGetValue<List<EmployeerPaymentEntity>>(cacheKey, out var payments) || payments is null)
         {
             payments = await decorator.GetAllPaymentsForEmployeer(employeer_id);
@@ -85,25 +95,18 @@ public class CachedEmployeerRepository : IEmployeerRepository
 
     public async Task<EmployeerEntity> GetEmployeer(int id)
     {
-        var cacheKey = $"emp-{id}";
+        var cacheKey = EmployeerKey(id);
         if (!cache.TryGetValue<EmployeerEntity>(cacheKey, out var emp) || emp is null)
         {
             emp = await decorator.GetEmployeer(id);
 
             // null не кэшируем: иначе после создания работодателя он еще какое-то время "не существует"
+            // (валидаторы DTO спрашивают GetEmployeer для несуществующих id)
             if (emp is not null)
             {
                 cache.Set(cacheKey, emp, CacheLifetime);
             }
         }
         return emp!;
-    }
-
-    private void ClearCache()
-    {
-        if (cache is MemoryCache memoryCache)
-        {
-            memoryCache.Clear();
-        }
     }
 }

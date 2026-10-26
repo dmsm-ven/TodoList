@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Desktop.ViewModels;
@@ -19,7 +20,6 @@ public static class JobItemMapperHelper
             Description = jobItem.description ?? string.Empty,
             IsCompleted = jobItem.is_completed,
             IsPayed = jobItem.is_payed,
-            // API отдает UTC, берем локальное время (раньше .DateTime давал UTC-часы, из-за чего дата уезжала на день назад)
             StartDate = jobItem.start_date.LocalDateTime,
             EndDate = jobItem.end_date,
             EmployeerId = jobItem.employeer_id,
@@ -35,11 +35,40 @@ public static class JobItemMapperHelper
             description = jobItem.Description,
             is_completed = jobItem.IsCompleted,
             is_payed = jobItem.IsPayed,
-            start_date = jobItem.StartDate ?? throw new InvalidOperationException("Не указана дата создания задачи"),
+            start_date = RequireStartDate(jobItem),
             end_date = jobItem.EndDate,
             employeer_id = jobItem.EmployeerId,
             price = jobItem.Price,
             website = jobItem.Website
+        };
+    }
+    public static UpdateJobDto ToUpdateJobItem(this JobItemViewModel jobItem)
+    {
+        return new UpdateJobDto
+        {
+            Id = jobItem.Id,
+            EmployeerId = jobItem.EmployeerId,
+            Title = jobItem.Title,
+            Description = jobItem.Description,
+            IsCompleted = jobItem.IsCompleted,
+            IsPayed = jobItem.IsPayed,
+            StartDate = new DateTimeOffset(DateTime.SpecifyKind(RequireStartDate(jobItem), DateTimeKind.Local)),
+            EndDate = jobItem.EndDate != null ? DateOnly.FromDateTime(jobItem.EndDate.Value.UtcDateTime) : null,
+            Price = jobItem.Price,
+            Website = jobItem.Website
+        };
+    }
+
+    public static CreateJobDto ToCreateJobItem(this JobItemViewModel jobItem)
+    {
+        return new CreateJobDto
+        {
+            Title = jobItem.Title,
+            Description = jobItem.Description,
+            StartDate = RequireStartDate(jobItem),
+            Price = jobItem.Price,
+            Website = jobItem.Website,
+            EmployeerId = jobItem.EmployeerId
         };
     }
 
@@ -53,6 +82,11 @@ public static class JobItemMapperHelper
             ChangedPropertyName = JobItemViewModel.PropertyNameToTitle.TryGetValue(propertyName, out var title) ? title : propertyName,
             NewValue = FormatHistoryValue(propertyName, jobItemHistory.new_value),
         };
+    }
+
+    private static DateTime RequireStartDate(JobItemViewModel jobItem)
+    {
+        return jobItem.StartDate ?? throw new InvalidOperationException("Не указана дата создания задачи");
     }
 
     private static string FormatHistoryValue(string propertyName, string? value)

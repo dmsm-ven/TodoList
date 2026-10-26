@@ -3,7 +3,7 @@
     <Style TargetType="Border" x:Key="ColumnBorderStyle">
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Padding" Value="5"/>
-        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="2"/>
     </Style>

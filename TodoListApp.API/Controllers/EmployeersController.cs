@@ -1,4 +1,7 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using TodoListApp.Core.Dtos;
 using TodoListApp.Core.Entities;
 using TodoListApp.Core.Models;
 using TodoListApp.Core.Repositories.Interfaces;
@@ -6,7 +9,8 @@ using TodoListApp.Core.Repositories.Interfaces;
 namespace TodoListApp.API.Controllers;
 
 [ApiController]
-public class EmployeersController(IEmployeerRepository repo) : ControllerBase
+public class EmployeersController(IEmployeerRepository repo, IValidator<CreateEmployeerDto> empValidator, ILogger<EmployeersController> logger)
+    : ControllerBase
 {
     [HttpGet("api/employeers")]
     public async Task<ActionResult<IEnumerable<EmployeerEntity>>> GetAll()
@@ -31,7 +35,7 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
             return NotFound();
         }
         await repo.DeleteEmployeer(id);
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("api/employeers/{employeer_id}/payments")]
@@ -46,13 +50,13 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
     {
         if (payment is null || payment.amount <= 0 || employeer_id <= 0)
         {
-            return BadRequest("РЎСѓРјРјР° РѕРїР»Р°С‚С‹ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ Р±РѕР»СЊС€Рµ РЅСѓР»СЏ.");
+            return BadRequest("Сумма оплаты должна быть больше нуля.");
         }
 
-        // employeer_id РІ С‚РµР»Рµ РЅРµ РѕР±СЏР·Р°С‚РµР»РµРЅ, РЅРѕ РµСЃР»Рё СѓРєР°Р·Р°РЅ - РґРѕР»Р¶РµРЅ СЃРѕРІРїР°РґР°С‚СЊ СЃ РјР°СЂС€СЂСѓС‚РѕРј
+        // employeer_id в теле не обязателен, но если указан - должен совпадать с маршрутом
         if (payment.employeer_id != 0 && payment.employeer_id != employeer_id)
         {
-            return BadRequest("employeer_id РІ С‚РµР»Рµ Р·Р°РїСЂРѕСЃР° РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ employeer_id РІ РјР°СЂС€СЂСѓС‚Рµ.");
+            return BadRequest("employeer_id в теле запроса не совпадает с employeer_id в маршруте.");
         }
 
         var emp = await repo.GetEmployeer(employeer_id);
@@ -61,10 +65,10 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
             return NotFound();
         }
 
-        // РСЃС‚РѕС‡РЅРёРє РїСЂР°РІРґС‹ - РјР°СЂС€СЂСѓС‚, Р° РЅРµ С‚РµР»Рѕ Р·Р°РїСЂРѕСЃР°
+        // Источник правды - маршрут, а не тело запроса
         payment.employeer_id = employeer_id;
 
-        // Postgres (timestamptz) РїСЂРёРЅРёРјР°РµС‚ С‚РѕР»СЊРєРѕ DateTimeOffset СЃРѕ СЃРјРµС‰РµРЅРёРµРј 0
+        // Postgres (timestamptz) принимает только DateTimeOffset со смещением 0
         payment.transfer_arrival_date = payment.transfer_arrival_date == default
             ? DateTimeOffset.UtcNow
             : payment.transfer_arrival_date.ToUniversalTime();
@@ -73,21 +77,21 @@ public class EmployeersController(IEmployeerRepository repo) : ControllerBase
         return Ok();
     }
 
-    [HttpPost("api/employeers/add")]
-    public async Task<ActionResult<int>> AddEmployeer([FromBody] EmployeerEntity payload)
+    [HttpPost("api/employeers")]
+    public async Task<IActionResult> AddEmployeer([FromBody] CreateEmployeerDto employeer)
     {
-        if (payload is null || string.IsNullOrWhiteSpace(payload?.name))
-        {
-            return BadRequest();
-        }
-        var allEmployeers = await repo.GetAllEmployeer();
+        var isValid = await empValidator.ValidateAsync(employeer);
 
-        if (allEmployeers.Any(e => e.name.Equals(payload.name, StringComparison.OrdinalIgnoreCase)))
+        if (!isValid.IsValid)
         {
-            return Conflict("Employeer with the same name already exists.");
+            return BadRequest(isValid.Errors);
         }
 
-        var empId = await repo.AddEmployeer(payload);
-        return empId;
+        var empId = await repo.AddEmployeer(employeer.ToEntity());
+        var createdEmp = await repo.GetEmployeer(empId);
+
+        logger.LogInformation("Создан заказчик с ID {id}. Data[{data}]", empId, JsonSerializer.Serialize(createdEmp));
+
+        return CreatedAtAction(nameof(GetById), new { id = empId }, createdEmp);
     }
 }

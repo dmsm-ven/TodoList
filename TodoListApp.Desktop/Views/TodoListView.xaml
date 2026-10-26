@@ -6,7 +6,7 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:converters="clr-namespace:TodoListApp.Desktop.Infrastructure.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
@@ -26,40 +26,45 @@
             VerticalAlignment="Top"
             Panel.ZIndex="10"
             Orientation="Horizontal">
-            <Button
+            <ui:Button
+                Appearance="Transparent"
+                Command="{Binding ShowAppSettingsWindowCommand}"
+                Icon="{ui:SymbolIcon Symbol=Settings24,
+                                     FontSize=20}"
+                ToolTip="Настройки" />
+            <ui:Button
+                Appearance="Transparent"
+                Command="{Binding ShowStatisticsWindowCommand}"
+                Icon="{ui:SymbolIcon Symbol=DataBarVertical24,
+                                     FontSize=20}"
+                ToolTip="Статистика" />
+            <ui:Button
+                Appearance="Transparent"
+                Command="{Binding ShowPaymentsWindowCommand}"
+                Foreground="{StaticResource MoneyGreenBrush}"
+                Icon="{ui:SymbolIcon Symbol=Money24,
+                                     FontSize=20}"
+                ToolTip="Оплаты" />
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding ShowLogsWindowCommand}"
-                Style="{StaticResource ToolButtonStyle}"
-                ToolTip="Открыть лог-журнал">
-                <icons:PackIconFontAwesome
-                    Width="22"
-                    Height="22"
-                    Foreground="Red"
-                    Kind="ListSolid"
-                    Opacity="0.4" />
-            </Button>
-            <Button
+                Icon="{ui:SymbolIcon Symbol=TextBulletListLtr24,
+                                     FontSize=20}"
+                ToolTip="Открыть лог-журнал" />
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding RemoveEmployeerTabCommand}"
-                Style="{StaticResource ToolButtonStyle}"
-                ToolTip="Удалить текущую вкладку с работами">
-                <icons:PackIconFontAwesome
-                    Width="22"
-                    Height="22"
-                    Foreground="Red"
-                    Kind="UserMinusSolid"
-                    Opacity="0.4" />
-            </Button>
-
-            <Button
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Icon="{ui:SymbolIcon Symbol=PersonDelete24,
+                                     FontSize=20}"
+                ToolTip="Удалить текущую вкладку с работами" />
+            <ui:Button
+                Appearance="Transparent"
                 Command="{Binding AddNewEmployeerTabCommand}"
-                Style="{StaticResource ToolButtonStyle}"
-                ToolTip="Создать новую вкладку с работами">
-                <icons:PackIconFontAwesome
-                    Width="22"
-                    Height="22"
-                    Foreground="LawnGreen"
-                    Kind="UserPlusSolid"
-                    Opacity="0.4" />
-            </Button>
+                Foreground="{DynamicResource SystemFillColorSuccessBrush}"
+                Icon="{ui:SymbolIcon Symbol=PersonAdd24,
+                                     FontSize=20}"
+                ToolTip="Создать новую вкладку с работами" />
         </StackPanel>
 
         <TabControl
@@ -86,7 +91,7 @@
                                 d:Text="99"
                                 FontSize="14"
                                 Foreground="White"
-                                Text="{Binding StatusBarData.ActiveOrNotPayedTasks}" />
+                                Text="{Binding ActiveTasksCount}" />
                         </Grid>
 
                         <TextBlock
@@ -94,7 +99,7 @@
                             Background="Transparent"
                             FontSize="20"
                             FontWeight="Bold"
-                            Foreground="Black"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                             Text="{Binding Employeer.Name, TargetNullValue='Имя'}" />
 
                     </StackPanel>

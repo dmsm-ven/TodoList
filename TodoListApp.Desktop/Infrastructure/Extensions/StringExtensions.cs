@@ -1,5 +1,4 @@
-﻿using MahApps.Metro.IconPacks;
-using System;
+﻿using System;
 
 namespace TodoListApp.Desktop.Infrastructure.Extensions;
 
@@ -24,14 +23,5 @@ public static class StringExtensions
 
             return Convert.ToHexString(hashBytes); // .NET 5 +
         }
-    }
-
-    public static PackIconFontAwesomeKind ToFontAwesomeIcon(this string s)
-    {
-        if (Enum.TryParse<PackIconFontAwesomeKind>(s, out var icon))
-        {
-            return icon;
-        }
-        return PackIconFontAwesomeKind.QuestionSolid;
     }
 }

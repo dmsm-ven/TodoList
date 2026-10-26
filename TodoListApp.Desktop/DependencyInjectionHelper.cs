@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using TodoListApp.Core.Entities;
+using TodoListApp.Desktop.Infrastructure;
 using TodoListApp.Desktop.Models.TodoList;
 using TodoListApp.Desktop.Services.Options;
 using TodoListApp.Desktop.ViewModels;
@@ -33,6 +34,8 @@ public static class DependencyInjectionHelper
     }
     public static IServiceCollection ConfigureMyViewModels(this IServiceCollection services)
     {
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<AppSettingsViewModel>();
         services.AddTransient<EmployeerTabViewModel>();
         services.AddSingleton<ConnectionErrorWindowViewModel>();
         services.AddSingleton<LoginWindowViewModel>();
