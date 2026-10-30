@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OxyPlot;
+using OxyPlot.Annotations;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Windows;
 using System.Windows.Threading;
 using TodoListApp.Desktop.ViewModels;
 using Wpf.Ui.Appearance;
@@ -14,6 +14,8 @@ namespace TodoListApp.Desktop.Views;
 /// </summary>
 public partial class StatisticsWindow : FluentWindow
 {
+    private static readonly OxyColor BarColor = OxyColor.Parse("#4169E1");
+
     private bool redrawQueued;
     private StatisticsViewModel? subscribedViewModel;
 
@@ -21,9 +23,9 @@ public partial class StatisticsWindow : FluentWindow
     {
         InitializeComponent();
 
-        // Графики статичные: отключаем зум/перетаскивание, чтобы колесо мыши прокручивало окно
-        DynamicsPlot.UserInputProcessor.Disable();
-        ComparisonPlot.UserInputProcessor.Disable();
+        // Графики статичные: отключаем зум/перетаскивание/трекер, чтобы колесо мыши прокручивало окно
+        DynamicsPlot.Controller = CreateStaticController();
+        ComparisonPlot.Controller = CreateStaticController();
 
         DataContextChanged += (_, _) => Subscribe();
         ApplicationThemeManager.Changed += OnThemeChanged;
@@ -32,6 +34,13 @@ public partial class StatisticsWindow : FluentWindow
             ApplicationThemeManager.Changed -= OnThemeChanged;
             Unsubscribe();
         };
+    }
+
+    private static PlotController CreateStaticController()
+    {
+        var controller = new PlotController();
+        controller.UnbindAll();
+        return controller;
     }
 
     private void OnThemeChanged(ApplicationTheme currentApplicationTheme, System.Windows.Media.Color systemAccent) => QueueRedraw();
@@ -84,31 +93,95 @@ public partial class StatisticsWindow : FluentWindow
         DrawBars(ComparisonPlot, vm.Comparison.Select(c => c.Name).ToList(), vm.Comparison.Select(c => (double)c.Total).ToList(), dark);
     }
 
-    private static void DrawBars(ScottPlot.WPF.WpfPlot control, IReadOnlyList<string> labels, IReadOnlyList<double> values, bool dark)
+    private static void DrawBars(OxyPlot.Wpf.PlotView control, IReadOnlyList<string> labels, IReadOnlyList<double> values, bool dark)
     {
-        var plot = control.Plot;
-        plot.Clear();
-        plot.SetStyle(dark ? new ScottPlot.PlotStyles.Dark() : new ScottPlot.PlotStyles.Light());
+        var textColor = dark ? OxyColors.WhiteSmoke : OxyColors.Black;
+        var lineColor = dark ? OxyColor.FromRgb(120, 120, 120) : OxyColor.FromRgb(160, 160, 160);
+        var gridColor = dark ? OxyColor.FromArgb(40, 255, 255, 255) : OxyColor.FromArgb(40, 0, 0, 0);
+
+        var model = new PlotModel
+        {
+            Background = OxyColors.Transparent,
+            PlotAreaBackground = OxyColors.Transparent,
+            PlotAreaBorderColor = OxyColors.Transparent,
+            TextColor = textColor
+        };
+
+        var max = values.Count > 0 ? values.Max() : 0;
+
+        // Нижняя ось числовая: подписи категорий подставляются по целым индексам столбцов
+        var categoryAxis = new LinearAxis
+        {
+            Position = AxisPosition.Bottom,
+            Minimum = -0.6,
+            Maximum = Math.Max(values.Count - 1, 0) + 0.6,
+            MajorStep = 1,
+            MinorStep = 1,
+            MajorTickSize = 0,
+            MinorTickSize = 0,
+            LabelFormatter = v =>
+            {
+                var index = (int)Math.Round(v);
+                return Math.Abs(v - index) < 0.001 && index >= 0 && index < labels.Count ? labels[index] : string.Empty;
+            },
+            TextColor = textColor,
+            TicklineColor = lineColor,
+            AxislineColor = lineColor,
+            AxislineStyle = LineStyle.Solid,
+            IsZoomEnabled = false,
+            IsPanEnabled = false
+        };
+
+        var valueAxis = new LinearAxis
+        {
+            Position = AxisPosition.Left,
+            Minimum = 0,
+            Maximum = max > 0 ? max * 1.2 : 1,
+            StringFormat = "N0",
+            TextColor = textColor,
+            TicklineColor = lineColor,
+            AxislineColor = lineColor,
+            MajorGridlineStyle = LineStyle.Solid,
+            MajorGridlineColor = gridColor,
+            IsZoomEnabled = false,
+            IsPanEnabled = false
+        };
+
+        model.Axes.Add(categoryAxis);
+        model.Axes.Add(valueAxis);
 
         if (values.Count > 0)
         {
-            var bars = plot.Add.Bars(values.ToArray());
-            bars.Color = ScottPlot.Color.FromHex("#4169E1");
-
-            for (var i = 0; i < bars.Bars.Count; i++)
+            var series = new RectangleBarSeries
             {
-                bars.Bars[i].LineWidth = 0;
-                bars.Bars[i].Label = values[i] > 0 ? values[i].ToString("N0") : string.Empty;
-                bars.Bars[i].LabelOnTop = true;
+                FillColor = BarColor,
+                StrokeThickness = 0
+            };
+
+            for (var i = 0; i < values.Count; i++)
+            {
+                series.Items.Add(new RectangleBarItem(i - 0.3, 0, i + 0.3, values[i]));
+
+                // Подпись значения над столбцом (для нулевых не показываем)
+                if (values[i] > 0)
+                {
+                    model.Annotations.Add(new TextAnnotation
+                    {
+                        Text = values[i].ToString("N0"),
+                        TextPosition = new DataPoint(i, values[i]),
+                        TextHorizontalAlignment = OxyPlot.HorizontalAlignment.Center,
+                        TextVerticalAlignment = OxyPlot.VerticalAlignment.Bottom,
+                        TextColor = textColor,
+                        Stroke = OxyColors.Transparent,
+                        Background = OxyColors.Transparent,
+                        Padding = new OxyThickness(0, 0, 0, 2)
+                    });
+                }
             }
 
-            plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(
-                labels.Select((label, i) => new ScottPlot.Tick(i, label)).ToArray());
+            model.Series.Add(series);
         }
 
-        var max = values.Count > 0 ? values.Max() : 0;
-        plot.Axes.SetLimitsY(0, max > 0 ? max * 1.2 : 1);
-
-        control.Refresh();
+        control.Model = model;
     }
 }

@@ -1,0 +1,614 @@
+diff --git a/Directory.Packages.props b/Directory.Packages.props
+index 8aae85e..ceb18e4 100644
+--- a/Directory.Packages.props
++++ b/Directory.Packages.props
+@@ -8,7 +8,6 @@
+     <PackageVersion Include="Dapper" Version="2.1.72" />
+     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+     <PackageVersion Include="Humanizer.Core.ru" Version="2.14.1" />
+-    <PackageVersion Include="LoadingSpinner.WPF" Version="1.0.0" />
+     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.0" />
+     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+@@ -16,9 +15,9 @@
+     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
++    <PackageVersion Include="OxyPlot.Wpf" Version="2.2.0" />
+     <PackageVersion Include="Painven.TelegramNotificator" Version="1.0.11" />
+     <PackageVersion Include="Scrutor" Version="7.0.0" />
+-    <PackageVersion Include="ScottPlot.WPF" Version="5.1.59" />
+     <PackageVersion Include="WPF-UI" Version="4.2.0" />
+   </ItemGroup>
+ </Project>
+\ No newline at end of file
+diff --git a/TodoListApp.Desktop/TodoListApp.Desktop.csproj b/TodoListApp.Desktop/TodoListApp.Desktop.csproj
+index 5ee06f6..8184273 100644
+--- a/TodoListApp.Desktop/TodoListApp.Desktop.csproj
++++ b/TodoListApp.Desktop/TodoListApp.Desktop.csproj
+@@ -30,14 +30,13 @@
+   <ItemGroup>
+     <PackageReference Include="CommunityToolkit.Mvvm" />
+     <PackageReference Include="Humanizer.Core.ru" />
+-    <PackageReference Include="LoadingSpinner.WPF" />
+     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+     <PackageReference Include="Microsoft.Extensions.Hosting" />
+     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+-    <PackageReference Include="ScottPlot.WPF" />
++    <PackageReference Include="OxyPlot.Wpf" />
+     <PackageReference Include="WPF-UI" />
+-  
++
+   </ItemGroup>
+ 
+   <ItemGroup>
+diff --git a/TodoListApp.Desktop/Views/Controls/LoadingSpinner.cs b/TodoListApp.Desktop/Views/Controls/LoadingSpinner.cs
+new file mode 100644
+index 0000000..cc799f7
+--- /dev/null
++++ b/TodoListApp.Desktop/Views/Controls/LoadingSpinner.cs
+@@ -0,0 +1,137 @@
++using System;
++using System.Windows;
++using System.Windows.Media;
++using System.Windows.Media.Animation;
++
++namespace TodoListApp.Desktop.Views.Controls;
++
++/// <summary>
++/// Простой индикатор загрузки: вращающаяся дуга на полупрозрачной окружности.
++/// Анимация работает только пока <see cref="IsLoading"/> = true и элемент виден.
++/// </summary>
++public class LoadingSpinner : FrameworkElement
++{
++    private const double DefaultSize = 40;
++    private const double SweepAngle = 270;
++
++    private readonly RotateTransform rotateTransform = new();
++
++    public static readonly DependencyProperty IsLoadingProperty =
++        DependencyProperty.Register(
++            nameof(IsLoading),
++            typeof(bool),
++            typeof(LoadingSpinner),
++            new PropertyMetadata(true, (d, _) => ((LoadingSpinner)d).UpdateAnimation()));
++
++    public static readonly DependencyProperty ThicknessProperty =
++        DependencyProperty.Register(
++            nameof(Thickness),
++            typeof(double),
++            typeof(LoadingSpinner),
++            new FrameworkPropertyMetadata(4.0, FrameworkPropertyMetadataOptions.AffectsRender));
++
++    public static readonly DependencyProperty ColorProperty =
++        DependencyProperty.Register(
++            nameof(Color),
++            typeof(Color),
++            typeof(LoadingSpinner),
++            new FrameworkPropertyMetadata(Colors.RoyalBlue, FrameworkPropertyMetadataOptions.AffectsRender));
++
++    static LoadingSpinner()
++    {
++        // Размер по умолчанию, который можно переопределить через Width/Height
++        WidthProperty.OverrideMetadata(typeof(LoadingSpinner), new FrameworkPropertyMetadata(DefaultSize));
++        HeightProperty.OverrideMetadata(typeof(LoadingSpinner), new FrameworkPropertyMetadata(DefaultSize));
++        IsHitTestVisibleProperty.OverrideMetadata(typeof(LoadingSpinner), new FrameworkPropertyMetadata(false));
++    }
++
++    public LoadingSpinner()
++    {
++        RenderTransform = rotateTransform;
++        RenderTransformOrigin = new Point(0.5, 0.5);
++
++        IsVisibleChanged += (_, _) => UpdateAnimation();
++        Loaded += (_, _) => UpdateAnimation();
++        Unloaded += (_, _) => StopAnimation();
++    }
++
++    public bool IsLoading
++    {
++        get => (bool)GetValue(IsLoadingProperty);
++        set => SetValue(IsLoadingProperty, value);
++    }
++
++    /// <summary>Толщина дуги.</summary>
++    public double Thickness
++    {
++        get => (double)GetValue(ThicknessProperty);
++        set => SetValue(ThicknessProperty, value);
++    }
++
++    /// <summary>Цвет дуги.</summary>
++    public Color Color
++    {
++        get => (Color)GetValue(ColorProperty);
++        set => SetValue(ColorProperty, value);
++    }
++
++    private void UpdateAnimation()
++    {
++        if (IsLoading && IsVisible)
++        {
++            var animation = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(1))
++            {
++                RepeatBehavior = RepeatBehavior.Forever
++            };
++            rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation);
++        }
++        else
++        {
++            StopAnimation();
++        }
++    }
++
++    private void StopAnimation() => rotateTransform.BeginAnimation(RotateTransform.AngleProperty, null);
++
++    protected override void OnRender(DrawingContext drawingContext)
++    {
++        var thickness = Math.Max(Thickness, 0.5);
++        var diameter = Math.Min(ActualWidth, ActualHeight) - thickness;
++        if (diameter <= 0) { return; }
++
++        var radius = diameter / 2;
++        var center = new Point(ActualWidth / 2, ActualHeight / 2);
++
++        var trackBrush = new SolidColorBrush(Color) { Opacity = 0.2 };
++        trackBrush.Freeze();
++        var arcBrush = new SolidColorBrush(Color);
++        arcBrush.Freeze();
++
++        var trackPen = new Pen(trackBrush, thickness);
++        trackPen.Freeze();
++        var arcPen = new Pen(arcBrush, thickness)
++        {
++            StartLineCap = PenLineCap.Round,
++            EndLineCap = PenLineCap.Round
++        };
++        arcPen.Freeze();
++
++        // Фоновая окружность
++        drawingContext.DrawEllipse(null, trackPen, center, radius, radius);
++
++        // Вращающаяся дуга: от 0° (справа) по часовой стрелке на 270°
++        var start = new Point(center.X + radius, center.Y);
++        var endRadians = SweepAngle * Math.PI / 180;
++        var end = new Point(center.X + radius * Math.Cos(endRadians), center.Y + radius * Math.Sin(endRadians));
++
++        var geometry = new StreamGeometry();
++        using (var context = geometry.Open())
++        {
++            context.BeginFigure(start, false, false);
++            context.ArcTo(end, new Size(radius, radius), 0, true, SweepDirection.Clockwise, true, false);
++        }
++        geometry.Freeze();
++
++        drawingContext.DrawGeometry(null, arcPen, geometry);
++    }
++}
+diff --git a/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml b/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml
+index 3b13b56..4244d24 100644
+--- a/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml
++++ b/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml
+@@ -5,43 +5,72 @@
+     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:local="clr-namespace:TodoListApp.Desktop.Views.Controls"
+-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:mod="clr-namespace:TodoListApp.Desktop.Models.TodoList"
++    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+     d:DataContext="{d:DesignInstance Type={x:Type mod:EmployeerTabViewModel},
+                                      IsDesignTimeCreatable=False}"
+     d:DesignHeight="450"
+     d:DesignWidth="800"
+     mc:Ignorable="d">
+     <Border Style="{StaticResource ColumnBorderStyle}">
+-        <ScrollViewer
+-            MinHeight="30"
+-            BorderThickness="0"
+-            HorizontalScrollBarVisibility="Auto"
+-            VerticalScrollBarVisibility="Hidden">
+-            <StackPanel Orientation="Horizontal">
+-            <ItemsControl ItemsSource="{Binding MonthPills}">
+-                <ItemsControl.ItemsPanel>
+-                    <ItemsPanelTemplate>
+-                        <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+-                    </ItemsPanelTemplate>
+-                </ItemsControl.ItemsPanel>
+-                <ItemsControl.ItemTemplate>
+-                    <DataTemplate>
+-                        <con:TodoListMonthPillItem Margin="2,2,8,2" 
+-                                                   IsSelectedPill="{Binding IsSelected}"/>
+-                    </DataTemplate>
+-                </ItemsControl.ItemTemplate>
+-            </ItemsControl>
++        <DockPanel>
++            <!--  Стрелки прокрутки: показываются только когда плитки не помещаются в панель  -->
++            <ui:Button
++                x:Name="ScrollLeftButton"
++                MinHeight="30"
++                Margin="2,2,0,2"
++                Padding="4,0"
++                VerticalAlignment="Center"
++                Appearance="Transparent"
++                Click="OnScrollLeftClick"
++                DockPanel.Dock="Left"
++                Icon="{ui:SymbolIcon ChevronLeft24}"
++                Visibility="Collapsed" />
+             <ui:Button
+-                Margin="2,2,8,2"
++                x:Name="ScrollRightButton"
++                MinHeight="30"
++                Margin="0,2,2,2"
++                Padding="4,0"
+                 VerticalAlignment="Center"
+-                Appearance="Secondary"
+-                Command="{Binding ShowMoreMonthPillsCommand}"
+-                Content="Показать еще"
+-                Icon="{ui:SymbolIcon Add24}"
+-                Visibility="{Binding HasHiddenMonthPills, Converter={StaticResource BoolToVisibilityConverter}}" />
+-            </StackPanel>
+-        </ScrollViewer>
++                Appearance="Transparent"
++                Click="OnScrollRightClick"
++                DockPanel.Dock="Right"
++                Icon="{ui:SymbolIcon ChevronRight24}"
++                Visibility="Collapsed" />
++
++            <!--  Полоса прокрутки скрыта (раньше перекрывала кнопки): прокрутка колесом мыши и стрелками  -->
++            <ScrollViewer
++                x:Name="PillsScrollViewer"
++                MinHeight="30"
++                BorderThickness="0"
++                HorizontalScrollBarVisibility="Hidden"
++                PreviewMouseWheel="OnPillsPreviewMouseWheel"
++                ScrollChanged="OnPillsScrollChanged"
++                VerticalScrollBarVisibility="Disabled">
++                <StackPanel Orientation="Horizontal">
++                    <ItemsControl ItemsSource="{Binding MonthPills}">
++                        <ItemsControl.ItemsPanel>
++                            <ItemsPanelTemplate>
++                                <StackPanel IsItemsHost="True" Orientation="Horizontal" />
++                            </ItemsPanelTemplate>
++                        </ItemsControl.ItemsPanel>
++                        <ItemsControl.ItemTemplate>
++                            <DataTemplate>
++                                <con:TodoListMonthPillItem Margin="2,2,8,2" IsSelectedPill="{Binding IsSelected}" />
++                            </DataTemplate>
++                        </ItemsControl.ItemTemplate>
++                    </ItemsControl>
++                    <ui:Button
++                        Margin="2,2,8,2"
++                        VerticalAlignment="Center"
++                        Appearance="Secondary"
++                        Command="{Binding ShowMoreMonthPillsCommand}"
++                        Content="Показать еще"
++                        Icon="{ui:SymbolIcon Add24}"
++                        Visibility="{Binding HasHiddenMonthPills, Converter={StaticResource BoolToVisibilityConverter}}" />
++                </StackPanel>
++            </ScrollViewer>
++        </DockPanel>
+     </Border>
+ </UserControl>
+diff --git a/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml.cs b/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml.cs
+index f92052b..d681864 100644
+--- a/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml.cs
++++ b/TodoListApp.Desktop/Views/Controls/TodoListMonthPillsNavigation.xaml.cs
+@@ -1,4 +1,7 @@
+-﻿using System.Windows.Controls;
++﻿using System;
++using System.Windows;
++using System.Windows.Controls;
++using System.Windows.Input;
+ 
+ namespace TodoListApp.Desktop.Views.Controls;
+ /// <summary>
+@@ -6,8 +9,37 @@ namespace TodoListApp.Desktop.Views.Controls;
+ /// </summary>
+ public partial class TodoListMonthPillsNavigation : UserControl
+ {
++    private const double ScrollStep = 200;
++
+     public TodoListMonthPillsNavigation()
+     {
+         InitializeComponent();
+     }
++
++    private void OnScrollLeftClick(object sender, RoutedEventArgs e) =>
++        PillsScrollViewer.ScrollToHorizontalOffset(Math.Max(0, PillsScrollViewer.HorizontalOffset - ScrollStep));
++
++    private void OnScrollRightClick(object sender, RoutedEventArgs e) =>
++        PillsScrollViewer.ScrollToHorizontalOffset(Math.Min(PillsScrollViewer.ScrollableWidth, PillsScrollViewer.HorizontalOffset + ScrollStep));
++
++    // Колесо мыши над панелью прокручивает плитки по горизонтали
++    private void OnPillsPreviewMouseWheel(object sender, MouseWheelEventArgs e)
++    {
++        if (PillsScrollViewer.ScrollableWidth <= 0) { return; }
++
++        PillsScrollViewer.ScrollToHorizontalOffset(PillsScrollViewer.HorizontalOffset - e.Delta);
++        e.Handled = true;
++    }
++
++    private void OnPillsScrollChanged(object sender, ScrollChangedEventArgs e)
++    {
++        var hasOverflow = PillsScrollViewer.ScrollableWidth > 0;
++        var visibility = hasOverflow ? Visibility.Visible : Visibility.Collapsed;
++
++        ScrollLeftButton.Visibility = visibility;
++        ScrollRightButton.Visibility = visibility;
++
++        ScrollLeftButton.IsEnabled = PillsScrollViewer.HorizontalOffset > 0;
++        ScrollRightButton.IsEnabled = PillsScrollViewer.HorizontalOffset < PillsScrollViewer.ScrollableWidth;
++    }
+ }
+diff --git a/TodoListApp.Desktop/Views/Controls/TodoListTabContent.xaml b/TodoListApp.Desktop/Views/Controls/TodoListTabContent.xaml
+index 401b51e..3368918 100644
+--- a/TodoListApp.Desktop/Views/Controls/TodoListTabContent.xaml
++++ b/TodoListApp.Desktop/Views/Controls/TodoListTabContent.xaml
+@@ -6,7 +6,6 @@
+     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+     xmlns:vm="clr-namespace:TodoListApp.Desktop.Models.TodoList"
+     d:DataContext="{d:DesignInstance Type=vm:EmployeerTabViewModel,
+@@ -68,14 +67,12 @@
+             DataContext="{Binding StatusBarData}" />
+ 
+         <!--  индикатор загрузки вкладки  -->
+-        <ss:LoadingSpinner
++        <con:LoadingSpinner
+             Grid.Row="1"
+             Width="200"
+             Height="200"
+-            HorizontalAlignment="Stretch"
+-            VerticalAlignment="Stretch"
+-            HorizontalContentAlignment="Center"
+-            VerticalContentAlignment="Center"
++            HorizontalAlignment="Center"
++            VerticalAlignment="Center"
+             Panel.ZIndex="10"
+             IsLoading="True"
+             Opacity="0.75"
+diff --git a/TodoListApp.Desktop/Views/Controls/TodoListTabTableView.xaml b/TodoListApp.Desktop/Views/Controls/TodoListTabTableView.xaml
+index 674f276..5b3d4be 100644
+--- a/TodoListApp.Desktop/Views/Controls/TodoListTabTableView.xaml
++++ b/TodoListApp.Desktop/Views/Controls/TodoListTabTableView.xaml
+@@ -32,6 +32,7 @@
+             FontSize="13"
+             HeadersVisibility="Column"
+             HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
++            HorizontalScrollBarVisibility="Disabled"
+             ItemsSource="{Binding FilteredTodoItems}"
+             RowBackground="Transparent"
+             RowDetailsVisibilityMode="VisibleWhenSelected"
+@@ -92,7 +93,10 @@
+                     Width="2*"
+                     Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                     Header="Задача" />
+-                <DataGridTemplateColumn Width="300" Header="Сайт">
++                <DataGridTemplateColumn
++                    Width="*"
++                    MinWidth="150"
++                    Header="Сайт">
+                     <DataGridTemplateColumn.CellTemplate>
+                         <DataTemplate>
+                             <StackPanel Orientation="Horizontal">
+diff --git a/TodoListApp.Desktop/Views/TodoListView.xaml b/TodoListApp.Desktop/Views/TodoListView.xaml
+index cefbd38..25bcead 100644
+--- a/TodoListApp.Desktop/Views/TodoListView.xaml
++++ b/TodoListApp.Desktop/Views/TodoListView.xaml
+@@ -7,7 +7,6 @@
+     xmlns:converters="clr-namespace:TodoListApp.Desktop.Infrastructure.Converters"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
+     d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel,
+@@ -109,7 +108,7 @@
+             </TabControl.ItemTemplate>
+         </TabControl>
+ 
+-        <ss:LoadingSpinner
++        <con:LoadingSpinner
+             Width="64"
+             Height="64"
+             HorizontalAlignment="Center"
+diff --git a/TodoListApp.Desktop/Views/Windows/LoginWindow.xaml b/TodoListApp.Desktop/Views/Windows/LoginWindow.xaml
+index 2d5a197..a41e317 100644
+--- a/TodoListApp.Desktop/Views/Windows/LoginWindow.xaml
++++ b/TodoListApp.Desktop/Views/Windows/LoginWindow.xaml
+@@ -6,7 +6,7 @@
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
++    xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
+     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
+     x:Name="loginWindow"
+     Title="Войти"
+@@ -81,7 +81,7 @@
+                     </Style>
+                 </Grid.Resources>
+ 
+-                <ss:LoadingSpinner
++                <con:LoadingSpinner
+                     Grid.Row="0"
+                     Margin="0,14,0,0"
+                     Panel.ZIndex="999"
+diff --git a/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml b/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml
+index 45d202c..d91ec9c 100644
+--- a/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml
++++ b/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml
+@@ -5,7 +5,7 @@
+     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
+     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+-    xmlns:sp="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
++    xmlns:oxy="http://oxyplot.org/wpf"
+     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
+     Title="Статистика"
+@@ -136,7 +136,7 @@
+                     Header="Динамика за 12 месяцев"
+                     IsExpanded="False">
+                     <StackPanel Margin="0,8,0,0">
+-                    <sp:WpfPlot x:Name="DynamicsPlot" Height="260" />
++                    <oxy:PlotView x:Name="DynamicsPlot" Height="260" Background="Transparent" />
+                     <DataGrid
+                         MaxHeight="360"
+                         AutoGenerateColumns="False"
+@@ -175,7 +175,7 @@
+                     Header="Сравнение работодателей"
+                     IsExpanded="False">
+                     <StackPanel Margin="0,8,0,0">
+-                    <sp:WpfPlot x:Name="ComparisonPlot" Height="260" />
++                    <oxy:PlotView x:Name="ComparisonPlot" Height="260" Background="Transparent" />
+                     <DataGrid
+                         MaxHeight="300"
+                         AutoGenerateColumns="False"
+diff --git a/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml.cs b/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml.cs
+index 30b36d0..2d7962e 100644
+--- a/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml.cs
++++ b/TodoListApp.Desktop/Views/Windows/StatisticsWindow.xaml.cs
+@@ -1,4 +1,7 @@
+-﻿using System;
++﻿using OxyPlot;
++using OxyPlot.Axes;
++using OxyPlot.Series;
++using System;
+ using System.Collections.Generic;
+ using System.Collections.Specialized;
+ using System.Linq;
+@@ -14,6 +17,8 @@ namespace TodoListApp.Desktop.Views;
+ /// </summary>
+ public partial class StatisticsWindow : FluentWindow
+ {
++    private static readonly OxyColor BarColor = OxyColor.Parse("#4169E1");
++
+     private bool redrawQueued;
+     private StatisticsViewModel? subscribedViewModel;
+ 
+@@ -21,9 +26,9 @@ public partial class StatisticsWindow : FluentWindow
+     {
+         InitializeComponent();
+ 
+-        // Графики статичные: отключаем зум/перетаскивание, чтобы колесо мыши прокручивало окно
+-        DynamicsPlot.UserInputProcessor.Disable();
+-        ComparisonPlot.UserInputProcessor.Disable();
++        // Графики статичные: отключаем зум/перетаскивание/трекер, чтобы колесо мыши прокручивало окно
++        DynamicsPlot.Controller = CreateStaticController();
++        ComparisonPlot.Controller = CreateStaticController();
+ 
+         DataContextChanged += (_, _) => Subscribe();
+         ApplicationThemeManager.Changed += OnThemeChanged;
+@@ -34,6 +39,13 @@ public partial class StatisticsWindow : FluentWindow
+         };
+     }
+ 
++    private static PlotController CreateStaticController()
++    {
++        var controller = new PlotController();
++        controller.UnbindAll();
++        return controller;
++    }
++
+     private void OnThemeChanged(ApplicationTheme currentApplicationTheme, System.Windows.Media.Color systemAccent) => QueueRedraw();
+ 
+     private void Subscribe()
+@@ -84,31 +96,75 @@ public partial class StatisticsWindow : FluentWindow
+         DrawBars(ComparisonPlot, vm.Comparison.Select(c => c.Name).ToList(), vm.Comparison.Select(c => (double)c.Total).ToList(), dark);
+     }
+ 
+-    private static void DrawBars(ScottPlot.WPF.WpfPlot control, IReadOnlyList<string> labels, IReadOnlyList<double> values, bool dark)
++    private static void DrawBars(OxyPlot.Wpf.PlotView control, IReadOnlyList<string> labels, IReadOnlyList<double> values, bool dark)
+     {
+-        var plot = control.Plot;
+-        plot.Clear();
+-        plot.SetStyle(dark ? new ScottPlot.PlotStyles.Dark() : new ScottPlot.PlotStyles.Light());
++        var textColor = dark ? OxyColors.WhiteSmoke : OxyColors.Black;
++        var lineColor = dark ? OxyColor.FromRgb(120, 120, 120) : OxyColor.FromRgb(160, 160, 160);
++        var gridColor = dark ? OxyColor.FromArgb(40, 255, 255, 255) : OxyColor.FromArgb(40, 0, 0, 0);
+ 
+-        if (values.Count > 0)
++        var model = new PlotModel
+         {
+-            var bars = plot.Add.Bars(values.ToArray());
+-            bars.Color = ScottPlot.Color.FromHex("#4169E1");
++            Background = OxyColors.Transparent,
++            PlotAreaBackground = OxyColors.Transparent,
++            PlotAreaBorderColor = OxyColors.Transparent,
++            TextColor = textColor
++        };
++
++        var categoryAxis = new CategoryAxis
++        {
++            Position = AxisPosition.Bottom,
++            TextColor = textColor,
++            TicklineColor = lineColor,
++            AxislineColor = lineColor,
++            AxislineStyle = LineStyle.Solid,
++            IsZoomEnabled = false,
++            IsPanEnabled = false
++        };
++        foreach (var label in labels)
++        {
++            categoryAxis.Labels.Add(label);
++        }
+ 
+-            for (var i = 0; i < bars.Bars.Count; i++)
++        var max = values.Count > 0 ? values.Max() : 0;
++        var valueAxis = new LinearAxis
++        {
++            Position = AxisPosition.Left,
++            Minimum = 0,
++            Maximum = max > 0 ? max * 1.2 : 1,
++            StringFormat = "N0",
++            TextColor = textColor,
++            TicklineColor = lineColor,
++            AxislineColor = lineColor,
++            MajorGridlineStyle = LineStyle.Solid,
++            MajorGridlineColor = gridColor,
++            IsZoomEnabled = false,
++            IsPanEnabled = false
++        };
++
++        model.Axes.Add(categoryAxis);
++        model.Axes.Add(valueAxis);
++
++        if (values.Count > 0)
++        {
++            var series = new ColumnSeries
++            {
++                FillColor = BarColor,
++                StrokeThickness = 0,
++                ColumnWidth = 0.6,
++                LabelPlacement = LabelPlacement.Outside,
++                // Третья секция формата пустая - подписи для нулевых значений не показываем
++                LabelFormatString = "{0:#,##0;;}",
++                TextColor = textColor
++            };
++
++            foreach (var value in values)
+             {
+-                bars.Bars[i].LineWidth = 0;
+-                bars.Bars[i].Label = values[i] > 0 ? values[i].ToString("N0") : string.Empty;
+-                bars.Bars[i].LabelOnTop = true;
++                series.Items.Add(new ColumnItem(value));
+             }
+ 
+-            plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(
+-                labels.Select((label, i) => new ScottPlot.Tick(i, label)).ToArray());
++            model.Series.Add(series);
+         }
+ 
+-        var max = values.Count > 0 ? values.Max() : 0;
+-        plot.Axes.SetLimitsY(0, max > 0 ? max * 1.2 : 1);
+-
+-        control.Refresh();
++        control.Model = model;
+     }
+ }

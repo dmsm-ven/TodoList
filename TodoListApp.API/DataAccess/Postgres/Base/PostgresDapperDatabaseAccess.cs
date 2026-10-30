@@ -79,7 +79,7 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
 
         var item = connection.QuerySingleOrDefault<T>(sql, parameters);
 
-        return item;
+        return item ?? default!;
     }
 
     public async Task<T> GetSingleAsync<T>(string sql, object? parameters = null)
@@ -90,6 +90,6 @@ public class PostgresDapperDatabaseAccess : IDapperDatabaseAccess
 
         var item = await connection.QuerySingleOrDefaultAsync<T>(sql, parameters);
 
-        return item;
+        return item ?? default!;
     }
 }

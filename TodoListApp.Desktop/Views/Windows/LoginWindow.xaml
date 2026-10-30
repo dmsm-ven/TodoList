@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
+    xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels.Windows"
     x:Name="loginWindow"
     Title="Войти"
@@ -81,7 +81,7 @@
                     </Style>
                 </Grid.Resources>
 
-                <ss:LoadingSpinner
+                <con:LoadingSpinner
                     Grid.Row="0"
                     Margin="0,14,0,0"
                     Panel.ZIndex="999"

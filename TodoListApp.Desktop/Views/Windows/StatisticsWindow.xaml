@@ -5,7 +5,7 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sp="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+    xmlns:oxy="http://oxyplot.org/wpf"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     Title="Статистика"
@@ -136,7 +136,7 @@
                     Header="Динамика за 12 месяцев"
                     IsExpanded="False">
                     <StackPanel Margin="0,8,0,0">
-                    <sp:WpfPlot x:Name="DynamicsPlot" Height="260" />
+                    <oxy:PlotView x:Name="DynamicsPlot" Height="260" Background="Transparent" />
                     <DataGrid
                         MaxHeight="360"
                         AutoGenerateColumns="False"
@@ -175,7 +175,7 @@
                     Header="Сравнение работодателей"
                     IsExpanded="False">
                     <StackPanel Margin="0,8,0,0">
-                    <sp:WpfPlot x:Name="ComparisonPlot" Height="260" />
+                    <oxy:PlotView x:Name="ComparisonPlot" Height="260" Background="Transparent" />
                     <DataGrid
                         MaxHeight="300"
                         AutoGenerateColumns="False"
