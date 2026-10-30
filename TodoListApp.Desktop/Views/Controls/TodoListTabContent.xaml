@@ -6,7 +6,6 @@
     xmlns:con="clr-namespace:TodoListApp.Desktop.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.Models.TodoList"
     d:DataContext="{d:DesignInstance Type=vm:EmployeerTabViewModel,
@@ -68,14 +67,12 @@
             DataContext="{Binding StatusBarData}" />
 
         <!--  индикатор загрузки вкладки  -->
-        <ss:LoadingSpinner
+        <con:LoadingSpinner
             Grid.Row="1"
             Width="200"
             Height="200"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
             Panel.ZIndex="10"
             IsLoading="True"
             Opacity="0.75"

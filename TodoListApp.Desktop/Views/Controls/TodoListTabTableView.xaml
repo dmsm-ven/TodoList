@@ -32,6 +32,7 @@
             FontSize="13"
             HeadersVisibility="Column"
             HorizontalGridLinesBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+            HorizontalScrollBarVisibility="Disabled"
             ItemsSource="{Binding FilteredTodoItems}"
             RowBackground="Transparent"
             RowDetailsVisibilityMode="VisibleWhenSelected"
@@ -92,7 +93,10 @@
                     Width="2*"
                     Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                     Header="Задача" />
-                <DataGridTemplateColumn Width="300" Header="Сайт">
+                <DataGridTemplateColumn
+                    Width="*"
+                    MinWidth="150"
+                    Header="Сайт">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

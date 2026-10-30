@@ -7,7 +7,6 @@
     xmlns:converters="clr-namespace:TodoListApp.Desktop.Infrastructure.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ss="clr-namespace:LoadingSpinnerControl;assembly=LoadingSpinnerControl"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:vm="clr-namespace:TodoListApp.Desktop.ViewModels"
     d:DataContext="{d:DesignInstance Type=vm:TodoListViewModel,
@@ -109,7 +108,7 @@
             </TabControl.ItemTemplate>
         </TabControl>
 
-        <ss:LoadingSpinner
+        <con:LoadingSpinner
             Width="64"
             Height="64"
             HorizontalAlignment="Center"

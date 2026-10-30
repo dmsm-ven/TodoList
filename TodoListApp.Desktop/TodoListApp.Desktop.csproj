@@ -30,14 +30,13 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Humanizer.Core.ru" />
-    <PackageReference Include="LoadingSpinner.WPF" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-    <PackageReference Include="ScottPlot.WPF" />
+    <PackageReference Include="OxyPlot.Wpf" />
     <PackageReference Include="WPF-UI" />
-  
+
   </ItemGroup>
 
   <ItemGroup>
