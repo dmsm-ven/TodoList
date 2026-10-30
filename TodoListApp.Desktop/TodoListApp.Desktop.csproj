@@ -5,6 +5,8 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UserSecretsId>61ea3258-ff2f-47bc-98ac-f0e942e0f6e4</UserSecretsId>
+	  <PublishReadyToRun>true</PublishReadyToRun>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
